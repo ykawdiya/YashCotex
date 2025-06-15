@@ -12,6 +12,7 @@ using WeighbridgeSoftwareYashCotex.Services;
 using WeighbridgeSoftwareYashCotex.Models;
 using Models = WeighbridgeSoftwareYashCotex.Models;
 using Newtonsoft.Json;
+using System.Windows.Threading;
 
 namespace WeighbridgeSoftwareYashCotex.Views
 {
@@ -1408,7 +1409,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 _settingsService.SaveSettings();
 
                 // Reload all settings from service into UI after saving
-                LoadAllSettingsIntoUI();
+                Dispatcher.BeginInvoke(new Action(() => LoadAllSettingsIntoUI()), DispatcherPriority.ApplicationIdle);
             }
             catch (Exception ex)
             {
@@ -1453,7 +1454,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 AddressesListBox.Items.Add(address);
 
             // Cameras
-            var cameras = _settingsService.Cameras ?? new List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration>();
+            var cameras = _settingsService.Cameras ??
+                          new List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration>();
             if (cameras.Count > 0)
                 Camera1NameTextBox.Text = cameras[0].Name;
             if (cameras.Count > 1)
@@ -2520,7 +2522,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 System.Diagnostics.Debug.WriteLine($"Error during cleanup: {ex.Message}");
             }
         }
-        
+
         public void SaveSettings()
         {
             try
@@ -2533,4 +2535,4 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
         }
     }
-}    
+}
