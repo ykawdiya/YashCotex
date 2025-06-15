@@ -1,0 +1,206 @@
+﻿<Window x:Class="WeighbridgeSoftwareYashCotex.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Weighbridge Software - Login" 
+        Height="600" Width="900"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+
+    <Window.Resources>
+        <!-- Login Styles -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#2C3E50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#34495E"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#1B2631"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="LoginTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#BDC3C7"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Padding="{TemplateBinding Padding}"
+                                        VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#3498DB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="LoginPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#BDC3C7"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Padding" Value="15,12"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Padding="{TemplateBinding Padding}"
+                                        VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#3498DB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="White" CornerRadius="15">
+        <Border.Effect>
+            <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="10" Opacity="0.3"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Side - Branding -->
+            <Border Grid.Column="0" Background="#2C3E50" CornerRadius="15,0,0,15">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="40">
+                    <TextBlock Text="🏭" FontSize="80" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    <TextBlock Text="YASH COTEX" FontSize="28" FontWeight="Bold" Foreground="White" 
+                               HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                    <TextBlock Text="PRIVATE LIMITED" FontSize="16" Foreground="#BDC3C7" 
+                               HorizontalAlignment="Center" Margin="0,0,0,30"/>
+                    <TextBlock Text="Weighbridge Management System" FontSize="14" Foreground="#BDC3C7" 
+                               HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,20"/>
+                    <TextBlock Text="Version 2.1.0" FontSize="12" Foreground="#7F8C8D" 
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Right Side - Login Form -->
+            <Grid Grid.Column="1" Margin="60">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Close Button -->
+                <Button Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Width="30" Height="30" Background="Transparent" BorderThickness="0"
+                        Content="✕" FontSize="16" Foreground="#7F8C8D" Cursor="Hand"
+                        Click="CloseButton_Click"/>
+
+                <!-- Login Form -->
+                <StackPanel Grid.Row="1" VerticalAlignment="Center" MaxWidth="350">
+                    <!-- Header -->
+                    <TextBlock Text="Welcome Back" FontSize="32" FontWeight="Bold" 
+                               Foreground="#2C3E50" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                    <TextBlock Text="Please sign in to your account" FontSize="16" 
+                               Foreground="#7F8C8D" HorizontalAlignment="Center" Margin="0,0,0,40"/>
+
+                    <!-- Username -->
+                    <TextBlock Text="Username" FontSize="14" FontWeight="SemiBold" 
+                               Foreground="#2C3E50" Margin="0,0,0,8"/>
+                    <TextBox x:Name="UsernameTextBox" Style="{StaticResource LoginTextBoxStyle}" 
+                             Margin="0,0,0,20" Text="admin"/>
+
+                    <!-- Password -->
+                    <TextBlock Text="Password" FontSize="14" FontWeight="SemiBold" 
+                               Foreground="#2C3E50" Margin="0,0,0,8"/>
+                    <PasswordBox x:Name="PasswordBox" Style="{StaticResource LoginPasswordBoxStyle}" 
+                                 Margin="0,0,0,20" Password="password123"/>
+
+                    <!-- Two-Factor Code (Initially Hidden) -->
+                    <StackPanel x:Name="TwoFactorPanel" Visibility="Collapsed" Margin="0,0,0,20">
+                        <TextBlock Text="Two-Factor Authentication Code" FontSize="14" FontWeight="SemiBold" 
+                                   Foreground="#2C3E50" Margin="0,0,0,8"/>
+                        <TextBox x:Name="TwoFactorCodeTextBox" Style="{StaticResource LoginTextBoxStyle}" 
+                                 MaxLength="6" Text="123456"/>
+                        <TextBlock Text="Enter the 6-digit code from your authenticator app" 
+                                   FontSize="12" Foreground="#7F8C8D" Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <!-- Remember Me -->
+                    <CheckBox x:Name="RememberMeCheckBox" Content="Remember me" 
+                              Foreground="#7F8C8D" Margin="0,0,0,30"/>
+
+                    <!-- Login Button -->
+                    <Button x:Name="LoginButton" Content="🔐 SIGN IN" 
+                            Style="{StaticResource ModernButtonStyle}"
+                            Click="LoginButton_Click" Margin="0,0,0,20"/>
+
+                    <!-- Status Message -->
+                    <TextBlock x:Name="StatusTextBlock" TextWrapping="Wrap" 
+                               HorizontalAlignment="Center" Margin="0,10,0,0"
+                               FontSize="14" Visibility="Collapsed"/>
+
+                    <!-- Additional Options -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                        <TextBlock Text="Default Users:" FontSize="12" Foreground="#7F8C8D" Margin="0,0,10,0"/>
+                        <Button Content="Admin" Click="SetAdminCredentials" Background="Transparent" 
+                                BorderThickness="0" Foreground="#3498DB" Cursor="Hand" FontSize="12" Padding="5,0"/>
+                        <TextBlock Text="|" Foreground="#BDC3C7" Margin="5,0"/>
+                        <Button Content="Manager" Click="SetManagerCredentials" Background="Transparent" 
+                                BorderThickness="0" Foreground="#3498DB" Cursor="Hand" FontSize="12" Padding="5,0"/>
+                        <TextBlock Text="|" Foreground="#BDC3C7" Margin="5,0"/>
+                        <Button Content="User" Click="SetUserCredentials" Background="Transparent" 
+                                BorderThickness="0" Foreground="#3498DB" Cursor="Hand" FontSize="12" Padding="5,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Footer -->
+                <StackPanel Grid.Row="2" VerticalAlignment="Bottom">
+                    <TextBlock Text="© 2024 Yash Cotex Private Limited. All rights reserved." 
+                               FontSize="12" Foreground="#BDC3C7" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

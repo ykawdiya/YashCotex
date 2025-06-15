@@ -17,6 +17,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
     {
         private readonly DatabaseService _databaseService;
         private readonly List<string> _availablePrinters;
+        private AuthenticationService? _authService;
         private string _currentUserRole = "User"; // This would come from authentication service
 
         public event EventHandler<string>? FormCompleted;
@@ -213,13 +214,28 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
         }
 
+        public void SetAuthenticationService(AuthenticationService authService)
+        {
+            _authService = authService;
+            if (_authService?.CurrentUser != null)
+            {
+                _currentUserRole = _authService.CurrentRole.ToString();
+            }
+            SetupAccessControl();
+        }
+
         private void SetupAccessControl()
         {
             // Disable Weight Rules tab for non-Super Admin users
-            if (_currentUserRole != "Super Admin")
+            if (_authService?.CurrentRole != UserRole.SuperAdmin)
             {
                 WeightRulesTab.IsEnabled = false;
                 WeightRulesTab.ToolTip = "Super Admin access required";
+            }
+            else
+            {
+                WeightRulesTab.IsEnabled = true;
+                WeightRulesTab.ToolTip = null;
             }
         }
 

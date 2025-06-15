@@ -291,7 +291,8 @@
                         <TextBlock Text="Battery: 85%" Style="{StaticResource FooterTextStyle}" Foreground="#ADB5BD"/>
                         <TextBlock Text=" | Internet: " Style="{StaticResource FooterTextStyle}" Foreground="#ADB5BD"/>
                         <TextBlock Text="Connected" Style="{StaticResource FooterTextStyle}" FontWeight="Bold" Foreground="#20C997"/>
-                        <TextBlock Text=" | User: Admin" Style="{StaticResource FooterTextStyle}" Foreground="#ADB5BD"/>
+                        <TextBlock Text=" | User: " Style="{StaticResource FooterTextStyle}" Foreground="#ADB5BD"/>
+                        <TextBlock x:Name="CurrentUserText" Text="Not Logged In" Style="{StaticResource FooterTextStyle}" FontWeight="Bold" Foreground="#FFC107"/>
                     </StackPanel>
                 </StackPanel>
             </Grid>
