@@ -153,6 +153,20 @@ public class DatabaseService : IDisposable
         }
     }
     
+    public WeighmentEntry? GetEntryByVehicleNumber(string vehicleNumber)
+    {
+        return _context.WeighmentEntries
+            .Where(w => w.VehicleNumber == vehicleNumber && !w.ExitDateTime.HasValue)
+            .OrderByDescending(w => w.EntryDateTime)
+            .FirstOrDefault();
+    }
+    
+    public void UpdateEntryExit(WeighmentEntry entry)
+    {
+        _context.WeighmentEntries.Update(entry);
+        _context.SaveChanges();
+    }
+    
     public List<WeighmentEntry> GetAllWeighments()
     {
         return _context.WeighmentEntries

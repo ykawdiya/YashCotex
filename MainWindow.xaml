@@ -1,8 +1,41 @@
 ﻿<Window x:Class="WeighbridgeSoftwareYashCotex.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Weighbridge Software - YASH COTEX" Height="800" Width="1200"
-        WindowStartupLocation="CenterScreen">
+        Title="Weighbridge Software - YASH COTEX" Height="900" Width="1400"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized">
+
+    <Window.Resources>
+        <!-- Minimal Styles -->
+        <Style x:Key="HeaderStyle" TargetType="Border">
+            <Setter Property="Background" Value="#2C3E50"/>
+            <Setter Property="Padding" Value="20,15"/>
+        </Style>
+        
+        <Style x:Key="CCTVStyle" TargetType="Border">
+            <Setter Property="Background" Value="#1A1A1A"/>
+            <Setter Property="BorderBrush" Value="#444"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="8"/>
+        </Style>
+        
+        <Style x:Key="CenterPanelStyle" TargetType="Border">
+            <Setter Property="Background" Value="#F8F9FA"/>
+            <Setter Property="BorderBrush" Value="#DEE2E6"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Margin" Value="10"/>
+        </Style>
+        
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="10,5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -13,132 +46,142 @@
         </Grid.RowDefinitions>
 
         <!-- Header Section -->
-        <Border Grid.Row="0" Background="#2E86C1" Padding="15,10">
+        <Border Grid.Row="0" Style="{StaticResource HeaderStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- Logo Section -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Image Source="dotnet_bot.png" Width="40" Height="40" Margin="0,0,10,0"/>
+                    <TextBlock Text="⚖️" FontSize="32" VerticalAlignment="Center" Margin="0,0,15,0"/>
                     <StackPanel>
-                        <Label Content="YASH COTEX" FontSize="18" FontWeight="Bold" Foreground="White"/>
-                        <Label Content="Weighbridge Software" FontSize="12" Foreground="LightGray"/>
+                        <TextBlock Text="YASH COTEX" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Text="Weighbridge System" FontSize="12" Foreground="#BDC3C7"/>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Company Info Section -->
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Label Content="COMPANY ADDRESS HERE" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
-                    <Label Content="Phone: +91-9876543210 | Email: info@yashcotex.com" FontSize="12" Foreground="LightGray" HorizontalAlignment="Center"/>
-                    <Label Content="GSTIN: 22AAAAA0000A1Z5" FontSize="12" Foreground="LightGray" HorizontalAlignment="Center"/>
+                    <TextBlock Text="YASH COTEX PRIVATE LIMITED" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Contact: +91-9876543210 | Email: info@yashcotex.com" FontSize="11" Foreground="#BDC3C7" HorizontalAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Date/Time Section -->
                 <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <Label x:Name="CurrentDateTime" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right"/>
+                    <TextBlock x:Name="CurrentDateTime" FontSize="14" FontWeight="SemiBold" Foreground="White" HorizontalAlignment="Right"/>
                 </StackPanel>
             </Grid>
         </Border>
 
         <!-- Main Content Area -->
-        <Grid Grid.Row="1" Margin="20">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <Grid Grid.Row="1" Margin="10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="300"/>  <!-- Left CCTV Panel -->
+                <ColumnDefinition Width="*"/>    <!-- Center Content -->
+                <ColumnDefinition Width="300"/>  <!-- Right CCTV Panel -->
             </Grid.ColumnDefinitions>
 
-            <!-- Camera Feeds Section -->
-            <Grid Grid.Row="0" Grid.Column="0" Margin="0,0,15,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Camera 1 -->
-                <Border Grid.Row="0" Grid.Column="0" Background="Black" Margin="5">
+            <!-- Left CCTV Panel -->
+            <StackPanel Grid.Column="0" Margin="5">
+                <TextBlock Text="CCTV Feeds - Left" FontSize="14" FontWeight="Bold" Margin="10,5" HorizontalAlignment="Center"/>
+                
+                <!-- CCTV 1 -->
+                <Border Style="{StaticResource CCTVStyle}" Height="200">
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Label Content="📹" FontSize="48" Foreground="White" HorizontalAlignment="Center"/>
-                        <Label Content="Camera 1" FontSize="14" Foreground="White" HorizontalAlignment="Center"/>
-                        <Label Content="Entry View" FontSize="12" Foreground="Gray" HorizontalAlignment="Center"/>
+                        <TextBlock Text="📹" FontSize="40" Foreground="#007ACC" HorizontalAlignment="Center"/>
+                        <TextBlock Text="CCTV 1" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Entry Gate" FontSize="11" Foreground="#888" HorizontalAlignment="Center"/>
+                        <Rectangle Fill="#007ACC" Height="2" Width="40" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
-
-                <!-- Camera 2 -->
-                <Border Grid.Row="0" Grid.Column="1" Background="Black" Margin="5">
+                
+                <!-- CCTV 2 -->
+                <Border Style="{StaticResource CCTVStyle}" Height="200">
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Label Content="📹" FontSize="48" Foreground="White" HorizontalAlignment="Center"/>
-                        <Label Content="Camera 2" FontSize="14" Foreground="White" HorizontalAlignment="Center"/>
-                        <Label Content="Exit View" FontSize="12" Foreground="Gray" HorizontalAlignment="Center"/>
+                        <TextBlock Text="📹" FontSize="40" Foreground="#28A745" HorizontalAlignment="Center"/>
+                        <TextBlock Text="CCTV 2" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Weighbridge Left" FontSize="11" Foreground="#888" HorizontalAlignment="Center"/>
+                        <Rectangle Fill="#28A745" Height="2" Width="40" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
+            </StackPanel>
 
-                <!-- Camera 3 -->
-                <Border Grid.Row="1" Grid.Column="0" Background="Black" Margin="5">
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Label Content="📹" FontSize="48" Foreground="White" HorizontalAlignment="Center"/>
-                        <Label Content="Camera 3" FontSize="14" Foreground="White" HorizontalAlignment="Center"/>
-                        <Label Content="Side View" FontSize="12" Foreground="Gray" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- Camera 4 -->
-                <Border Grid.Row="1" Grid.Column="1" Background="Black" Margin="5">
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Label Content="📹" FontSize="48" Foreground="White" HorizontalAlignment="Center"/>
-                        <Label Content="Camera 4" FontSize="14" Foreground="White" HorizontalAlignment="Center"/>
-                        <Label Content="Overview" FontSize="12" Foreground="Gray" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
-
-            <!-- Live Weight Display -->
-            <Border Grid.Row="0" Grid.Column="1" Background="#E8F4FD" Padding="20">
-                <StackPanel VerticalAlignment="Center">
-                    <Label Content="LIVE WEIGHT" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
-                    
-                    <Border Background="Black" Padding="15" HorizontalAlignment="Stretch" Margin="0,15,0,15">
-                        <StackPanel>
-                            <Label x:Name="LiveWeight" Content="0.00" FontSize="36" FontWeight="Bold" 
-                                   Foreground="Lime" HorizontalAlignment="Center"/>
-                            <Label Content="KG" FontSize="14" Foreground="White" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
-
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,4">
-                            <Label Content="Status:" FontSize="12" VerticalAlignment="Center"/>
-                            <Label x:Name="StabilityIndicator" Content="STABLE" FontSize="12" FontWeight="Bold" 
-                                   Foreground="Green" VerticalAlignment="Center"/>
-                        </StackPanel>
+            <!-- Center Content Panel -->
+            <Border Grid.Column="1" Style="{StaticResource CenterPanelStyle}">
+                <Grid x:Name="CenterContentGrid">
+                    <!-- Live Weight Display (Default View) -->
+                    <StackPanel x:Name="LiveWeightPanel" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="LIVE WEIGHT DISPLAY" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,30" Foreground="#2C3E50"/>
                         
-                        <StackPanel Orientation="Horizontal" Margin="0,4">
-                            <Label Content="Connection:" FontSize="12" VerticalAlignment="Center"/>
-                            <Label x:Name="ConnectionStatus" Content="Connected" FontSize="12" FontWeight="Bold" 
-                                   Foreground="Green" VerticalAlignment="Center"/>
-                        </StackPanel>
+                        <Border Background="#1A1A1A" CornerRadius="15" Padding="40,30" HorizontalAlignment="Center">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock x:Name="LiveWeight" Text="0.00" FontSize="72" FontWeight="Bold" 
+                                           Foreground="#00FF41" HorizontalAlignment="Center" FontFamily="Consolas"/>
+                                <TextBlock Text="KILOGRAMS" FontSize="16" Foreground="#888" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </Border>
 
-                        <Label x:Name="LastUpdated" Content="Last Updated: --:--:--" FontSize="10" 
-                               Foreground="Gray" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        <Grid Margin="0,30,0,0" Width="400">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                <TextBlock Text="STATUS" FontSize="12" Foreground="#666" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="StabilityIndicator" Text="STABLE" FontSize="16" FontWeight="Bold" 
+                                           Foreground="#28A745" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                            </StackPanel>
+                            
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                <TextBlock Text="CONNECTION" FontSize="12" Foreground="#666" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="ConnectionStatus" Text="CONNECTED" FontSize="16" FontWeight="Bold" 
+                                           Foreground="#28A745" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock x:Name="LastUpdated" Text="Last Updated: --:--:--" FontSize="12" 
+                                   Foreground="#888" HorizontalAlignment="Center" Margin="0,20,0,0"/>
                     </StackPanel>
-                </StackPanel>
+
+                    <!-- Content Panel for Forms -->
+                    <ContentPresenter x:Name="FormContentPresenter" Visibility="Collapsed"/>
+                </Grid>
             </Border>
+
+            <!-- Right CCTV Panel -->
+            <StackPanel Grid.Column="2" Margin="5">
+                <TextBlock Text="CCTV Feeds - Right" FontSize="14" FontWeight="Bold" Margin="10,5" HorizontalAlignment="Center"/>
+                
+                <!-- CCTV 3 -->
+                <Border Style="{StaticResource CCTVStyle}" Height="200">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="📹" FontSize="40" Foreground="#FFC107" HorizontalAlignment="Center"/>
+                        <TextBlock Text="CCTV 3" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Weighbridge Right" FontSize="11" Foreground="#888" HorizontalAlignment="Center"/>
+                        <Rectangle Fill="#FFC107" Height="2" Width="40" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+                
+                <!-- CCTV 4 -->
+                <Border Style="{StaticResource CCTVStyle}" Height="200">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="📹" FontSize="40" Foreground="#DC3545" HorizontalAlignment="Center"/>
+                        <TextBlock Text="CCTV 4" FontSize="14" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Exit Gate" FontSize="11" Foreground="#888" HorizontalAlignment="Center"/>
+                        <Rectangle Fill="#DC3545" Height="2" Width="40" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
         </Grid>
 
-        <!-- Button Bar -->
-        <Grid Grid.Row="2" Background="#34495E" Margin="20,15">
+        <!-- Action Buttons -->
+        <Grid Grid.Row="2" Background="#34495E" Margin="10,0">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -146,20 +189,22 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" x:Name="EntryButton" Content="ENTRY (F1)" Background="#27AE60" Foreground="White"
-                    FontSize="14" FontWeight="Bold" Click="EntryButton_Clicked" Margin="5"/>
-            <Button Grid.Column="1" x:Name="ExitButton" Content="EXIT (F2)" Background="#E74C3C" Foreground="White"
-                    FontSize="14" FontWeight="Bold" Click="ExitButton_Clicked" Margin="5"/>
-            <Button Grid.Column="2" x:Name="PrintButton" Content="PRINT (F3)" Background="#3498DB" Foreground="White"
-                    FontSize="14" FontWeight="Bold" Click="PrintButton_Clicked" Margin="5"/>
-            <Button Grid.Column="3" x:Name="SettingsButton" Content="SETTINGS (F4)" Background="#9B59B6" Foreground="White"
-                    FontSize="14" FontWeight="Bold" Click="SettingsButton_Clicked" Margin="5"/>
-            <Button Grid.Column="4" x:Name="LogoutButton" Content="LOGOUT (F5)" Background="#E67E22" Foreground="White"
-                    FontSize="14" FontWeight="Bold" Click="LogoutButton_Clicked" Margin="5"/>
+            <Button Grid.Column="0" x:Name="HomeButton" Content="🏠 HOME" Background="#6C757D" Foreground="White"
+                    Style="{StaticResource ActionButtonStyle}" Click="HomeButton_Clicked"/>
+            <Button Grid.Column="1" x:Name="EntryButton" Content="📥 ENTRY (F1)" Background="#28A745" Foreground="White"
+                    Style="{StaticResource ActionButtonStyle}" Click="EntryButton_Clicked"/>
+            <Button Grid.Column="2" x:Name="ExitButton" Content="📤 EXIT (F2)" Background="#DC3545" Foreground="White"
+                    Style="{StaticResource ActionButtonStyle}" Click="ExitButton_Clicked"/>
+            <Button Grid.Column="3" x:Name="PrintButton" Content="🖨️ PRINT (F3)" Background="#007BFF" Foreground="White"
+                    Style="{StaticResource ActionButtonStyle}" Click="PrintButton_Clicked"/>
+            <Button Grid.Column="4" x:Name="SettingsButton" Content="⚙️ SETTINGS (F4)" Background="#6F42C1" Foreground="White"
+                    Style="{StaticResource ActionButtonStyle}" Click="SettingsButton_Clicked"/>
+            <Button Grid.Column="5" x:Name="LogoutButton" Content="🚪 LOGOUT (F5)" Background="#FD7E14" Foreground="White"
+                    Style="{StaticResource ActionButtonStyle}" Click="LogoutButton_Clicked"/>
         </Grid>
 
-        <!-- Footer -->
-        <Border Grid.Row="3" Background="#2C3E50" Padding="15,10">
+        <!-- Status Footer -->
+        <Border Grid.Row="3" Background="#212529" Padding="15,10">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -168,18 +213,18 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Label Content="Scale Status:" FontSize="12" Foreground="LightGray" VerticalAlignment="Center"/>
-                    <Label x:Name="ScaleStatus" Content="Active" FontSize="12" FontWeight="Bold" 
-                           Foreground="Lime" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <TextBlock Text="Scale Status:" FontSize="12" Foreground="#ADB5BD" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="ScaleStatus" Text="ACTIVE" FontSize="12" FontWeight="Bold" 
+                               Foreground="#20C997" VerticalAlignment="Center" Margin="8,0,0,0"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                    <Label x:Name="LatestOperation" Content="System Ready" FontSize="12" 
-                           Foreground="White" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="LatestOperation" Text="System Ready" FontSize="12" 
+                               Foreground="White" HorizontalAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" HorizontalAlignment="Right">
-                    <Label Content="Device: COM1 | User: Admin" FontSize="12" Foreground="LightGray"/>
+                    <TextBlock Text="Device: COM1 | User: Admin | v2.0" FontSize="12" Foreground="#ADB5BD"/>
                 </StackPanel>
             </Grid>
         </Border>
