@@ -260,120 +260,232 @@
                 <!-- Tab 3: Camera Settings -->
                 <TabItem Header="📹 Cameras">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-                        <StackPanel MaxWidth="700">
+                        <StackPanel MaxWidth="800">
                             <TextBlock Text="IP CAMERA CONFIGURATION" Style="{StaticResource SectionHeaderStyle}"/>
                             
-                            <!-- Camera 1 -->
+                            <!-- Camera Control Buttons -->
+                            <Border Background="#E3F2FD" BorderBrush="#2196F3" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <TextBlock Text="🎮 CAMERA CONTROLS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="🔄 Test All Cameras" Padding="10,5" Margin="0,0,10,0" x:Name="TestAllCamerasButton"/>
+                                        <Button Content="📹 Start Monitoring" Padding="10,5" Margin="0,0,10,0" x:Name="StartMonitoringButton"/>
+                                        <Button Content="⏹️ Stop Monitoring" Padding="10,5" Margin="0,0,10,0" x:Name="StopMonitoringButton"/>
+                                        <Button Content="📸 Capture All" Padding="10,5" x:Name="CaptureAllButton"/>
+                                    </StackPanel>
+                                    <TextBlock x:Name="CameraStatusText" Text="Ready to configure cameras" Margin="0,10,0,0" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <!-- Camera 1 - Entry -->
                             <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,15">
                                 <StackPanel>
-                                    <TextBlock Text="📹 CAMERA 1 (Front Entry)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                                    
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="📹 CAMERA 1 (Entry Camera)" FontSize="14" FontWeight="Bold" Grid.Column="0"/>
+                                        <CheckBox x:Name="Camera1EnabledCheckBox" Content="Enable" IsChecked="True" Grid.Column="1"/>
+                                    </Grid>
+                                    
+                                    <Grid Margin="0,10,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="15"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="15"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         
                                         <StackPanel Grid.Column="0">
-                                            <TextBlock Text="Camera IP Address" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBlock Text="Camera Name" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera1NameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Entry Camera"/>
+                                            
+                                            <TextBlock Text="IP Address" Style="{StaticResource FieldLabelStyle}"/>
                                             <TextBox x:Name="Camera1IpTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="192.168.1.101"/>
                                             
-                                            <TextBlock Text="Port" Style="{StaticResource FieldLabelStyle}"/>
-                                            <TextBox x:Name="Camera1PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="554"/>
+                                            <TextBlock Text="Stream URL" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera1StreamUrlTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="http://192.168.1.101/mjpeg/1"/>
                                         </StackPanel>
                                         
                                         <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Port" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera1PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="80"/>
+                                            
                                             <TextBlock Text="Username" Style="{StaticResource FieldLabelStyle}"/>
                                             <TextBox x:Name="Camera1UsernameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="admin"/>
                                             
                                             <TextBlock Text="Password" Style="{StaticResource FieldLabelStyle}"/>
                                             <PasswordBox x:Name="Camera1PasswordBox" Height="35" Margin="0,0,0,12" Padding="8"/>
                                         </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="4">
+                                            <Button Content="🔄 Test" x:Name="TestCamera1Button" Margin="0,20,0,5" Padding="8,4"/>
+                                            <Button Content="📸 Capture" x:Name="CaptureCamera1Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <Button Content="👁️ Preview" x:Name="PreviewCamera1Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <TextBlock x:Name="Camera1StatusText" Text="Not tested" FontSize="10" Margin="0,5,0,0"/>
+                                        </StackPanel>
                                     </Grid>
-                                    
-                                    <CheckBox x:Name="Camera1EnabledCheckBox" Content="Enable Camera 1" IsChecked="True" Margin="0,10,0,0"/>
                                 </StackPanel>
                             </Border>
 
-                            <!-- Camera 2 -->
+                            <!-- Camera 2 - Exit -->
                             <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,15">
                                 <StackPanel>
-                                    <TextBlock Text="📹 CAMERA 2 (Rear Entry)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                                    
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="📹 CAMERA 2 (Exit Camera)" FontSize="14" FontWeight="Bold" Grid.Column="0"/>
+                                        <CheckBox x:Name="Camera2EnabledCheckBox" Content="Enable" IsChecked="True" Grid.Column="1"/>
+                                    </Grid>
+                                    
+                                    <Grid Margin="0,10,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="15"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="15"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         
                                         <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Camera Name" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera2NameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Exit Camera"/>
+                                            
+                                            <TextBlock Text="IP Address" Style="{StaticResource FieldLabelStyle}"/>
                                             <TextBox x:Name="Camera2IpTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="192.168.1.102"/>
-                                            <TextBox x:Name="Camera2PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="554"/>
+                                            
+                                            <TextBlock Text="Stream URL" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera2StreamUrlTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="http://192.168.1.102/mjpeg/1"/>
                                         </StackPanel>
                                         
                                         <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Port" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera2PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="80"/>
+                                            
+                                            <TextBlock Text="Username" Style="{StaticResource FieldLabelStyle}"/>
                                             <TextBox x:Name="Camera2UsernameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="admin"/>
+                                            
+                                            <TextBlock Text="Password" Style="{StaticResource FieldLabelStyle}"/>
                                             <PasswordBox x:Name="Camera2PasswordBox" Height="35" Margin="0,0,0,12" Padding="8"/>
                                         </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="4">
+                                            <Button Content="🔄 Test" x:Name="TestCamera2Button" Margin="0,20,0,5" Padding="8,4"/>
+                                            <Button Content="📸 Capture" x:Name="CaptureCamera2Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <Button Content="👁️ Preview" x:Name="PreviewCamera2Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <TextBlock x:Name="Camera2StatusText" Text="Not tested" FontSize="10" Margin="0,5,0,0"/>
+                                        </StackPanel>
                                     </Grid>
-                                    
-                                    <CheckBox x:Name="Camera2EnabledCheckBox" Content="Enable Camera 2" IsChecked="True" Margin="0,10,0,0"/>
                                 </StackPanel>
                             </Border>
 
-                            <!-- Camera 3 -->
+                            <!-- Camera 3 - Left Side -->
                             <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,15">
                                 <StackPanel>
-                                    <TextBlock Text="📹 CAMERA 3 (Side Exit)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                                    
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="📹 CAMERA 3 (Left Side Camera)" FontSize="14" FontWeight="Bold" Grid.Column="0"/>
+                                        <CheckBox x:Name="Camera3EnabledCheckBox" Content="Enable" IsChecked="True" Grid.Column="1"/>
+                                    </Grid>
+                                    
+                                    <Grid Margin="0,10,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="15"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="15"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         
                                         <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Camera Name" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera3NameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Left Side Camera"/>
+                                            
+                                            <TextBlock Text="IP Address" Style="{StaticResource FieldLabelStyle}"/>
                                             <TextBox x:Name="Camera3IpTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="192.168.1.103"/>
-                                            <TextBox x:Name="Camera3PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="554"/>
+                                            
+                                            <TextBlock Text="Stream URL" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera3StreamUrlTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="http://192.168.1.103/mjpeg/1"/>
                                         </StackPanel>
                                         
                                         <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Port" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera3PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="80"/>
+                                            
+                                            <TextBlock Text="Username" Style="{StaticResource FieldLabelStyle}"/>
                                             <TextBox x:Name="Camera3UsernameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="admin"/>
+                                            
+                                            <TextBlock Text="Password" Style="{StaticResource FieldLabelStyle}"/>
                                             <PasswordBox x:Name="Camera3PasswordBox" Height="35" Margin="0,0,0,12" Padding="8"/>
                                         </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="4">
+                                            <Button Content="🔄 Test" x:Name="TestCamera3Button" Margin="0,20,0,5" Padding="8,4"/>
+                                            <Button Content="📸 Capture" x:Name="CaptureCamera3Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <Button Content="👁️ Preview" x:Name="PreviewCamera3Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <TextBlock x:Name="Camera3StatusText" Text="Not tested" FontSize="10" Margin="0,5,0,0"/>
+                                        </StackPanel>
                                     </Grid>
-                                    
-                                    <CheckBox x:Name="Camera3EnabledCheckBox" Content="Enable Camera 3" IsChecked="True" Margin="0,10,0,0"/>
                                 </StackPanel>
                             </Border>
 
-                            <!-- Camera 4 -->
+                            <!-- Camera 4 - Right Side -->
                             <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15">
                                 <StackPanel>
-                                    <TextBlock Text="📹 CAMERA 4 (Overview)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                                    
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="📹 CAMERA 4 (Right Side Camera)" FontSize="14" FontWeight="Bold" Grid.Column="0"/>
+                                        <CheckBox x:Name="Camera4EnabledCheckBox" Content="Enable" IsChecked="True" Grid.Column="1"/>
+                                    </Grid>
+                                    
+                                    <Grid Margin="0,10,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="15"/>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="15"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         
                                         <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Camera Name" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera4NameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Right Side Camera"/>
+                                            
+                                            <TextBlock Text="IP Address" Style="{StaticResource FieldLabelStyle}"/>
                                             <TextBox x:Name="Camera4IpTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="192.168.1.104"/>
-                                            <TextBox x:Name="Camera4PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="554"/>
+                                            
+                                            <TextBlock Text="Stream URL" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera4StreamUrlTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="http://192.168.1.104/mjpeg/1"/>
                                         </StackPanel>
                                         
                                         <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Port" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera4PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="80"/>
+                                            
+                                            <TextBlock Text="Username" Style="{StaticResource FieldLabelStyle}"/>
                                             <TextBox x:Name="Camera4UsernameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="admin"/>
+                                            
+                                            <TextBlock Text="Password" Style="{StaticResource FieldLabelStyle}"/>
                                             <PasswordBox x:Name="Camera4PasswordBox" Height="35" Margin="0,0,0,12" Padding="8"/>
                                         </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="4">
+                                            <Button Content="🔄 Test" x:Name="TestCamera4Button" Margin="0,20,0,5" Padding="8,4"/>
+                                            <Button Content="📸 Capture" x:Name="CaptureCamera4Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <Button Content="👁️ Preview" x:Name="PreviewCamera4Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <TextBlock x:Name="Camera4StatusText" Text="Not tested" FontSize="10" Margin="0,5,0,0"/>
+                                        </StackPanel>
                                     </Grid>
-                                    
-                                    <CheckBox x:Name="Camera4EnabledCheckBox" Content="Enable Camera 4" IsChecked="True" Margin="0,10,0,0"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>

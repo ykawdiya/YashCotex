@@ -43,26 +43,225 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             switch (e.Key)
             {
+                case Key.F5:
+                    // Quick capture weight
+                    CaptureCurrentWeight();
+                    UpdateFormStatus("Weight captured manually", true);
+                    e.Handled = true;
+                    break;
+                case Key.F6:
+                    // Quick validation
+                    ValidateForm();
+                    e.Handled = true;
+                    break;
+                case Key.F7:
+                    // Auto-complete vehicle number if partial
+                    AutoCompleteVehicleNumber();
+                    e.Handled = true;
+                    break;
+                case Key.F8:
+                    // Auto-fill customer details from last entry
+                    AutoFillFromLastEntry();
+                    e.Handled = true;
+                    break;
                 case Key.F9:
+                    // Save entry
                     if (SaveButton.IsEnabled)
                         SaveButton_Click(this, new RoutedEventArgs());
+                    e.Handled = true;
                     break;
                 case Key.F10:
+                    // Clear form
                     ClearButton_Click(this, new RoutedEventArgs());
+                    e.Handled = true;
+                    break;
+                case Key.F11:
+                    // Print preview
+                    PreviewEntry();
+                    e.Handled = true;
                     break;
                 case Key.Escape:
+                    // Cancel/Exit
                     CancelButton_Click(this, new RoutedEventArgs());
+                    e.Handled = true;
                     break;
                 case Key.Tab:
                     // Allow normal tab navigation
                     break;
                 case Key.Enter:
-                    // Move to next field on Enter
-                    var focusedElement = Keyboard.FocusedElement as UIElement;
-                    focusedElement?.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                    // Smart Enter navigation
+                    HandleEnterKeyNavigation();
+                    e.Handled = true;
+                    break;
+                case Key.F1:
+                    // Show help
+                    ShowEntryHelp();
                     e.Handled = true;
                     break;
             }
+        }
+
+        private void HandleEnterKeyNavigation()
+        {
+            var focusedElement = Keyboard.FocusedElement;
+            
+            // Special handling for specific fields
+            if (focusedElement == VehicleNumberTextBox)
+            {
+                NameTextBox.Focus();
+            }
+            else if (focusedElement == NameTextBox)
+            {
+                PhoneNumberTextBox.Focus();
+            }
+            else if (focusedElement == PhoneNumberTextBox)
+            {
+                AddressComboBox.Focus();
+            }
+            else if (focusedElement == AddressComboBox)
+            {
+                MaterialComboBox.Focus();
+            }
+            else if (focusedElement == MaterialComboBox)
+            {
+                // Skip weight field as it's read-only, go to save
+                if (SaveButton.IsEnabled)
+                {
+                    SaveButton.Focus();
+                }
+                else
+                {
+                    VehicleNumberTextBox.Focus(); // Cycle back to start
+                }
+            }
+            else
+            {
+                // Default behavior - move to next focusable element
+                if (focusedElement is UIElement element)
+                {
+                    element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                }
+            }
+        }
+
+        private void AutoCompleteVehicleNumber()
+        {
+            try
+            {
+                var partialNumber = VehicleNumberTextBox.Text?.Trim().ToUpper();
+                if (string.IsNullOrEmpty(partialNumber) || partialNumber.Length < 2)
+                    return;
+
+                // Find similar vehicle numbers from database
+                var recentEntries = _databaseService.GetRecentVehicleNumbers(partialNumber, 5);
+                
+                if (recentEntries.Any())
+                {
+                    var firstMatch = recentEntries.First();
+                    VehicleNumberTextBox.Text = firstMatch;
+                    VehicleNumberTextBox.SelectionStart = partialNumber.Length;
+                    VehicleNumberTextBox.SelectionLength = firstMatch.Length - partialNumber.Length;
+                    
+                    UpdateFormStatus($"Auto-completed from {recentEntries.Count} matches", true);
+                }
+                else
+                {
+                    UpdateFormStatus("No matching vehicle numbers found", false);
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateFormStatus($"Auto-complete error: {ex.Message}", false);
+            }
+        }
+
+        private void AutoFillFromLastEntry()
+        {
+            try
+            {
+                var vehicleNumber = VehicleNumberTextBox.Text?.Trim().ToUpper();
+                if (string.IsNullOrEmpty(vehicleNumber))
+                {
+                    UpdateFormStatus("Enter vehicle number first", false);
+                    return;
+                }
+
+                var lastEntry = _databaseService.GetLastEntryForVehicle(vehicleNumber);
+                if (lastEntry != null)
+                {
+                    NameTextBox.Text = lastEntry.Name;
+                    PhoneNumberTextBox.Text = lastEntry.PhoneNumber;
+                    AddressComboBox.Text = lastEntry.Address;
+                    MaterialComboBox.Text = lastEntry.Material;
+                    
+                    UpdateFormStatus("Customer details filled from last entry", true);
+                }
+                else
+                {
+                    UpdateFormStatus("No previous entry found for this vehicle", false);
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateFormStatus($"Auto-fill error: {ex.Message}", false);
+            }
+        }
+
+        private void PreviewEntry()
+        {
+            try
+            {
+                if (!SaveButton.IsEnabled)
+                {
+                    UpdateFormStatus("Complete all required fields first", false);
+                    return;
+                }
+
+                var previewText = $"ENTRY PREVIEW\n" +
+                                $"=============\n" +
+                                $"RST: {RstNumberTextBox.Text}\n" +
+                                $"Vehicle: {VehicleNumberTextBox.Text}\n" +
+                                $"Customer: {NameTextBox.Text}\n" +
+                                $"Phone: {PhoneNumberTextBox.Text}\n" +
+                                $"Material: {MaterialComboBox.Text}\n" +
+                                $"Weight: {WeightTextBox.Text} kg\n" +
+                                $"Date: {DateTimeTextBox.Text}\n" +
+                                $"Address: {AddressComboBox.Text}";
+
+                MessageBox.Show(previewText, "Entry Preview (F11)", 
+                               MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                UpdateFormStatus($"Preview error: {ex.Message}", false);
+            }
+        }
+
+        private void ShowEntryHelp()
+        {
+            var helpText = "ENTRY FORM KEYBOARD SHORTCUTS\n" +
+                          "==============================\n\n" +
+                          "F1  - Show this help\n" +
+                          "F5  - Capture current weight\n" +
+                          "F6  - Validate form\n" +
+                          "F7  - Auto-complete vehicle number\n" +
+                          "F8  - Auto-fill from last entry\n" +
+                          "F9  - Save entry\n" +
+                          "F10 - Clear form\n" +
+                          "F11 - Preview entry\n" +
+                          "ESC - Cancel/Exit\n\n" +
+                          "NAVIGATION:\n" +
+                          "Enter - Move to next field\n" +
+                          "Tab   - Move to next field\n" +
+                          "Shift+Tab - Move to previous field\n\n" +
+                          "VALIDATION:\n" +
+                          "Vehicle: 9-10 characters, auto-uppercase\n" +
+                          "Phone: 10 digits only\n" +
+                          "Name: First and last name required\n" +
+                          "Address: Single word location";
+
+            MessageBox.Show(helpText, "Entry Form Help (F1)", 
+                           MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void InitializeForm()

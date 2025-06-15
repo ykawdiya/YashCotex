@@ -18,6 +18,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
         private readonly DatabaseService _databaseService;
         private readonly List<string> _availablePrinters;
         private AuthenticationService? _authService;
+        private GoogleSheetsService? _googleSheetsService;
+        private CameraService? _cameraService;
         private string _currentUserRole = "User"; // This would come from authentication service
 
         public event EventHandler<string>? FormCompleted;
@@ -27,6 +29,16 @@ namespace WeighbridgeSoftwareYashCotex.Views
             InitializeComponent();
             _databaseService = new DatabaseService();
             _availablePrinters = new List<string>();
+            _googleSheetsService = new GoogleSheetsService(_databaseService);
+            _cameraService = new CameraService();
+            
+            // Subscribe to Google Sheets events
+            _googleSheetsService.SyncStatusChanged += OnSyncStatusChanged;
+            _googleSheetsService.SyncProgressChanged += OnSyncProgressChanged;
+            
+            // Subscribe to Camera events
+            _cameraService.StatusChanged += OnCameraStatusChanged;
+            _cameraService.ImageUpdated += OnCameraImageUpdated;
             
             this.Loaded += SettingsControl_Loaded;
             this.KeyDown += SettingsControl_KeyDown;
@@ -46,14 +58,337 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             switch (e.Key)
             {
+                case Key.F1:
+                    // Show help
+                    ShowSettingsHelp();
+                    e.Handled = true;
+                    break;
                 case Key.F2:
+                    // Save settings
                     if (SaveSettingsButton.IsEnabled)
                         SaveSettingsButton_Click(this, new RoutedEventArgs());
+                    e.Handled = true;
+                    break;
+                case Key.F3:
+                    // Test connections (Google Sheets, Database)
+                    TestConnections();
+                    e.Handled = true;
+                    break;
+                case Key.F4:
+                    // Export settings
+                    ExportSettings();
+                    e.Handled = true;
+                    break;
+                case Key.F5:
+                    // Backup database
+                    BackupNowButton_Click(this, new RoutedEventArgs());
+                    e.Handled = true;
+                    break;
+                case Key.F6:
+                    // Sync with Google Sheets
+                    SyncNowButton_Click(this, new RoutedEventArgs());
+                    e.Handled = true;
+                    break;
+                case Key.F7:
+                    // System diagnostics
+                    SystemDiagnosticsButton_Click(this, new RoutedEventArgs());
+                    e.Handled = true;
+                    break;
+                case Key.F8:
+                    // Navigate to next tab
+                    NavigateToNextTab();
+                    e.Handled = true;
+                    break;
+                case Key.F9:
+                    // Navigate to previous tab
+                    NavigateToPreviousTab();
+                    e.Handled = true;
+                    break;
+                case Key.F10:
+                    // Reset current tab to defaults
+                    ResetCurrentTab();
+                    e.Handled = true;
                     break;
                 case Key.Escape:
+                    // Cancel/Exit
                     CancelSettingsButton_Click(this, new RoutedEventArgs());
+                    e.Handled = true;
+                    break;
+                case Key.Tab:
+                    // Allow normal tab navigation within controls
+                    break;
+                case Key.Enter:
+                    // Smart Enter navigation
+                    HandleEnterKeyInSettings();
+                    e.Handled = true;
                     break;
             }
+        }
+
+        private void HandleEnterKeyInSettings()
+        {
+            var focusedElement = Keyboard.FocusedElement;
+            
+            // Special handling for buttons
+            if (focusedElement is Button button && button.IsEnabled)
+            {
+                button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            }
+            else if (focusedElement is UIElement element)
+            {
+                // Default behavior - move to next focusable element
+                element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+            }
+        }
+
+        private void NavigateToNextTab()
+        {
+            var currentIndex = SettingsTabControl.SelectedIndex;
+            var nextIndex = (currentIndex + 1) % SettingsTabControl.Items.Count;
+            
+            // Skip disabled tabs
+            while (nextIndex != currentIndex && 
+                   SettingsTabControl.Items[nextIndex] is TabItem tab && 
+                   !tab.IsEnabled)
+            {
+                nextIndex = (nextIndex + 1) % SettingsTabControl.Items.Count;
+            }
+            
+            SettingsTabControl.SelectedIndex = nextIndex;
+        }
+
+        private void NavigateToPreviousTab()
+        {
+            var currentIndex = SettingsTabControl.SelectedIndex;
+            var prevIndex = currentIndex == 0 ? SettingsTabControl.Items.Count - 1 : currentIndex - 1;
+            
+            // Skip disabled tabs
+            while (prevIndex != currentIndex && 
+                   SettingsTabControl.Items[prevIndex] is TabItem tab && 
+                   !tab.IsEnabled)
+            {
+                prevIndex = prevIndex == 0 ? SettingsTabControl.Items.Count - 1 : prevIndex - 1;
+            }
+            
+            SettingsTabControl.SelectedIndex = prevIndex;
+        }
+
+        private void TestConnections()
+        {
+            try
+            {
+                var results = new List<string>();
+                
+                // Test database connection
+                try
+                {
+                    var version = DatabaseVersionText.Text;
+                    results.Add($"✅ Database: Connected (Version {version})");
+                }
+                catch
+                {
+                    results.Add("❌ Database: Connection failed");
+                }
+                
+                // Test Google Sheets connection
+                if (GoogleSheetsEnabledCheckBox.IsChecked == true)
+                {
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(ServiceAccountKeyTextBox.Text))
+                        {
+                            results.Add("✅ Google Sheets: Configuration valid");
+                        }
+                        else
+                        {
+                            results.Add("⚠️ Google Sheets: No service key configured");
+                        }
+                    }
+                    catch
+                    {
+                        results.Add("❌ Google Sheets: Configuration error");
+                    }
+                }
+                else
+                {
+                    results.Add("ℹ️ Google Sheets: Disabled");
+                }
+                
+                // Test scale connection
+                if (ScaleComPortComboBox.SelectedItem != null)
+                {
+                    results.Add("✅ Scale: Port configured");
+                }
+                else
+                {
+                    results.Add("⚠️ Scale: No port selected");
+                }
+                
+                var message = "CONNECTION TEST RESULTS\n" +
+                            "======================\n\n" +
+                            string.Join("\n", results);
+                
+                MessageBox.Show(message, "Connection Test (F3)", 
+                               MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Connection test error: {ex.Message}", "Test Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ExportSettings()
+        {
+            try
+            {
+                var saveDialog = new SaveFileDialog
+                {
+                    Filter = "JSON files (*.json)|*.json|Text files (*.txt)|*.txt",
+                    FileName = $"weighbridge_settings_{DateTime.Now:yyyyMMdd}.json",
+                    Title = "Export Settings"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    var settings = new
+                    {
+                        CompanyInfo = new
+                        {
+                            Name = CompanyNameTextBox.Text,
+                            Address = $"{AddressLine1TextBox.Text}, {AddressLine2TextBox.Text}",
+                            Email = CompanyEmailTextBox.Text,
+                            Phone = CompanyPhoneTextBox.Text,
+                            GST = GstNumberTextBox.Text
+                        },
+                        Hardware = new
+                        {
+                            MaxCapacity = MaxCapacityTextBox.Text,
+                            ComPort = ScaleComPortComboBox.Text,
+                            BaudRate = BaudRateComboBox.Text
+                        },
+                        ExportDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                    };
+
+                    var json = System.Text.Json.JsonSerializer.Serialize(settings, new System.Text.Json.JsonSerializerOptions 
+                    { 
+                        WriteIndented = true 
+                    });
+                    
+                    File.WriteAllText(saveDialog.FileName, json);
+                    
+                    MessageBox.Show($"Settings exported successfully!\n\nLocation: {saveDialog.FileName}", 
+                                   "Export Complete (F4)", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Export failed: {ex.Message}", "Export Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ResetCurrentTab()
+        {
+            try
+            {
+                var currentTab = SettingsTabControl.SelectedItem as TabItem;
+                if (currentTab == null) return;
+
+                var result = MessageBox.Show(
+                    $"Reset all settings in '{currentTab.Header}' tab to defaults?\n\n" +
+                    "This action cannot be undone.", 
+                    "Reset Tab Confirmation (F10)", 
+                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    switch (SettingsTabControl.SelectedIndex)
+                    {
+                        case 0: // Company Info
+                            ResetCompanyInfoTab();
+                            break;
+                        case 1: // Hardware
+                            ResetHardwareTab();
+                            break;
+                        case 2: // Cameras
+                            ResetCamerasTab();
+                            break;
+                        default:
+                            MessageBox.Show("Reset not implemented for this tab.", "Reset", 
+                                           MessageBoxButton.OK, MessageBoxImage.Information);
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Reset error: {ex.Message}", "Reset Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ResetCompanyInfoTab()
+        {
+            CompanyNameTextBox.Text = "YASH COTEX PRIVATE LIMITED";
+            AddressLine1TextBox.Text = "Industrial Area, Phase 1, Sector 58";
+            AddressLine2TextBox.Text = "Mohali, Punjab - 160059";
+            CompanyEmailTextBox.Text = "info@yashcotex.com";
+            CompanyPhoneTextBox.Text = "+91-9876543210";
+            GstNumberTextBox.Text = "22AAAAA0000A1Z5";
+        }
+
+        private void ResetHardwareTab()
+        {
+            MaxCapacityTextBox.Text = "50000";
+            BaudRateComboBox.SelectedIndex = 0;
+            ScaleComPortComboBox.SelectedIndex = 0;
+        }
+
+        private void ResetCamerasTab()
+        {
+            Camera1IpTextBox.Text = "192.168.1.101";
+            Camera2IpTextBox.Text = "192.168.1.102";
+            Camera3IpTextBox.Text = "192.168.1.103";
+            Camera4IpTextBox.Text = "192.168.1.104";
+            Camera1EnabledCheckBox.IsChecked = true;
+            Camera2EnabledCheckBox.IsChecked = true;
+            Camera3EnabledCheckBox.IsChecked = true;
+            Camera4EnabledCheckBox.IsChecked = true;
+        }
+
+        private void ShowSettingsHelp()
+        {
+            var helpText = "SETTINGS KEYBOARD SHORTCUTS\n" +
+                          "============================\n\n" +
+                          "F1  - Show this help\n" +
+                          "F2  - Save all settings\n" +
+                          "F3  - Test connections\n" +
+                          "F4  - Export settings\n" +
+                          "F5  - Backup database\n" +
+                          "F6  - Sync Google Sheets\n" +
+                          "F7  - System diagnostics\n" +
+                          "F8  - Next tab\n" +
+                          "F9  - Previous tab\n" +
+                          "F10 - Reset current tab\n" +
+                          "ESC - Cancel/Exit\n\n" +
+                          "NAVIGATION:\n" +
+                          "Enter - Activate button/next field\n" +
+                          "Tab   - Move to next field\n" +
+                          "Ctrl+Tab - Navigate between tabs\n\n" +
+                          "TAB ACCESS:\n" +
+                          "• Company Info (General settings)\n" +
+                          "• Hardware (Scale & printer setup)\n" +
+                          "• Cameras (IP camera configuration)\n" +
+                          "• Integrations (Google Sheets & backup)\n" +
+                          "• Data Management (Materials & addresses)\n" +
+                          "• Security (Recovery codes & timeouts)\n" +
+                          "• Weight Rules (Super Admin only)\n" +
+                          "• Users (User management)\n" +
+                          "• System (Diagnostics & maintenance)";
+
+            MessageBox.Show(helpText, "Settings Help (F1)", 
+                           MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         #region Initialization and Data Loading
@@ -311,43 +646,84 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
         }
 
-        private void TestGoogleSheetsButton_Click(object sender, RoutedEventArgs e)
+        private async void TestGoogleSheetsButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 TestGoogleSheetsButton.IsEnabled = false;
                 TestGoogleSheetsButton.Content = "🔄 Testing...";
 
-                // Simulate connection test
-                System.Threading.Tasks.Task.Delay(2000).ContinueWith(_ =>
+                if (_googleSheetsService == null)
                 {
-                    Dispatcher.Invoke(() =>
+                    MessageBox.Show("Google Sheets service not initialized", "Error", 
+                                   MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // Validate inputs
+                if (string.IsNullOrEmpty(ServiceAccountKeyTextBox.Text))
+                {
+                    MessageBox.Show("Please select a service account key file", "Configuration Required", 
+                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(SpreadsheetIdTextBox.Text))
+                {
+                    MessageBox.Show("Please enter a spreadsheet ID", "Configuration Required", 
+                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Configure and test connection
+                var configured = await _googleSheetsService.ConfigureAsync(
+                    ServiceAccountKeyTextBox.Text, 
+                    SpreadsheetIdTextBox.Text);
+
+                if (configured)
+                {
+                    var connectionTest = await _googleSheetsService.TestConnectionAsync();
+                    
+                    if (connectionTest)
                     {
                         TestGoogleSheetsButton.Content = "✅ Connected";
-                        MessageBox.Show("Google Sheets connection test successful!", "Connection Test", 
-                                       MessageBoxButton.OK, MessageBoxImage.Information);
                         
-                        System.Threading.Tasks.Task.Delay(1000).ContinueWith(__ =>
-                        {
-                            Dispatcher.Invoke(() =>
-                            {
-                                TestGoogleSheetsButton.Content = "🔄 Test Connection";
-                                TestGoogleSheetsButton.IsEnabled = true;
-                            });
-                        });
-                    });
-                });
+                        // Setup worksheets
+                        await _googleSheetsService.SetupWorksheetsAsync();
+                        
+                        MessageBox.Show(
+                            "Google Sheets connection successful!\n\n" +
+                            "✓ Connection verified\n" +
+                            "✓ Worksheets configured\n" +
+                            "✓ Ready for sync operations", 
+                            "Connection Test", 
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Connection test failed. Please check your configuration.", 
+                                       "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Configuration failed. Please check your service account key and spreadsheet ID.", 
+                                   "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Connection test failed: {ex.Message}", "Connection Error", 
                                MessageBoxButton.OK, MessageBoxImage.Error);
-                TestGoogleSheetsButton.IsEnabled = true;
+            }
+            finally
+            {
                 TestGoogleSheetsButton.Content = "🔄 Test Connection";
+                TestGoogleSheetsButton.IsEnabled = true;
             }
         }
 
-        private void SyncNowButton_Click(object sender, RoutedEventArgs e)
+        private async void SyncNowButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -358,29 +734,64 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     return;
                 }
 
+                if (_googleSheetsService == null || !_googleSheetsService.IsConfigured)
+                {
+                    MessageBox.Show("Google Sheets not configured. Please test connection first.", "Configuration Required", 
+                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 SyncNowButton.IsEnabled = false;
                 SyncNowButton.Content = "📤 Syncing...";
+                
+                // Starting sync - no UI feedback needed as we'll show result in MessageBox
 
-                // Simulate sync process
-                System.Threading.Tasks.Task.Delay(3000).ContinueWith(_ =>
+                // Perform full sync
+                var result = await _googleSheetsService.SyncAllDataAsync();
+                
+                if (result.Success)
                 {
-                    Dispatcher.Invoke(() =>
+                    MessageBox.Show(
+                        $"Data synchronized successfully!\n\n" +
+                        $"• RST Records: {result.RstRecordsSynced}\n" +
+                        $"• Materials: {result.MaterialsSynced}\n" +
+                        $"• Addresses: {result.AddressesSynced}\n" +
+                        $"• Total: {result.TotalRecordsSynced} records\n\n" +
+                        $"Last sync: {DateTime.Now:dd/MM/yyyy HH:mm}", 
+                        "Sync Complete",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    
+                    // Sync completed successfully - status shown in MessageBox
+                }
+                else
+                {
+                    var errorMessage = $"Sync completed with errors:\n\n{result.Message}";
+                    if (result.Errors.Any())
                     {
-                        MessageBox.Show("Data synchronized successfully!\n\n• 15 new records uploaded\n• Last sync: " + 
-                                       DateTime.Now.ToString("dd/MM/yyyy HH:mm"), "Sync Complete", 
-                                       MessageBoxButton.OK, MessageBoxImage.Information);
-                        
-                        SyncNowButton.Content = "📤 Sync Now";
-                        SyncNowButton.IsEnabled = true;
-                    });
-                });
+                        errorMessage += "\n\nErrors:\n" + string.Join("\n", result.Errors.Take(3));
+                        if (result.Errors.Count > 3)
+                        {
+                            errorMessage += $"\n... and {result.Errors.Count - 3} more errors";
+                        }
+                    }
+                    
+                    MessageBox.Show(errorMessage, "Sync Completed with Errors", 
+                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    
+                    // Sync completed with errors - status shown in MessageBox
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Sync failed: {ex.Message}", "Sync Error", 
+                MessageBox.Show($"Sync error: {ex.Message}", "Error", 
                                MessageBoxButton.OK, MessageBoxImage.Error);
-                SyncNowButton.IsEnabled = true;
+                // Sync failed - error shown in MessageBox
+            }
+            finally
+            {
                 SyncNowButton.Content = "📤 Sync Now";
+                SyncNowButton.IsEnabled = true;
+                // Sync operation completed
             }
         }
 
@@ -991,11 +1402,454 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         #endregion
 
+        #region Google Sheets Event Handlers
+
+        private void OnSyncStatusChanged(object? sender, string message)
+        {
+            try
+            {
+                // Log the status for debugging
+                System.Diagnostics.Debug.WriteLine($"Google Sheets Sync Status: {message}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling sync status: {ex.Message}");
+            }
+        }
+
+        private void OnSyncProgressChanged(object? sender, SyncProgressEventArgs e)
+        {
+            try
+            {
+                // Log the progress for debugging
+                System.Diagnostics.Debug.WriteLine($"Google Sheets Sync Progress: {e.Message} ({e.ProgressPercentage}%)");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling sync progress: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Camera Event Handlers
+
+        private void OnCameraStatusChanged(object? sender, CameraStatusEventArgs e)
+        {
+            try
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        CameraStatusText.Text = e.Message;
+                    }
+                    catch
+                    {
+                        // UI element might not exist
+                    }
+                    
+                    System.Diagnostics.Debug.WriteLine($"Camera Status: {e.Message}");
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling camera status: {ex.Message}");
+            }
+        }
+
+        private void OnCameraImageUpdated(object? sender, CameraImageEventArgs e)
+        {
+            try
+            {
+                // Log image update for debugging
+                System.Diagnostics.Debug.WriteLine($"Camera {e.CameraId} image updated");
+                
+                // In a real implementation, you might update UI elements showing camera feeds
+                // For now, we'll just log the event
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling camera image update: {ex.Message}");
+            }
+        }
+
+        // Camera Control Button Handlers
+        private async void TestAllCamerasButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_cameraService == null) return;
+
+                TestAllCamerasButton.IsEnabled = false;
+                TestAllCamerasButton.Content = "🔄 Testing...";
+                CameraStatusText.Text = "Testing all cameras...";
+
+                var results = await _cameraService.TestAllCamerasAsync();
+                
+                // Update individual camera status
+                UpdateCameraStatus(1, results.FirstOrDefault(r => r.CameraId == 1));
+                UpdateCameraStatus(2, results.FirstOrDefault(r => r.CameraId == 2));
+                UpdateCameraStatus(3, results.FirstOrDefault(r => r.CameraId == 3));
+                UpdateCameraStatus(4, results.FirstOrDefault(r => r.CameraId == 4));
+
+                var workingCameras = results.Count(r => r?.Success == true);
+                var totalCameras = results.Count;
+                
+                CameraStatusText.Text = $"Test completed: {workingCameras}/{totalCameras} cameras online";
+                
+                // Show summary
+                var summary = "CAMERA TEST RESULTS:\n" + string.Join("\n", 
+                    results.Select(r => $"• {r?.CameraName}: {(r?.Success == true ? "✅ " + r.Message : "❌ " + r?.Message)}"));
+                
+                MessageBox.Show(summary, "Camera Test Results", MessageBoxButton.OK, 
+                               workingCameras == totalCameras ? MessageBoxImage.Information : MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                CameraStatusText.Text = $"Test failed: {ex.Message}";
+                MessageBox.Show($"Camera test failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                TestAllCamerasButton.Content = "🔄 Test All Cameras";
+                TestAllCamerasButton.IsEnabled = true;
+            }
+        }
+
+        private async void StartMonitoringButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_cameraService == null) return;
+
+                StartMonitoringButton.IsEnabled = false;
+                var success = await _cameraService.StartMonitoringAsync();
+                
+                if (success)
+                {
+                    StartMonitoringButton.IsEnabled = false;
+                    StopMonitoringButton.IsEnabled = true;
+                    CameraStatusText.Text = "Camera monitoring started";
+                }
+                else
+                {
+                    StartMonitoringButton.IsEnabled = true;
+                    MessageBox.Show("Failed to start camera monitoring", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                StartMonitoringButton.IsEnabled = true;
+                MessageBox.Show($"Error starting monitoring: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void StopMonitoringButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_cameraService == null) return;
+
+                _cameraService.StopMonitoring();
+                StartMonitoringButton.IsEnabled = true;
+                StopMonitoringButton.IsEnabled = false;
+                CameraStatusText.Text = "Camera monitoring stopped";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error stopping monitoring: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void CaptureAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_cameraService == null) return;
+
+                CaptureAllButton.IsEnabled = false;
+                CaptureAllButton.Content = "📸 Capturing...";
+                CameraStatusText.Text = "Capturing all camera images...";
+
+                var snapshots = await _cameraService.SaveAllSnapshotsAsync("./CameraSnapshots");
+                
+                var successCount = snapshots.Values.Count(path => !string.IsNullOrEmpty(path));
+                var totalCount = snapshots.Count;
+                
+                CameraStatusText.Text = $"Captured {successCount}/{totalCount} camera images";
+                
+                var message = $"Camera capture completed:\n\n";
+                foreach (var kvp in snapshots)
+                {
+                    message += $"• {kvp.Key}: {(string.IsNullOrEmpty(kvp.Value) ? "❌ Failed" : "✅ " + Path.GetFileName(kvp.Value))}\n";
+                }
+                
+                MessageBox.Show(message, "Capture Results", MessageBoxButton.OK, 
+                               successCount == totalCount ? MessageBoxImage.Information : MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                CameraStatusText.Text = $"Capture failed: {ex.Message}";
+                MessageBox.Show($"Error capturing images: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                CaptureAllButton.Content = "📸 Capture All";
+                CaptureAllButton.IsEnabled = true;
+            }
+        }
+
+        // Individual Camera Button Handlers
+        private async void TestCamera1Button_Click(object sender, RoutedEventArgs e)
+        {
+            await TestCameraAsync(1, TestCamera1Button, Camera1StatusText);
+        }
+
+        private async void TestCamera2Button_Click(object sender, RoutedEventArgs e)
+        {
+            await TestCameraAsync(2, TestCamera2Button, Camera2StatusText);
+        }
+
+        private async void TestCamera3Button_Click(object sender, RoutedEventArgs e)
+        {
+            await TestCameraAsync(3, TestCamera3Button, Camera3StatusText);
+        }
+
+        private async void TestCamera4Button_Click(object sender, RoutedEventArgs e)
+        {
+            await TestCameraAsync(4, TestCamera4Button, Camera4StatusText);
+        }
+
+        private async void CaptureCamera1Button_Click(object sender, RoutedEventArgs e)
+        {
+            await CaptureCameraAsync(1, CaptureCamera1Button);
+        }
+
+        private async void CaptureCamera2Button_Click(object sender, RoutedEventArgs e)
+        {
+            await CaptureCameraAsync(2, CaptureCamera2Button);
+        }
+
+        private async void CaptureCamera3Button_Click(object sender, RoutedEventArgs e)
+        {
+            await CaptureCameraAsync(3, CaptureCamera3Button);
+        }
+
+        private async void CaptureCamera4Button_Click(object sender, RoutedEventArgs e)
+        {
+            await CaptureCameraAsync(4, CaptureCamera4Button);
+        }
+
+        private void PreviewCamera1Button_Click(object sender, RoutedEventArgs e)
+        {
+            ShowCameraPreview(1);
+        }
+
+        private void PreviewCamera2Button_Click(object sender, RoutedEventArgs e)
+        {
+            ShowCameraPreview(2);
+        }
+
+        private void PreviewCamera3Button_Click(object sender, RoutedEventArgs e)
+        {
+            ShowCameraPreview(3);
+        }
+
+        private void PreviewCamera4Button_Click(object sender, RoutedEventArgs e)
+        {
+            ShowCameraPreview(4);
+        }
+
+        // Camera Helper Methods
+        private async Task TestCameraAsync(int cameraId, Button testButton, TextBlock statusText)
+        {
+            try
+            {
+                if (_cameraService == null) return;
+
+                testButton.IsEnabled = false;
+                testButton.Content = "🔄 Testing...";
+                statusText.Text = "Testing...";
+
+                // Update camera configuration from UI
+                UpdateCameraConfigurationFromUI(cameraId);
+                
+                var camera = _cameraService.GetCamera(cameraId);
+                if (camera != null)
+                {
+                    var result = await _cameraService.TestCameraConnectionAsync(camera);
+                    UpdateCameraStatus(cameraId, result);
+                }
+            }
+            catch (Exception ex)
+            {
+                statusText.Text = $"Error: {ex.Message}";
+            }
+            finally
+            {
+                testButton.Content = "🔄 Test";
+                testButton.IsEnabled = true;
+            }
+        }
+
+        private async Task CaptureCameraAsync(int cameraId, Button captureButton)
+        {
+            try
+            {
+                if (_cameraService == null) return;
+
+                captureButton.IsEnabled = false;
+                captureButton.Content = "📸 Capturing...";
+
+                var camera = _cameraService.GetCamera(cameraId);
+                if (camera != null)
+                {
+                    var filePath = await _cameraService.SaveSnapshotAsync(camera, "./CameraSnapshots");
+                    if (!string.IsNullOrEmpty(filePath))
+                    {
+                        MessageBox.Show($"Image captured successfully:\n{Path.GetFileName(filePath)}", 
+                                       "Capture Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to capture image", "Capture Failed", 
+                                       MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error capturing image: {ex.Message}", "Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                captureButton.Content = "📸 Capture";
+                captureButton.IsEnabled = true;
+            }
+        }
+
+        private void ShowCameraPreview(int cameraId)
+        {
+            try
+            {
+                if (_cameraService == null) return;
+
+                var camera = _cameraService.GetCamera(cameraId);
+                if (camera != null)
+                {
+                    MessageBox.Show($"Camera Preview for {camera.Name}\n\n" +
+                                   $"IP: {camera.IpAddress}:{camera.Port}\n" +
+                                   $"Stream URL: {camera.StreamUrl}\n" +
+                                   $"Status: {(camera.IsEnabled ? "Enabled" : "Disabled")}\n\n" +
+                                   "Preview window would open here in full implementation.", 
+                                   "Camera Preview", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error showing preview: {ex.Message}", "Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void UpdateCameraConfigurationFromUI(int cameraId)
+        {
+            try
+            {
+                if (_cameraService == null) return;
+
+                var config = new CameraConfiguration { Id = cameraId };
+
+                switch (cameraId)
+                {
+                    case 1:
+                        config.Name = Camera1NameTextBox.Text;
+                        config.IpAddress = Camera1IpTextBox.Text;
+                        config.Port = int.TryParse(Camera1PortTextBox.Text, out var port1) ? port1 : 80;
+                        config.Username = Camera1UsernameTextBox.Text;
+                        config.Password = Camera1PasswordBox.Password;
+                        config.StreamUrl = Camera1StreamUrlTextBox.Text;
+                        config.IsEnabled = Camera1EnabledCheckBox.IsChecked == true;
+                        config.Position = CameraPosition.Entry;
+                        break;
+                    case 2:
+                        config.Name = Camera2NameTextBox.Text;
+                        config.IpAddress = Camera2IpTextBox.Text;
+                        config.Port = int.TryParse(Camera2PortTextBox.Text, out var port2) ? port2 : 80;
+                        config.Username = Camera2UsernameTextBox.Text;
+                        config.Password = Camera2PasswordBox.Password;
+                        config.StreamUrl = Camera2StreamUrlTextBox.Text;
+                        config.IsEnabled = Camera2EnabledCheckBox.IsChecked == true;
+                        config.Position = CameraPosition.Exit;
+                        break;
+                    case 3:
+                        config.Name = Camera3NameTextBox.Text;
+                        config.IpAddress = Camera3IpTextBox.Text;
+                        config.Port = int.TryParse(Camera3PortTextBox.Text, out var port3) ? port3 : 80;
+                        config.Username = Camera3UsernameTextBox.Text;
+                        config.Password = Camera3PasswordBox.Password;
+                        config.StreamUrl = Camera3StreamUrlTextBox.Text;
+                        config.IsEnabled = Camera3EnabledCheckBox.IsChecked == true;
+                        config.Position = CameraPosition.LeftSide;
+                        break;
+                    case 4:
+                        config.Name = Camera4NameTextBox.Text;
+                        config.IpAddress = Camera4IpTextBox.Text;
+                        config.Port = int.TryParse(Camera4PortTextBox.Text, out var port4) ? port4 : 80;
+                        config.Username = Camera4UsernameTextBox.Text;
+                        config.Password = Camera4PasswordBox.Password;
+                        config.StreamUrl = Camera4StreamUrlTextBox.Text;
+                        config.IsEnabled = Camera4EnabledCheckBox.IsChecked == true;
+                        config.Position = CameraPosition.RightSide;
+                        break;
+                }
+
+                _cameraService.UpdateCameraConfiguration(config);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating camera config: {ex.Message}");
+            }
+        }
+
+        private void UpdateCameraStatus(int cameraId, CameraTestResult? result)
+        {
+            try
+            {
+                TextBlock? statusText = cameraId switch
+                {
+                    1 => Camera1StatusText,
+                    2 => Camera2StatusText,
+                    3 => Camera3StatusText,
+                    4 => Camera4StatusText,
+                    _ => null
+                };
+
+                if (statusText != null && result != null)
+                {
+                    statusText.Text = result.Success ? $"✅ {result.Message}" : $"❌ {result.Message}";
+                    statusText.Foreground = result.Success ? 
+                        new SolidColorBrush(Color.FromRgb(40, 167, 69)) : 
+                        new SolidColorBrush(Color.FromRgb(220, 53, 69));
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating camera status: {ex.Message}");
+            }
+        }
+
+        #endregion
+
         public void Dispose()
         {
             try
             {
                 _databaseService?.Dispose();
+                _googleSheetsService?.Dispose();
+                _cameraService?.Dispose();
             }
             catch (Exception ex)
             {

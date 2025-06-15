@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 using WeighbridgeSoftwareYashCotex.Views;
 using WeighbridgeSoftwareYashCotex.Services;
@@ -131,27 +132,138 @@ namespace WeighbridgeSoftwareYashCotex
         
         private void MainWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
+            // Check if we're in a text input field - if so, let some keys pass through
+            var focusedElement = Keyboard.FocusedElement;
+            var isInTextInput = focusedElement is TextBox || focusedElement is PasswordBox || focusedElement is ComboBox;
+            
             switch (e.Key)
             {
                 case System.Windows.Input.Key.F1:
-                    EntryButton_Clicked(this, new RoutedEventArgs());
+                    if (_currentFormControl != null)
+                    {
+                        // Let the current form handle F1 for context help
+                        return;
+                    }
+                    else
+                    {
+                        EntryButton_Clicked(this, new RoutedEventArgs());
+                        e.Handled = true;
+                    }
                     break;
                 case System.Windows.Input.Key.F2:
                     ExitButton_Clicked(this, new RoutedEventArgs());
+                    e.Handled = true;
                     break;
                 case System.Windows.Input.Key.F3:
                     PrintButton_Clicked(this, new RoutedEventArgs());
+                    e.Handled = true;
                     break;
                 case System.Windows.Input.Key.F4:
                     SettingsButton_Clicked(this, new RoutedEventArgs());
+                    e.Handled = true;
                     break;
                 case System.Windows.Input.Key.F5:
                     LogoutButton_Clicked(this, new RoutedEventArgs());
+                    e.Handled = true;
+                    break;
+                case System.Windows.Input.Key.F12:
+                    // Global help - show comprehensive function key guide
+                    ShowGlobalHelp();
+                    e.Handled = true;
                     break;
                 case System.Windows.Input.Key.Escape:
-                    ShowHome();
+                    if (_currentFormControl != null)
+                    {
+                        ShowHome();
+                    }
+                    e.Handled = true;
+                    break;
+                case System.Windows.Input.Key.Home:
+                    if (!isInTextInput)
+                    {
+                        ShowHome();
+                        e.Handled = true;
+                    }
+                    break;
+                case System.Windows.Input.Key.Tab:
+                    // Allow normal tab navigation
+                    break;
+                case System.Windows.Input.Key.Enter:
+                    // Let forms handle Enter key
                     break;
             }
+        }
+
+        private void ShowGlobalHelp()
+        {
+            var currentForm = "Main Window";
+            var helpText = "WEIGHBRIDGE SOFTWARE - GLOBAL KEYBOARD SHORTCUTS\n" +
+                          "===============================================\n\n" +
+                          "MAIN NAVIGATION:\n" +
+                          "F1  - Entry Form (New weighment entry)\n" +
+                          "F2  - Exit Form (Complete weighment)\n" +
+                          "F3  - Print Center (Reports & reprints)\n" +
+                          "F4  - Settings (System configuration)\n" +
+                          "F5  - Logout\n" +
+                          "F12 - This help screen\n" +
+                          "ESC - Return to home/cancel\n" +
+                          "Home- Return to home screen\n\n";
+
+            // Add context-specific help based on current form
+            if (_currentFormControl is EntryControl)
+            {
+                currentForm = "Entry Form";
+                helpText += "ENTRY FORM SHORTCUTS:\n" +
+                           "F5  - Capture weight\n" +
+                           "F6  - Validate form\n" +
+                           "F7  - Auto-complete vehicle\n" +
+                           "F8  - Auto-fill from last entry\n" +
+                           "F9  - Save entry\n" +
+                           "F10 - Clear form\n" +
+                           "F11 - Preview entry\n\n";
+            }
+            else if (_currentFormControl is ExitControl)
+            {
+                currentForm = "Exit Form";
+                helpText += "EXIT FORM SHORTCUTS:\n" +
+                           "F3  - Search for entry\n" +
+                           "F5  - Capture exit weight\n" +
+                           "F6  - Validate exit data\n" +
+                           "F7  - Quick search by RST\n" +
+                           "F8  - Show vehicle history\n" +
+                           "F9  - Save exit\n" +
+                           "F10 - Clear form\n" +
+                           "F11 - Print slip\n" +
+                           "F12 - Reprint last slip\n\n";
+            }
+            else if (_currentFormControl is SettingsControl)
+            {
+                currentForm = "Settings";
+                helpText += "SETTINGS SHORTCUTS:\n" +
+                           "F2  - Save all settings\n" +
+                           "F3  - Test connections\n" +
+                           "F4  - Export settings\n" +
+                           "F5  - Backup database\n" +
+                           "F6  - Sync Google Sheets\n" +
+                           "F7  - System diagnostics\n" +
+                           "F8  - Next tab\n" +
+                           "F9  - Previous tab\n" +
+                           "F10 - Reset current tab\n\n";
+            }
+
+            helpText += "UNIVERSAL SHORTCUTS:\n" +
+                       "Enter - Smart navigation/activate\n" +
+                       "Tab   - Move to next field\n" +
+                       "Shift+Tab - Move to previous field\n\n" +
+                       "TIPS:\n" +
+                       "• Most forms have F1 for context help\n" +
+                       "• Function keys work globally\n" +
+                       "• ESC always goes back/cancels\n" +
+                       "• Enter provides smart navigation\n\n" +
+                       $"Current Context: {currentForm}";
+
+            MessageBox.Show(helpText, "Global Help (F12)", 
+                           MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void InitializeDateTimeTimer()

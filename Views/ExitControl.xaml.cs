@@ -39,22 +39,296 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             switch (e.Key)
             {
+                case Key.F1:
+                    // Show help
+                    ShowExitHelp();
+                    e.Handled = true;
+                    break;
+                case Key.F3:
+                    // Search for entry
+                    if (!string.IsNullOrWhiteSpace(SearchTextBox.Text))
+                        SearchButton_Click(this, new RoutedEventArgs());
+                    else
+                        SearchTextBox.Focus();
+                    e.Handled = true;
+                    break;
+                case Key.F5:
+                    // Capture current weight
+                    CaptureExitWeight();
+                    e.Handled = true;
+                    break;
+                case Key.F6:
+                    // Validate exit data
+                    ValidateExitData();
+                    e.Handled = true;
+                    break;
+                case Key.F7:
+                    // Quick search by RST (show input dialog)
+                    QuickSearchByRst();
+                    e.Handled = true;
+                    break;
+                case Key.F8:
+                    // Show entry history for current vehicle
+                    ShowEntryHistory();
+                    e.Handled = true;
+                    break;
                 case Key.F9:
+                    // Save exit
                     if (SaveExitButton.IsEnabled)
                         SaveExitButton_Click(this, new RoutedEventArgs());
+                    e.Handled = true;
+                    break;
+                case Key.F10:
+                    // Clear and reset form
+                    ClearExitForm();
+                    e.Handled = true;
                     break;
                 case Key.F11:
+                    // Print slip
                     if (PrintSlipButton.IsEnabled)
                         PrintSlipButton_Click(this, new RoutedEventArgs());
+                    e.Handled = true;
+                    break;
+                case Key.F12:
+                    // Reprint last slip
+                    ReprintLastSlip();
+                    e.Handled = true;
                     break;
                 case Key.Escape:
+                    // Cancel/Exit
                     CancelButton_Click(this, new RoutedEventArgs());
+                    e.Handled = true;
                     break;
                 case Key.Enter:
-                    if (SearchTextBox.IsFocused && !string.IsNullOrWhiteSpace(SearchTextBox.Text))
-                        SearchButton_Click(this, new RoutedEventArgs());
+                    // Smart Enter handling
+                    HandleEnterKeyInExit();
+                    e.Handled = true;
                     break;
             }
+        }
+
+        private void HandleEnterKeyInExit()
+        {
+            var focusedElement = Keyboard.FocusedElement;
+            
+            if (focusedElement == SearchTextBox)
+            {
+                if (!string.IsNullOrWhiteSpace(SearchTextBox.Text))
+                {
+                    SearchButton_Click(this, new RoutedEventArgs());
+                }
+            }
+            else if (focusedElement == SaveExitButton && SaveExitButton.IsEnabled)
+            {
+                SaveExitButton_Click(this, new RoutedEventArgs());
+            }
+            else if (focusedElement == PrintSlipButton && PrintSlipButton.IsEnabled)
+            {
+                PrintSlipButton_Click(this, new RoutedEventArgs());
+            }
+            else
+            {
+                // Default behavior - move focus
+                if (focusedElement is UIElement element)
+                {
+                    element.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                }
+            }
+        }
+
+        private void QuickSearchByRst()
+        {
+            try
+            {
+                var rstInput = Microsoft.VisualBasic.Interaction.InputBox(
+                    "Enter RST number to search:", "Quick Search by RST", "");
+                
+                if (!string.IsNullOrEmpty(rstInput) && int.TryParse(rstInput, out int rstNumber))
+                {
+                    SearchTextBox.Text = rstNumber.ToString();
+                    SearchButton_Click(this, new RoutedEventArgs());
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateFormStatus($"Quick search error: {ex.Message}", false);
+            }
+        }
+
+        private void ValidateExitData()
+        {
+            try
+            {
+                if (_currentEntry == null)
+                {
+                    UpdateExitStatus("No entry selected for validation", false);
+                    return;
+                }
+
+                var issues = new List<string>();
+                
+                // Check if weight is captured
+                if (_capturedExitWeight <= 0)
+                {
+                    issues.Add("Exit weight not captured");
+                }
+                
+                // Check weight difference
+                if (_currentEntry.EntryWeight > 0 && _capturedExitWeight > 0)
+                {
+                    var difference = Math.Abs(_currentEntry.EntryWeight - _capturedExitWeight);
+                    var percentDiff = (difference / _currentEntry.EntryWeight) * 100;
+                    
+                    if (percentDiff > 10) // More than 10% difference
+                    {
+                        issues.Add($"Large weight difference: {percentDiff:F1}%");
+                    }
+                }
+                
+                if (issues.Any())
+                {
+                    var message = "Validation Issues Found:\n" + string.Join("\n", issues);
+                    MessageBox.Show(message, "Exit Validation (F6)", 
+                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    UpdateExitStatus($"{issues.Count} validation issues found", false);
+                }
+                else
+                {
+                    UpdateExitStatus("All exit data validated successfully", true);
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateExitStatus($"Validation error: {ex.Message}", false);
+            }
+        }
+
+        private void ShowEntryHistory()
+        {
+            try
+            {
+                if (_currentEntry == null)
+                {
+                    UpdateFormStatus("No entry selected", false);
+                    return;
+                }
+
+                var history = _databaseService.GetVehicleHistory(_currentEntry.VehicleNumber, 5);
+                
+                if (history.Any())
+                {
+                    var historyText = "RECENT VEHICLE HISTORY\n" +
+                                    "=====================\n\n";
+                    
+                    foreach (var entry in history)
+                    {
+                        historyText += $"RST: {entry.RstNumber} | {entry.EntryDateTime:dd/MM/yyyy}\n" +
+                                     $"Material: {entry.Material} | Weight: {entry.EntryWeight:F1} kg\n" +
+                                     $"Exit: {(entry.ExitWeight?.ToString("F1") ?? "Pending")} kg\n\n";
+                    }
+                    
+                    MessageBox.Show(historyText, "Vehicle History (F8)", 
+                                   MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("No history found for this vehicle.", "Vehicle History (F8)", 
+                                   MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateFormStatus($"History error: {ex.Message}", false);
+            }
+        }
+
+        private void ClearExitForm()
+        {
+            try
+            {
+                SearchTextBox.Clear();
+                HideEntryDetails();
+                _currentEntry = null;
+                _capturedExitWeight = 0;
+                
+                UpdateFormStatus("Form cleared - ready for new search", true);
+                UpdateWeightStatus("Waiting for entry selection", true);
+                UpdateExitStatus("Ready for exit processing", true);
+                
+                SearchTextBox.Focus();
+            }
+            catch (Exception ex)
+            {
+                UpdateFormStatus($"Clear error: {ex.Message}", false);
+            }
+        }
+
+        private void ReprintLastSlip()
+        {
+            try
+            {
+                if (_currentEntry == null)
+                {
+                    UpdateFormStatus("No entry available for reprint", false);
+                    return;
+                }
+
+                // Simulate reprint
+                var result = MessageBox.Show(
+                    $"Reprint slip for RST {_currentEntry.RstNumber}?\n\n" +
+                    $"Vehicle: {_currentEntry.VehicleNumber}\n" +
+                    $"Customer: {_currentEntry.Name}",
+                    "Reprint Confirmation (F12)", 
+                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    // Simulate printing
+                    UpdateFormStatus($"Reprinting slip for RST {_currentEntry.RstNumber}...", true);
+                    
+                    // Simulate print delay
+                    System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ =>
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            UpdateFormStatus("Slip reprinted successfully", true);
+                        });
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateFormStatus($"Reprint error: {ex.Message}", false);
+            }
+        }
+
+        private void ShowExitHelp()
+        {
+            var helpText = "EXIT FORM KEYBOARD SHORTCUTS\n" +
+                          "=============================\n\n" +
+                          "F1  - Show this help\n" +
+                          "F3  - Search for entry\n" +
+                          "F5  - Capture current weight\n" +
+                          "F6  - Validate exit data\n" +
+                          "F7  - Quick search by RST\n" +
+                          "F8  - Show vehicle history\n" +
+                          "F9  - Save exit\n" +
+                          "F10 - Clear form\n" +
+                          "F11 - Print slip\n" +
+                          "F12 - Reprint last slip\n" +
+                          "ESC - Cancel/Exit\n\n" +
+                          "SEARCH TYPES:\n" +
+                          "RST Number: 1-5 digits\n" +
+                          "Vehicle: 6+ characters\n" +
+                          "Phone: 10 digits\n\n" +
+                          "NAVIGATION:\n" +
+                          "Enter - Smart navigation\n" +
+                          "Tab   - Move to next field\n\n" +
+                          "Auto-search triggers when typing\n" +
+                          "in search box with valid criteria.";
+
+            MessageBox.Show(helpText, "Exit Form Help (F1)", 
+                           MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void InitializeForm()

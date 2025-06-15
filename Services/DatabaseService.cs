@@ -173,6 +173,36 @@ public class DatabaseService : IDisposable
             .OrderByDescending(w => w.EntryDateTime)
             .ToList();
     }
+
+    public List<string> GetRecentVehicleNumbers(string partialNumber, int limit = 5)
+    {
+        return _context.WeighmentEntries
+            .Where(w => w.VehicleNumber.StartsWith(partialNumber))
+            .Select(w => w.VehicleNumber)
+            .Distinct()
+            .OrderByDescending(v => _context.WeighmentEntries
+                .Where(e => e.VehicleNumber == v)
+                .Max(e => e.EntryDateTime))
+            .Take(limit)
+            .ToList();
+    }
+
+    public WeighmentEntry? GetLastEntryForVehicle(string vehicleNumber)
+    {
+        return _context.WeighmentEntries
+            .Where(w => w.VehicleNumber == vehicleNumber)
+            .OrderByDescending(w => w.EntryDateTime)
+            .FirstOrDefault();
+    }
+
+    public List<WeighmentEntry> GetVehicleHistory(string vehicleNumber, int limit = 5)
+    {
+        return _context.WeighmentEntries
+            .Where(w => w.VehicleNumber == vehicleNumber)
+            .OrderByDescending(w => w.EntryDateTime)
+            .Take(limit)
+            .ToList();
+    }
     
     public void Dispose()
     {
