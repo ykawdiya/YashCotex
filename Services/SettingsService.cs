@@ -1,3 +1,5 @@
+using System.IO;
+using System.Text.Json;
 using System;
 using WeighbridgeSoftwareYashCotex.Models;
 
@@ -27,66 +29,133 @@ public class SettingsService
     public string CompanyLogo { get; set; } = "Assets/logo.png";
     
     public List<WeightRule>? WeightRules { get; set; }
+    public List<string> Materials { get; set; } = new();
     
     private SettingsService()
     {
         LoadSettings();
     }
     
+    private const string SettingsFilePath = "settings.json";
+
     private void LoadSettings()
     {
+        if (File.Exists(SettingsFilePath))
+        {
+            try
+            {
+                var json = File.ReadAllText(SettingsFilePath);
+                var loaded = JsonSerializer.Deserialize<SettingsService>(json);
+                if (loaded != null)
+                {
+                    CompanyName = loaded.CompanyName;
+                    CompanyAddress = loaded.CompanyAddress;
+                    CompanyEmail = loaded.CompanyEmail;
+                    CompanyPhone = loaded.CompanyPhone;
+                    CompanyGSTIN = loaded.CompanyGSTIN;
+                    CompanyLogo = loaded.CompanyLogo;
+                    WeighbridgeComPort = loaded.WeighbridgeComPort;
+                    WeightRules = loaded.WeightRules;
+                    Materials = loaded.Materials ?? new List<string>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to load settings: " + ex.Message);
+            }
+        }
     }
     
     public void SaveSettings()
     {
-        // Trigger settings changed event
-        OnSettingsChanged(new SettingsChangedEventArgs
+        try
         {
-            ChangeType = "General",
-            Description = "Settings saved successfully"
-        });
+            var json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(SettingsFilePath, json);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Failed to save settings: " + ex.Message);
+        }
+
+        RefreshAll();
     }
     
     public void SaveCompanyInfo()
     {
         SaveSettings();
         OnCompanyInfoChanged("Company information updated");
+        OnSettingsChanged(new SettingsChangedEventArgs
+        {
+            ChangeType = "CompanyInfo",
+            Description = "Company information saved"
+        });
     }
     
     public void SaveWeighbridgeSettings()
     {
         SaveSettings();
         OnWeighbridgeSettingsChanged("Weighbridge settings updated");
+        OnSettingsChanged(new SettingsChangedEventArgs
+        {
+            ChangeType = "Weighbridge",
+            Description = "Weighbridge settings saved"
+        });
     }
     
     public void SaveDatabaseSettings()
     {
         SaveSettings();
         OnDatabaseSettingsChanged();
+        OnSettingsChanged(new SettingsChangedEventArgs
+        {
+            ChangeType = "Database",
+            Description = "Database settings saved"
+        });
     }
     
     public void SaveGoogleSheetsSettings()
     {
         SaveSettings();
         OnGoogleSheetsSettingsChanged();
+        OnSettingsChanged(new SettingsChangedEventArgs
+        {
+            ChangeType = "GoogleSheets",
+            Description = "Google Sheets settings saved"
+        });
     }
     
     public void SaveCameraSettings()
     {
         SaveSettings();
         OnCameraSettingsChanged();
+        OnSettingsChanged(new SettingsChangedEventArgs
+        {
+            ChangeType = "Camera",
+            Description = "Camera settings saved"
+        });
     }
     
     public void SavePrinterSettings()
     {
         SaveSettings();
         OnPrinterSettingsChanged();
+        OnSettingsChanged(new SettingsChangedEventArgs
+        {
+            ChangeType = "Printer",
+            Description = "Printer settings saved"
+        });
     }
     
     public void SaveSystemSettings()
     {
         SaveSettings();
         OnSystemSettingsChanged();
+        OnSettingsChanged(new SettingsChangedEventArgs
+        {
+            ChangeType = "System",
+            Description = "System settings saved"
+        });
     }
     
     protected virtual void OnSettingsChanged(SettingsChangedEventArgs e)
@@ -149,3 +218,18 @@ public class WeightRule
         return weight;
     }
 }
+    public void RefreshAll()
+    {
+        OnCompanyInfoChanged("Auto-refreshed");
+        OnWeighbridgeSettingsChanged("Auto-refreshed");
+        OnDatabaseSettingsChanged();
+        OnGoogleSheetsSettingsChanged();
+        OnCameraSettingsChanged();
+        OnPrinterSettingsChanged();
+        OnSystemSettingsChanged();
+        OnSettingsChanged(new SettingsChangedEventArgs
+        {
+            ChangeType = "All",
+            Description = "All settings refreshed"
+        });
+    }
