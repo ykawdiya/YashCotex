@@ -108,7 +108,7 @@ namespace WeighbridgeSoftwareYashCotex.Services
                 if (string.IsNullOrEmpty(existingCamera.StreamUrl))
                 {
                     existingCamera.StreamUrl = GenerateStreamUrl(existingCamera);
-                }
+    // SettingsSnapshot is defined in SettingsService.cs
             }
         }
 
