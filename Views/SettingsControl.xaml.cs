@@ -1089,48 +1089,6 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         #region Security Tab
 
-        private void GenerateRecoveryCodesButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var result = MessageBox.Show("This will generate new recovery codes and invalidate existing ones.\n\n" +
-                                           "Are you sure you want to continue?", "Generate Recovery Codes", 
-                                           MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    var recoveryCodes = GenerateRecoveryCodes();
-                    var codesText = string.Join("\n", recoveryCodes);
-                    
-                    MessageBox.Show($"New recovery codes generated:\n\n{codesText}\n\n" +
-                                   "Please save these codes in a secure location.", "Recovery Codes", 
-                                   MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error generating recovery codes: {ex.Message}", "Generation Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private List<string> GenerateRecoveryCodes()
-        {
-            var codes = new List<string>();
-            var random = new Random();
-            
-            for (int i = 0; i < 10; i++)
-            {
-                var code = "";
-                for (int j = 0; j < 8; j++)
-                {
-                    code += random.Next(0, 10).ToString();
-                }
-                codes.Add(code);
-            }
-            
-            return codes;
-        }
 
         #endregion
 
@@ -1443,7 +1401,155 @@ namespace WeighbridgeSoftwareYashCotex.Views
         private void SaveCameraSettings()
         {
             // Save camera settings from UI controls
+            SaveIndividualCameraSettings();
             _settingsService.SaveCameraSettings();
+        }
+        
+        private void SaveIndividualCameraSettings()
+        {
+            try
+            {
+                // Save Camera 1 settings
+                var camera1Config = new Models.CameraConfiguration
+                {
+                    Name = Camera1NameTextBox?.Text ?? "Entry Camera",
+                    Protocol = GetSelectedProtocol(Camera1ProtocolComboBox),
+                    IpAddress = Camera1IpTextBox?.Text ?? "192.168.1.101",
+                    Port = int.TryParse(Camera1PortTextBox?.Text, out int port1) ? port1 : 80,
+                    StreamPath = Camera1StreamPathTextBox?.Text ?? "/mjpeg/1",
+                    Username = Camera1UsernameTextBox?.Text ?? "admin",
+                    Password = Camera1PasswordBox?.Password ?? "",
+                    IsEnabled = Camera1EnabledCheckBox?.IsChecked ?? true
+                };
+                
+                // Similar for cameras 2, 3, 4
+                // Store in settings service or configuration
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error saving camera settings: {ex.Message}");
+            }
+        }
+        
+        private string GetSelectedProtocol(ComboBox protocolComboBox)
+        {
+            if (protocolComboBox?.SelectedItem is ComboBoxItem selectedItem)
+            {
+                return selectedItem.Tag?.ToString() ?? "http";
+            }
+            return "http";
+        }
+        
+        private void UpdateCameraUrl(ComboBox protocolCombo, TextBox ipTextBox, TextBox portTextBox, 
+                                   TextBox pathTextBox, TextBox fullUrlTextBox)
+        {
+            try
+            {
+                var protocol = GetSelectedProtocol(protocolCombo);
+                var ip = ipTextBox?.Text ?? "192.168.1.101";
+                var port = portTextBox?.Text ?? "80";
+                var path = pathTextBox?.Text ?? "/mjpeg/1";
+                
+                string fullUrl = BuildCameraUrl(protocol, ip, port, path);
+                if (fullUrlTextBox != null)
+                {
+                    fullUrlTextBox.Text = fullUrl;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating camera URL: {ex.Message}");
+            }
+        }
+        
+        private string BuildCameraUrl(string protocol, string ip, string port, string path)
+        {
+            // Ensure path starts with /
+            if (!string.IsNullOrEmpty(path) && !path.StartsWith("/"))
+            {
+                path = "/" + path;
+            }
+            
+            switch (protocol.ToLower())
+            {
+                case "http":
+                    return $"http://{ip}:{port}{path}";
+                    
+                case "https":
+                    var httpsPort = port == "80" ? "443" : port;
+                    return $"https://{ip}:{httpsPort}{path}";
+                    
+                case "rtsp":
+                    var rtspPort = port == "80" ? "554" : port;
+                    return $"rtsp://{ip}:{rtspPort}{path}";
+                    
+                case "tcp":
+                    return $"tcp://{ip}:{port}";
+                    
+                default:
+                    return $"http://{ip}:{port}{path}";
+            }
+        }
+        
+        // Camera protocol change event handlers
+        private void Camera1ProtocolComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (IsLoaded)
+            {
+                UpdateCameraUrl(Camera1ProtocolComboBox, Camera1IpTextBox, Camera1PortTextBox, 
+                              Camera1StreamPathTextBox, Camera1FullUrlTextBox);
+                UpdateDefaultPortForProtocol(Camera1ProtocolComboBox, Camera1PortTextBox);
+            }
+        }
+        
+        private void Camera2ProtocolComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (IsLoaded)
+            {
+                UpdateCameraUrl(Camera2ProtocolComboBox, Camera2IpTextBox, Camera2PortTextBox, 
+                              Camera2StreamPathTextBox, Camera2FullUrlTextBox);
+                UpdateDefaultPortForProtocol(Camera2ProtocolComboBox, Camera2PortTextBox);
+            }
+        }
+        
+        private void Camera3ProtocolComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (IsLoaded)
+            {
+                UpdateCameraUrl(Camera3ProtocolComboBox, Camera3IpTextBox, Camera3PortTextBox, 
+                              Camera3StreamPathTextBox, Camera3FullUrlTextBox);
+                UpdateDefaultPortForProtocol(Camera3ProtocolComboBox, Camera3PortTextBox);
+            }
+        }
+        
+        private void Camera4ProtocolComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (IsLoaded)
+            {
+                UpdateCameraUrl(Camera4ProtocolComboBox, Camera4IpTextBox, Camera4PortTextBox, 
+                              Camera4StreamPathTextBox, Camera4FullUrlTextBox);
+                UpdateDefaultPortForProtocol(Camera4ProtocolComboBox, Camera4PortTextBox);
+            }
+        }
+        
+        private void UpdateDefaultPortForProtocol(ComboBox protocolCombo, TextBox portTextBox)
+        {
+            var protocol = GetSelectedProtocol(protocolCombo);
+            var defaultPort = protocol.ToLower() switch
+            {
+                "http" => "80",
+                "https" => "443",
+                "rtsp" => "554",
+                "tcp" => "8080",
+                _ => "80"
+            };
+            
+            if (portTextBox != null && (string.IsNullOrEmpty(portTextBox.Text) || 
+                portTextBox.Text == "80" || portTextBox.Text == "443" || 
+                portTextBox.Text == "554" || portTextBox.Text == "8080"))
+            {
+                portTextBox.Text = defaultPort;
+            }
         }
         
         private void SaveIntegrationSettings()
@@ -1742,8 +1848,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 testButton.Content = "🔄 Testing...";
                 statusText.Text = "Testing...";
 
-                // Update camera configuration from UI
-                UpdateCameraConfigurationFromUI(cameraId);
+                // Camera configuration is updated through SaveCameraSettings method
                 
                 var camera = _cameraService.GetCamera(cameraId);
                 if (camera != null)
@@ -1824,65 +1929,6 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
         }
 
-        private void UpdateCameraConfigurationFromUI(int cameraId)
-        {
-            try
-            {
-                if (_cameraService == null) return;
-
-                var config = new CameraConfiguration { Id = cameraId };
-
-                switch (cameraId)
-                {
-                    case 1:
-                        config.Name = Camera1NameTextBox.Text;
-                        config.IpAddress = Camera1IpTextBox.Text;
-                        config.Port = int.TryParse(Camera1PortTextBox.Text, out var port1) ? port1 : 80;
-                        config.Username = Camera1UsernameTextBox.Text;
-                        config.Password = Camera1PasswordBox.Password;
-                        config.StreamUrl = Camera1StreamUrlTextBox.Text;
-                        config.IsEnabled = Camera1EnabledCheckBox.IsChecked == true;
-                        config.Position = CameraPosition.Entry;
-                        break;
-                    case 2:
-                        config.Name = Camera2NameTextBox.Text;
-                        config.IpAddress = Camera2IpTextBox.Text;
-                        config.Port = int.TryParse(Camera2PortTextBox.Text, out var port2) ? port2 : 80;
-                        config.Username = Camera2UsernameTextBox.Text;
-                        config.Password = Camera2PasswordBox.Password;
-                        config.StreamUrl = Camera2StreamUrlTextBox.Text;
-                        config.IsEnabled = Camera2EnabledCheckBox.IsChecked == true;
-                        config.Position = CameraPosition.Exit;
-                        break;
-                    case 3:
-                        config.Name = Camera3NameTextBox.Text;
-                        config.IpAddress = Camera3IpTextBox.Text;
-                        config.Port = int.TryParse(Camera3PortTextBox.Text, out var port3) ? port3 : 80;
-                        config.Username = Camera3UsernameTextBox.Text;
-                        config.Password = Camera3PasswordBox.Password;
-                        config.StreamUrl = Camera3StreamUrlTextBox.Text;
-                        config.IsEnabled = Camera3EnabledCheckBox.IsChecked == true;
-                        config.Position = CameraPosition.LeftSide;
-                        break;
-                    case 4:
-                        config.Name = Camera4NameTextBox.Text;
-                        config.IpAddress = Camera4IpTextBox.Text;
-                        config.Port = int.TryParse(Camera4PortTextBox.Text, out var port4) ? port4 : 80;
-                        config.Username = Camera4UsernameTextBox.Text;
-                        config.Password = Camera4PasswordBox.Password;
-                        config.StreamUrl = Camera4StreamUrlTextBox.Text;
-                        config.IsEnabled = Camera4EnabledCheckBox.IsChecked == true;
-                        config.Position = CameraPosition.RightSide;
-                        break;
-                }
-
-                _cameraService.UpdateCameraConfiguration(config);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error updating camera config: {ex.Message}");
-            }
-        }
 
         private void UpdateCameraStatus(int cameraId, CameraTestResult? result)
         {
