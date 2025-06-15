@@ -87,6 +87,10 @@ namespace WeighbridgeSoftwareYashCotex
                     entryControl.Dispose();
                 else if (_currentFormControl is ExitControl exitControl)
                     exitControl.Dispose();
+                else if (_currentFormControl is PrintControl printControl)
+                    printControl.Dispose();
+                else if (_currentFormControl is SettingsControl settingsControl)
+                    settingsControl.Dispose();
                 
                 _currentFormControl = null;
                 FormContentPresenter.Content = null;
@@ -168,14 +172,30 @@ namespace WeighbridgeSoftwareYashCotex
         {
             try
             {
-                // TODO: Implement print functionality in center panel
-                LatestOperation.Text = "Print function - Coming Soon";
-                MessageBox.Show("Print functionality will be implemented in future update.", "Print", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                // Dispose current form if any
+                if (_currentFormControl is EntryControl oldEntry)
+                    oldEntry.Dispose();
+                else if (_currentFormControl is ExitControl oldExit)
+                    oldExit.Dispose();
+                else if (_currentFormControl is SettingsControl oldSettings)
+                    oldSettings.Dispose();
+                
+                var printControl = new PrintControl();
+                printControl.FormCompleted += (s, message) => {
+                    LatestOperation.Text = message;
+                    ShowHome();
+                };
+                
+                _currentFormControl = printControl;
+                FormContentPresenter.Content = printControl;
+                FormContentPresenter.Visibility = Visibility.Visible;
+                LiveWeightPanel.Visibility = Visibility.Collapsed;
+                
+                LatestOperation.Text = "Print center opened";
             }
             catch (Exception ex)
             {
-                LatestOperation.Text = $"Print error: {ex.Message}";
+                LatestOperation.Text = $"Error opening print center: {ex.Message}";
             }
         }
 
@@ -183,14 +203,30 @@ namespace WeighbridgeSoftwareYashCotex
         {
             try
             {
-                // TODO: Implement settings functionality in center panel
-                LatestOperation.Text = "Settings function - Coming Soon";
-                MessageBox.Show("Settings functionality will be implemented in future update.", "Settings", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                // Dispose current form if any
+                if (_currentFormControl is EntryControl oldEntry)
+                    oldEntry.Dispose();
+                else if (_currentFormControl is ExitControl oldExit)
+                    oldExit.Dispose();
+                else if (_currentFormControl is PrintControl oldPrint)
+                    oldPrint.Dispose();
+                
+                var settingsControl = new SettingsControl();
+                settingsControl.FormCompleted += (s, message) => {
+                    LatestOperation.Text = message;
+                    ShowHome();
+                };
+                
+                _currentFormControl = settingsControl;
+                FormContentPresenter.Content = settingsControl;
+                FormContentPresenter.Visibility = Visibility.Visible;
+                LiveWeightPanel.Visibility = Visibility.Collapsed;
+                
+                LatestOperation.Text = "Settings opened";
             }
             catch (Exception ex)
             {
-                LatestOperation.Text = $"Settings error: {ex.Message}";
+                LatestOperation.Text = $"Error opening settings: {ex.Message}";
             }
         }
 
@@ -226,6 +262,10 @@ namespace WeighbridgeSoftwareYashCotex
                 entryControl.Dispose();
             else if (_currentFormControl is ExitControl exitControl)
                 exitControl.Dispose();
+            else if (_currentFormControl is PrintControl printControl)
+                printControl.Dispose();
+            else if (_currentFormControl is SettingsControl settingsControl)
+                settingsControl.Dispose();
         }
     }
 }
