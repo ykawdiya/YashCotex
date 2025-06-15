@@ -3,367 +3,737 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <UserControl.Resources>
-        <!-- Styles -->
-        <Style x:Key="TabButtonStyle" TargetType="Button">
-            <Setter Property="Padding" Value="20,10"/>
-            <Setter Property="Margin" Value="5,0"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Background" Value="#F8F9FA"/>
-            <Setter Property="Foreground" Value="#495057"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Cursor" Value="Hand"/>
+        <!-- Settings Styles -->
+        <Style x:Key="HeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#6C5CE7"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
         </Style>
         
-        <Style x:Key="ActiveTabButtonStyle" TargetType="Button" BasedOn="{StaticResource TabButtonStyle}">
-            <Setter Property="Background" Value="#007BFF"/>
-            <Setter Property="Foreground" Value="White"/>
+        <Style x:Key="TabHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#2D3436"/>
+            <Setter Property="Margin" Value="5,8"/>
         </Style>
         
         <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#2C3E50"/>
-            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
         </Style>
         
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Margin" Value="0,0,0,5"/>
             <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="FontSize" Value="13"/>
         </Style>
         
         <Style x:Key="FieldTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Padding" Value="8"/>
             <Setter Property="BorderBrush" Value="#CCC"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="35"/>
         </Style>
         
         <Style x:Key="FieldComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Padding" Value="8"/>
             <Setter Property="BorderBrush" Value="#CCC"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="35"/>
         </Style>
         
-        <Style x:Key="ButtonStyle" TargetType="Button">
+        <Style x:Key="SaveButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#00B894"/>
+            <Setter Property="Foreground" Value="White"/>
             <Setter Property="Padding" Value="20,10"/>
-            <Setter Property="Margin" Value="10,5"/>
+            <Setter Property="Margin" Value="8,0"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="40"/>
         </Style>
         
-        <Style x:Key="SaveButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
-            <Setter Property="Background" Value="#28A745"/>
+        <Style x:Key="CancelButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#636E72"/>
             <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Margin" Value="8,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="40"/>
         </Style>
         
-        <Style x:Key="ResetButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
-            <Setter Property="Background" Value="#FFC107"/>
-            <Setter Property="Foreground" Value="#212529"/>
+        <Style x:Key="AdminOnlyStyle" TargetType="Control">
+            <Setter Property="Background" Value="#FFF5F5"/>
+            <Setter Property="BorderBrush" Value="#FF6B6B"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="ToolTip" Value="Super Admin access required"/>
         </Style>
     </UserControl.Resources>
-    
-    <Border Background="White" CornerRadius="10" Padding="30">
+
+    <Border Background="White" CornerRadius="10" Padding="30" Margin="20">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>  <!-- Header -->
+                <RowDefinition Height="*"/>     <!-- Tab Content -->
+                <RowDefinition Height="Auto"/>  <!-- Buttons -->
             </Grid.RowDefinitions>
-            
+
             <!-- Header -->
-            <StackPanel Grid.Row="0" Margin="0,0,0,25">
-                <TextBlock Text="⚙️ SYSTEM SETTINGS" FontSize="28" FontWeight="Bold" 
-                           HorizontalAlignment="Center" Foreground="#2C3E50"/>
-                <Rectangle Fill="#6F42C1" Height="3" Width="150" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="⚙️ SYSTEM SETTINGS" Style="{StaticResource HeaderStyle}"/>
+                <Rectangle Fill="#6C5CE7" Height="3" Width="150" HorizontalAlignment="Center" Margin="0,0,0,25"/>
             </StackPanel>
-            
-            <!-- Tab Navigation -->
-            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
-                <Button x:Name="CompanyTabButton" Content="🏢 Company" Style="{StaticResource ActiveTabButtonStyle}" Click="CompanyTabButton_Click"/>
-                <Button x:Name="WeighbridgeTabButton" Content="⚖️ Weighbridge" Style="{StaticResource TabButtonStyle}" Click="WeighbridgeTabButton_Click"/>
-                <Button x:Name="DatabaseTabButton" Content="💾 Database" Style="{StaticResource TabButtonStyle}" Click="DatabaseTabButton_Click"/>
-                <Button x:Name="SystemTabButton" Content="🖥️ System" Style="{StaticResource TabButtonStyle}" Click="SystemTabButton_Click"/>
-            </StackPanel>
-            
-            <!-- Content Area -->
-            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                <Grid>
-                <!-- Company Settings -->
-                <StackPanel x:Name="CompanySettingsPanel" Visibility="Visible">
-                    <TextBlock Text="🏢 COMPANY INFORMATION" Style="{StaticResource SectionHeaderStyle}"/>
-                    
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="20"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Company Name *" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="CompanyNameTextBox" Text="YASH COTEX PRIVATE LIMITED" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="Address Line 1 *" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="Address1TextBox" Text="Industrial Area, Phase 1" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="Address Line 2" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="Address2TextBox" Text="Sector 58, Mohali" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="City *" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="CityTextBox" Text="Mohali" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="State *" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="StateTextBox" Text="Punjab" Style="{StaticResource FieldTextBoxStyle}"/>
-                        </StackPanel>
-                        
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="PIN Code *" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="PinCodeTextBox" Text="160059" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="Phone Number *" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="PhoneTextBox" Text="+91-9876543210" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="Email Address" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="EmailTextBox" Text="info@yashcotex.com" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="GST Number" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="GstNumberTextBox" Text="22AAAAA0000A1Z5" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="License Number" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="LicenseNumberTextBox" Text="WB/2024/001" Style="{StaticResource FieldTextBoxStyle}"/>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
+
+            <!-- Tab Control -->
+            <TabControl Grid.Row="1" x:Name="SettingsTabControl" Background="White" BorderThickness="1" BorderBrush="#DDD">
                 
-                <!-- Weighbridge Settings -->
-                <StackPanel x:Name="WeighbridgeSettingsPanel" Visibility="Collapsed">
-                    <TextBlock Text="⚖️ WEIGHBRIDGE CONFIGURATION" Style="{StaticResource SectionHeaderStyle}"/>
-                    
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="20"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Scale Model" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="ScaleModelComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                <ComboBoxItem Content="Avery Weigh-Tronix E1310" IsSelected="True"/>
-                                <ComboBoxItem Content="Mettler Toledo IND780"/>
-                                <ComboBoxItem Content="Cardinal Scale 825"/>
-                                <ComboBoxItem Content="Rice Lake RL1380"/>
-                            </ComboBox>
+                <!-- Tab 1: Company Information -->
+                <TabItem Header="🏢 Company Info">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                        <StackPanel MaxWidth="600">
+                            <TextBlock Text="COMPANY INFORMATION" Style="{StaticResource SectionHeaderStyle}"/>
                             
-                            <TextBlock Text="Communication Port" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="ComPortComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                <ComboBoxItem Content="COM1" IsSelected="True"/>
-                                <ComboBoxItem Content="COM2"/>
-                                <ComboBoxItem Content="COM3"/>
-                                <ComboBoxItem Content="COM4"/>
-                            </ComboBox>
-                            
-                            <TextBlock Text="Baud Rate" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="BaudRateComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                <ComboBoxItem Content="9600" IsSelected="True"/>
-                                <ComboBoxItem Content="19200"/>
-                                <ComboBoxItem Content="38400"/>
-                                <ComboBoxItem Content="57600"/>
-                            </ComboBox>
-                            
-                            <TextBlock Text="Data Bits" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="DataBitsComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                <ComboBoxItem Content="7"/>
-                                <ComboBoxItem Content="8" IsSelected="True"/>
-                            </ComboBox>
-                        </StackPanel>
-                        
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Maximum Capacity (KG)" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="MaxCapacityTextBox" Text="100000" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="Minimum Display (KG)" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="MinDisplayTextBox" Text="10" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="Calibration Factor" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="CalibrationFactorTextBox" Text="1.000" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="Zero Range (KG)" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="ZeroRangeTextBox" Text="50" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <!-- Connection Test -->
-                            <StackPanel Margin="0,20,0,0">
-                                <Button Content="🔌 Test Connection" x:Name="TestConnectionButton" 
-                                        Style="{StaticResource SaveButtonStyle}" Click="TestConnectionButton_Click"/>
-                                <TextBlock x:Name="ConnectionStatusText" Text="Click to test weighbridge connection" 
-                                           Foreground="#6C757D" FontSize="12" Margin="0,10,0,0"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
-                
-                <!-- Database Settings -->
-                <StackPanel x:Name="DatabaseSettingsPanel" Visibility="Collapsed">
-                    <TextBlock Text="💾 DATABASE CONFIGURATION" Style="{StaticResource SectionHeaderStyle}"/>
-                    
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="20"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Database Type" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="DatabaseTypeComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                <ComboBoxItem Content="SQLite (Local)" IsSelected="True"/>
-                                <ComboBoxItem Content="SQL Server"/>
-                                <ComboBoxItem Content="MySQL"/>
-                                <ComboBoxItem Content="PostgreSQL"/>
-                            </ComboBox>
-                            
-                            <TextBlock Text="Database Path" Style="{StaticResource FieldLabelStyle}"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="10"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBox x:Name="DatabasePathTextBox" Grid.Column="0" Text="weighbridge.db" Style="{StaticResource FieldTextBoxStyle}"/>
-                                <Button Grid.Column="2" Content="📁" Padding="10,8" Click="BrowseDatabasePath_Click"/>
-                            </Grid>
-                            
-                            <TextBlock Text="Backup Frequency" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="BackupFrequencyComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                <ComboBoxItem Content="Daily" IsSelected="True"/>
-                                <ComboBoxItem Content="Weekly"/>
-                                <ComboBoxItem Content="Monthly"/>
-                                <ComboBoxItem Content="Manual Only"/>
-                            </ComboBox>
-                            
-                            <TextBlock Text="Backup Location" Style="{StaticResource FieldLabelStyle}"/>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="15"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="10"/>
-                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox x:Name="BackupLocationTextBox" Grid.Column="0" Text="./Backups" Style="{StaticResource FieldTextBoxStyle}"/>
-                                <Button Grid.Column="2" Content="📁" Padding="10,8" Click="BrowseBackupLocation_Click"/>
+                                
+                                <!-- Left Column -->
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Company Name *" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="CompanyNameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="YASH COTEX PRIVATE LIMITED"/>
+                                    
+                                    <TextBlock Text="Address Line 1 *" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="AddressLine1TextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Industrial Area, Phase 1"/>
+                                    
+                                    <TextBlock Text="Address Line 2" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="AddressLine2TextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Sector 58, Mohali"/>
+                                    
+                                    <TextBlock Text="City *" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="CityTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Mohali"/>
+                                    
+                                    <TextBlock Text="State *" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="StateTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Punjab"/>
+                                </StackPanel>
+                                
+                                <!-- Right Column -->
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="PIN Code *" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="PinCodeTextBox" Style="{StaticResource FieldTextBoxStyle}" MaxLength="6" Text="160059"/>
+                                    
+                                    <TextBlock Text="Phone Number *" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="CompanyPhoneTextBox" Style="{StaticResource FieldTextBoxStyle}" MaxLength="10" Text="9876543210"/>
+                                    
+                                    <TextBlock Text="Email Address" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="CompanyEmailTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="info@yashcotex.com"/>
+                                    
+                                    <TextBlock Text="GST Number" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="GstNumberTextBox" Style="{StaticResource FieldTextBoxStyle}" MaxLength="15" Text="22AAAAA0000A1Z5"/>
+                                    
+                                    <TextBlock Text="License Number" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="LicenseNumberTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="WB/2024/001"/>
+                                </StackPanel>
                             </Grid>
                         </StackPanel>
-                        
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Data Retention (Days)" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="DataRetentionTextBox" Text="365" Style="{StaticResource FieldTextBoxStyle}"/>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- Tab 2: Hardware Configuration -->
+                <TabItem Header="🔧 Hardware">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                        <StackPanel MaxWidth="600">
+                            <TextBlock Text="HARDWARE CONFIGURATION" Style="{StaticResource SectionHeaderStyle}"/>
                             
-                            <TextBlock Text="Auto Archive After (Days)" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="AutoArchiveTextBox" Text="90" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <!-- Database Actions -->
-                            <StackPanel Margin="0,20,0,0">
-                                <Button Content="🔄 Create Backup Now" x:Name="BackupNowButton" 
-                                        Style="{StaticResource SaveButtonStyle}" Click="BackupNowButton_Click" Margin="0,5"/>
-                                <Button Content="📤 Export Data" x:Name="ExportDataButton" 
-                                        Style="{StaticResource SaveButtonStyle}" Click="ExportDataButton_Click" Margin="0,5"/>
-                                <Button Content="🗑️ Clean Old Data" x:Name="CleanDataButton" 
-                                        Style="{StaticResource ResetButtonStyle}" Click="CleanDataButton_Click" Margin="0,5"/>
-                                <TextBlock x:Name="DatabaseStatusText" Text="Database: Connected | Size: 2.5 MB" 
-                                           Foreground="#28A745" FontSize="12" Margin="0,10,0,0"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
-                
-                <!-- System Settings -->
-                <StackPanel x:Name="SystemSettingsPanel" Visibility="Collapsed">
-                    <TextBlock Text="🖥️ SYSTEM PREFERENCES" Style="{StaticResource SectionHeaderStyle}"/>
-                    
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="20"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Language" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="LanguageComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                <ComboBoxItem Content="English" IsSelected="True"/>
-                                <ComboBoxItem Content="Hindi"/>
-                                <ComboBoxItem Content="Punjabi"/>
-                            </ComboBox>
-                            
-                            <TextBlock Text="Date Format" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="DateFormatComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                <ComboBoxItem Content="DD/MM/YYYY" IsSelected="True"/>
-                                <ComboBoxItem Content="MM/DD/YYYY"/>
-                                <ComboBoxItem Content="YYYY-MM-DD"/>
-                            </ComboBox>
-                            
-                            <TextBlock Text="Weight Unit" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="WeightUnitComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                <ComboBoxItem Content="Kilograms (KG)" IsSelected="True"/>
-                                <ComboBoxItem Content="Tonnes (T)"/>
-                                <ComboBoxItem Content="Pounds (LBS)"/>
-                            </ComboBox>
-                            
-                            <TextBlock Text="Theme" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="ThemeComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                <ComboBoxItem Content="Light" IsSelected="True"/>
-                                <ComboBoxItem Content="Dark"/>
-                                <ComboBoxItem Content="Auto"/>
-                            </ComboBox>
-                        </StackPanel>
-                        
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Auto-Save Interval (Minutes)" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="AutoSaveIntervalTextBox" Text="5" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <TextBlock Text="Session Timeout (Minutes)" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="SessionTimeoutTextBox" Text="60" Style="{StaticResource FieldTextBoxStyle}"/>
-                            
-                            <!-- System Options -->
-                            <StackPanel Margin="0,20,0,0">
-                                <CheckBox x:Name="StartWithWindowsCheckBox" Content="Start with Windows" Margin="0,5"/>
-                                <CheckBox x:Name="MinimizeToTrayCheckBox" Content="Minimize to system tray" Margin="0,5"/>
-                                <CheckBox x:Name="ShowNotificationsCheckBox" Content="Show notifications" IsChecked="True" Margin="0,5"/>
-                                <CheckBox x:Name="EnableLoggingCheckBox" Content="Enable system logging" IsChecked="True" Margin="0,5"/>
-                                <CheckBox x:Name="AutoUpdateCheckBox" Content="Check for updates automatically" IsChecked="True" Margin="0,5"/>
-                            </StackPanel>
-                            
-                            <!-- System Info -->
-                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" 
-                                    CornerRadius="5" Padding="15" Margin="0,20,0,0">
+                            <!-- Weighbridge Settings -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,20">
                                 <StackPanel>
-                                    <TextBlock Text="📋 SYSTEM INFORMATION" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                                    <TextBlock Text="Software Version: 2.0.0" FontSize="12"/>
-                                    <TextBlock Text="Database Version: 1.5" FontSize="12"/>
-                                    <TextBlock Text="Last Updated: 15/06/2024" FontSize="12"/>
-                                    <TextBlock x:Name="SystemUptimeText" Text="System Uptime: 2h 15m" FontSize="12"/>
+                                    <TextBlock Text="⚖️ WEIGHBRIDGE SETTINGS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Scale COM Port *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="ScaleComPortComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="COM1" IsSelected="True"/>
+                                                <ComboBoxItem Content="COM2"/>
+                                                <ComboBoxItem Content="COM3"/>
+                                                <ComboBoxItem Content="COM4"/>
+                                            </ComboBox>
+                                            
+                                            <TextBlock Text="Baud Rate *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="BaudRateComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="9600" IsSelected="True"/>
+                                                <ComboBoxItem Content="19200"/>
+                                                <ComboBoxItem Content="38400"/>
+                                                <ComboBoxItem Content="57600"/>
+                                            </ComboBox>
+                                            
+                                            <TextBlock Text="Data Bits *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="DataBitsComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="7"/>
+                                                <ComboBoxItem Content="8" IsSelected="True"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Parity *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="ParityComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="None" IsSelected="True"/>
+                                                <ComboBoxItem Content="Even"/>
+                                                <ComboBoxItem Content="Odd"/>
+                                            </ComboBox>
+                                            
+                                            <TextBlock Text="Stop Bits *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="StopBitsComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="1" IsSelected="True"/>
+                                                <ComboBoxItem Content="2"/>
+                                            </ComboBox>
+                                            
+                                            <TextBlock Text="Maximum Capacity (KG) *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="MaxCapacityTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="100000"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Printer Settings -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15">
+                                <StackPanel>
+                                    <TextBlock Text="🖨️ PRINTER SETTINGS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Default Printer" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="DefaultPrinterComboBox" Style="{StaticResource FieldComboBoxStyle}"/>
+                                            
+                                            <TextBlock Text="Paper Size" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="PaperSizeComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="A4" IsSelected="True"/>
+                                                <ComboBoxItem Content="A5"/>
+                                                <ComboBoxItem Content="80mm (Thermal)"/>
+                                            </ComboBox>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Print Quality" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="PrintQualityComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="Draft"/>
+                                                <ComboBoxItem Content="Normal" IsSelected="True"/>
+                                                <ComboBoxItem Content="High"/>
+                                            </ComboBox>
+                                            
+                                            <CheckBox x:Name="AutoPrintCheckBox" Content="Auto-print after exit" Margin="0,15,0,0" IsChecked="True"/>
+                                        </StackPanel>
+                                    </Grid>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
-                    </Grid>
-                </StackPanel>
-                </Grid>
-            </ScrollViewer>
-            
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- Tab 3: Camera Settings -->
+                <TabItem Header="📹 Cameras">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                        <StackPanel MaxWidth="700">
+                            <TextBlock Text="IP CAMERA CONFIGURATION" Style="{StaticResource SectionHeaderStyle}"/>
+                            
+                            <!-- Camera 1 -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+                                <StackPanel>
+                                    <TextBlock Text="📹 CAMERA 1 (Front Entry)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Camera IP Address" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera1IpTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="192.168.1.101"/>
+                                            
+                                            <TextBlock Text="Port" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera1PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="554"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Username" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="Camera1UsernameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="admin"/>
+                                            
+                                            <TextBlock Text="Password" Style="{StaticResource FieldLabelStyle}"/>
+                                            <PasswordBox x:Name="Camera1PasswordBox" Height="35" Margin="0,0,0,12" Padding="8"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    
+                                    <CheckBox x:Name="Camera1EnabledCheckBox" Content="Enable Camera 1" IsChecked="True" Margin="0,10,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Camera 2 -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+                                <StackPanel>
+                                    <TextBlock Text="📹 CAMERA 2 (Rear Entry)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0">
+                                            <TextBox x:Name="Camera2IpTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="192.168.1.102"/>
+                                            <TextBox x:Name="Camera2PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="554"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="2">
+                                            <TextBox x:Name="Camera2UsernameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="admin"/>
+                                            <PasswordBox x:Name="Camera2PasswordBox" Height="35" Margin="0,0,0,12" Padding="8"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    
+                                    <CheckBox x:Name="Camera2EnabledCheckBox" Content="Enable Camera 2" IsChecked="True" Margin="0,10,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Camera 3 -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+                                <StackPanel>
+                                    <TextBlock Text="📹 CAMERA 3 (Side Exit)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0">
+                                            <TextBox x:Name="Camera3IpTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="192.168.1.103"/>
+                                            <TextBox x:Name="Camera3PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="554"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="2">
+                                            <TextBox x:Name="Camera3UsernameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="admin"/>
+                                            <PasswordBox x:Name="Camera3PasswordBox" Height="35" Margin="0,0,0,12" Padding="8"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    
+                                    <CheckBox x:Name="Camera3EnabledCheckBox" Content="Enable Camera 3" IsChecked="True" Margin="0,10,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Camera 4 -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15">
+                                <StackPanel>
+                                    <TextBlock Text="📹 CAMERA 4 (Overview)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0">
+                                            <TextBox x:Name="Camera4IpTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="192.168.1.104"/>
+                                            <TextBox x:Name="Camera4PortTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="554"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="2">
+                                            <TextBox x:Name="Camera4UsernameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="admin"/>
+                                            <PasswordBox x:Name="Camera4PasswordBox" Height="35" Margin="0,0,0,12" Padding="8"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    
+                                    <CheckBox x:Name="Camera4EnabledCheckBox" Content="Enable Camera 4" IsChecked="True" Margin="0,10,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- Tab 4: Integrations -->
+                <TabItem Header="🔗 Integrations">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                        <StackPanel MaxWidth="600">
+                            <TextBlock Text="EXTERNAL INTEGRATIONS" Style="{StaticResource SectionHeaderStyle}"/>
+                            
+                            <!-- Google Sheets Integration -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <TextBlock Text="📊 GOOGLE SHEETS INTEGRATION" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <CheckBox x:Name="GoogleSheetsEnabledCheckBox" Content="Enable Google Sheets Sync" Margin="0,0,0,10"/>
+                                    
+                                    <TextBlock Text="Service Account Key File" Style="{StaticResource FieldLabelStyle}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="ServiceAccountKeyTextBox" Style="{StaticResource FieldTextBoxStyle}" Grid.Column="0" IsReadOnly="True"/>
+                                        <Button Content="Browse..." Grid.Column="1" Margin="5,0,0,12" Padding="10,5" x:Name="BrowseKeyFileButton"/>
+                                    </Grid>
+                                    
+                                    <TextBlock Text="Spreadsheet ID" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="SpreadsheetIdTextBox" Style="{StaticResource FieldTextBoxStyle}"/>
+                                    
+                                    <TextBlock Text="Worksheet Name" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="WorksheetNameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="WeighmentData"/>
+                                    
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                        <Button Content="🔄 Test Connection" Padding="10,5" Margin="0,0,10,0" x:Name="TestGoogleSheetsButton"/>
+                                        <Button Content="📤 Sync Now" Padding="10,5" x:Name="SyncNowButton"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Database Backup -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15">
+                                <StackPanel>
+                                    <TextBlock Text="💾 DATABASE BACKUP" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <CheckBox x:Name="AutoBackupEnabledCheckBox" Content="Enable Automatic Backup" Margin="0,0,0,10" IsChecked="True"/>
+                                    
+                                    <TextBlock Text="Backup Location" Style="{StaticResource FieldLabelStyle}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="BackupLocationTextBox" Style="{StaticResource FieldTextBoxStyle}" Grid.Column="0" Text="./Backups"/>
+                                        <Button Content="Browse..." Grid.Column="1" Margin="5,0,0,12" Padding="10,5" x:Name="BrowseBackupLocationButton"/>
+                                    </Grid>
+                                    
+                                    <TextBlock Text="Backup Frequency" Style="{StaticResource FieldLabelStyle}"/>
+                                    <ComboBox x:Name="BackupFrequencyComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                        <ComboBoxItem Content="Daily" IsSelected="True"/>
+                                        <ComboBoxItem Content="Weekly"/>
+                                        <ComboBoxItem Content="Monthly"/>
+                                    </ComboBox>
+                                    
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                        <Button Content="💾 Backup Now" Padding="10,5" Margin="0,0,10,0" x:Name="BackupNowButton"/>
+                                        <Button Content="📂 Restore Backup" Padding="10,5" x:Name="RestoreBackupButton"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- Tab 5: Data Management -->
+                <TabItem Header="📊 Data Management">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                        <StackPanel MaxWidth="600">
+                            <TextBlock Text="DATA MANAGEMENT" Style="{StaticResource SectionHeaderStyle}"/>
+                            
+                            <!-- Materials Management -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <TextBlock Text="🏗️ MATERIALS MANAGEMENT" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <ListBox x:Name="MaterialsListBox" Grid.Column="0" Height="150" BorderBrush="#CCC" BorderThickness="1"/>
+                                        
+                                        <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                            <TextBox x:Name="NewMaterialTextBox" Width="150" Margin="0,0,0,5" Padding="5"/>
+                                            <Button Content="➕ Add" Padding="10,5" Margin="0,0,0,5" x:Name="AddMaterialButton"/>
+                                            <Button Content="✏️ Edit" Padding="10,5" Margin="0,0,0,5" x:Name="EditMaterialButton"/>
+                                            <Button Content="🗑️ Delete" Padding="10,5" x:Name="DeleteMaterialButton"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Addresses Management -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15">
+                                <StackPanel>
+                                    <TextBlock Text="📍 ADDRESSES MANAGEMENT" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <ListBox x:Name="AddressesListBox" Grid.Column="0" Height="150" BorderBrush="#CCC" BorderThickness="1"/>
+                                        
+                                        <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                            <TextBox x:Name="NewAddressTextBox" Width="150" Margin="0,0,0,5" Padding="5"/>
+                                            <Button Content="➕ Add" Padding="10,5" Margin="0,0,0,5" x:Name="AddAddressButton"/>
+                                            <Button Content="✏️ Edit" Padding="10,5" Margin="0,0,0,5" x:Name="EditAddressButton"/>
+                                            <Button Content="🗑️ Delete" Padding="10,5" x:Name="DeleteAddressButton"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- Tab 6: Security -->
+                <TabItem Header="🔒 Security">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                        <StackPanel MaxWidth="600">
+                            <TextBlock Text="SECURITY SETTINGS" Style="{StaticResource SectionHeaderStyle}"/>
+                            
+                            <!-- Session Settings -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <TextBlock Text="⏱️ SESSION MANAGEMENT" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <TextBlock Text="Admin Session Timeout (minutes)" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="AdminTimeoutTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="5"/>
+                                    
+                                    <TextBlock Text="Super Admin Session Timeout (minutes)" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="SuperAdminTimeoutTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="1"/>
+                                    
+                                    <CheckBox x:Name="AutoLogoutCheckBox" Content="Enable auto-logout on inactivity" IsChecked="True" Margin="0,10,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Two-Factor Authentication -->
+                            <Border Background="#FFF5F5" BorderBrush="#FF6B6B" BorderThickness="1" CornerRadius="8" Padding="15">
+                                <StackPanel>
+                                    <TextBlock Text="🔐 TWO-FACTOR AUTHENTICATION (Super Admin Only)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10" Foreground="#E17055"/>
+                                    
+                                    <CheckBox x:Name="TwoFactorEnabledCheckBox" Content="Enable 2FA for Super Admin" Margin="0,0,0,10"/>
+                                    
+                                    <TextBlock Text="Authentication Method" Style="{StaticResource FieldLabelStyle}"/>
+                                    <ComboBox x:Name="TwoFactorMethodComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                        <ComboBoxItem Content="Email OTP" IsSelected="True"/>
+                                        <ComboBoxItem Content="SMS OTP"/>
+                                        <ComboBoxItem Content="Authenticator App"/>
+                                    </ComboBox>
+                                    
+                                    <TextBlock Text="Recovery Email" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="RecoveryEmailTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="admin@yashcotex.com"/>
+                                    
+                                    <Button Content="🔄 Generate New Recovery Codes" Padding="10,5" Margin="0,10,0,0" x:Name="GenerateRecoveryCodesButton"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- Tab 7: Weight Rules (Super Admin Only) -->
+                <TabItem Header="⚖️ Weight Rules" x:Name="WeightRulesTab">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                        <StackPanel MaxWidth="600">
+                            <Border Background="#FFF5F5" BorderBrush="#FF6B6B" BorderThickness="2" CornerRadius="8" Padding="20">
+                                <StackPanel>
+                                    <TextBlock Text="⚠️ SUPER ADMIN ONLY - WEIGHT MANIPULATION RULES" 
+                                              Style="{StaticResource SectionHeaderStyle}" Foreground="#E17055" HorizontalAlignment="Center"/>
+                                    
+                                    <TextBlock Text="🛡️ WARNING: These settings affect weight calculations and should only be modified by authorized Super Admin users." 
+                                              FontSize="12" Foreground="#E17055" TextWrapping="Wrap" Margin="0,0,0,20" HorizontalAlignment="Center"/>
+                                    
+                                    <!-- Weight Tolerance Settings -->
+                                    <Border Background="#FFEAA7" BorderBrush="#FDCB6E" BorderThickness="1" CornerRadius="5" Padding="15" Margin="0,0,0,15">
+                                        <StackPanel>
+                                            <TextBlock Text="📊 WEIGHT TOLERANCE SETTINGS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                            
+                                            <TextBlock Text="Minimum Weight Difference (KG)" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="MinWeightDifferenceTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="5.0"/>
+                                            
+                                            <TextBlock Text="Maximum Weight Variance (%)" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="MaxWeightVarianceTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="10.0"/>
+                                            
+                                            <CheckBox x:Name="AllowNegativeWeightCheckBox" Content="Allow negative weight calculations" Margin="0,10,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Weight Adjustment Rules -->
+                                    <Border Background="#FFD3D3" BorderBrush="#FF6B6B" BorderThickness="1" CornerRadius="5" Padding="15">
+                                        <StackPanel>
+                                            <TextBlock Text="⚙️ WEIGHT ADJUSTMENT RULES" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                            
+                                            <CheckBox x:Name="AllowManualWeightAdjustmentCheckBox" Content="Allow manual weight adjustments" Margin="0,0,0,5"/>
+                                            <CheckBox x:Name="RequireJustificationCheckBox" Content="Require justification for adjustments" Margin="0,0,0,5"/>
+                                            <CheckBox x:Name="LogAllAdjustmentsCheckBox" Content="Log all weight adjustments" IsChecked="True" Margin="0,0,0,10"/>
+                                            
+                                            <TextBlock Text="Maximum Adjustment Limit (KG)" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="MaxAdjustmentLimitTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="50.0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- Tab 8: User Management -->
+                <TabItem Header="👥 Users">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                        <StackPanel MaxWidth="700">
+                            <TextBlock Text="USER MANAGEMENT" Style="{StaticResource SectionHeaderStyle}"/>
+                            
+                            <!-- Current Users -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <TextBlock Text="👥 CURRENT USERS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <DataGrid x:Name="UsersDataGrid" Height="200" AutoGenerateColumns="False" CanUserAddRows="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*"/>
+                                            <DataGridTextColumn Header="Role" Binding="{Binding Role}" Width="100"/>
+                                            <DataGridTextColumn Header="Last Login" Binding="{Binding LastLogin}" Width="150"/>
+                                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="80"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                        <Button Content="➕ Add User" Padding="10,5" Margin="0,0,10,0" x:Name="AddUserButton"/>
+                                        <Button Content="✏️ Edit User" Padding="10,5" Margin="0,0,10,0" x:Name="EditUserButton"/>
+                                        <Button Content="🗑️ Delete User" Padding="10,5" x:Name="DeleteUserButton"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Add New User -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15">
+                                <StackPanel>
+                                    <TextBlock Text="➕ ADD NEW USER" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Username *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="NewUsernameTextBox" Style="{StaticResource FieldTextBoxStyle}"/>
+                                            
+                                            <TextBlock Text="Password *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <PasswordBox x:Name="NewPasswordBox" Height="35" Margin="0,0,0,12" Padding="8"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Role *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="NewUserRoleComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="User" IsSelected="True"/>
+                                                <ComboBoxItem Content="Admin"/>
+                                                <ComboBoxItem Content="Super Admin"/>
+                                            </ComboBox>
+                                            
+                                            <TextBlock Text="Full Name" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="NewUserFullNameTextBox" Style="{StaticResource FieldTextBoxStyle}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    
+                                    <Button Content="👤 Create User" Padding="15,8" Margin="0,10,0,0" x:Name="CreateUserButton" HorizontalAlignment="Left"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- Tab 9: System -->
+                <TabItem Header="🖥️ System">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                        <StackPanel MaxWidth="600">
+                            <TextBlock Text="SYSTEM INFORMATION" Style="{StaticResource SectionHeaderStyle}"/>
+                            
+                            <!-- System Info -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <TextBlock Text="ℹ️ SYSTEM INFORMATION" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <TextBlock Text="Software Version:" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Margin="0,0,10,5"/>
+                                        <TextBlock Text="v2.1.0" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5"/>
+                                        
+                                        <TextBlock Text="Database Version:" FontWeight="Bold" Grid.Row="1" Grid.Column="0" Margin="0,0,10,5"/>
+                                        <TextBlock x:Name="DatabaseVersionText" Text="Loading..." Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+                                        
+                                        <TextBlock Text="Last Backup:" FontWeight="Bold" Grid.Row="2" Grid.Column="0" Margin="0,0,10,5"/>
+                                        <TextBlock x:Name="LastBackupText" Text="Loading..." Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+                                        
+                                        <TextBlock Text="Total Records:" FontWeight="Bold" Grid.Row="3" Grid.Column="0" Margin="0,0,10,5"/>
+                                        <TextBlock x:Name="TotalRecordsText" Text="Loading..." Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
+                                        
+                                        <TextBlock Text="Disk Usage:" FontWeight="Bold" Grid.Row="4" Grid.Column="0" Margin="0,0,10,5"/>
+                                        <TextBlock x:Name="DiskUsageText" Text="Loading..." Grid.Row="4" Grid.Column="1" Margin="0,0,0,5"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- System Actions -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15">
+                                <StackPanel>
+                                    <TextBlock Text="🔧 SYSTEM ACTIONS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                        <Button Content="🔄 Restart Application" Padding="10,5" Margin="0,0,10,0" x:Name="RestartAppButton"/>
+                                        <Button Content="📊 System Diagnostics" Padding="10,5" x:Name="SystemDiagnosticsButton"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="🗑️ Clear Cache" Padding="10,5" Margin="0,0,10,0" x:Name="ClearCacheButton"/>
+                                        <Button Content="📋 Export Logs" Padding="10,5" x:Name="ExportLogsButton"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+            </TabControl>
+
             <!-- Action Buttons -->
-            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,0">
-                <Button Content="💾 SAVE SETTINGS" x:Name="SaveSettingsButton" 
-                        Style="{StaticResource SaveButtonStyle}" Click="SaveSettingsButton_Click"/>
-                <Button Content="🔄 RESET TO DEFAULT" x:Name="ResetSettingsButton" 
-                        Style="{StaticResource ResetButtonStyle}" Click="ResetSettingsButton_Click"/>
-                <Button Content="📋 EXPORT CONFIG" x:Name="ExportConfigButton" 
-                        Style="{StaticResource SaveButtonStyle}" Click="ExportConfigButton_Click"/>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,25,0,0">
+                <Button x:Name="SaveSettingsButton" Content="💾 SAVE SETTINGS (F2)" Style="{StaticResource SaveButtonStyle}"
+                        Click="SaveSettingsButton_Click"/>
+                <Button x:Name="CancelSettingsButton" Content="❌ CANCEL (ESC)" Style="{StaticResource CancelButtonStyle}"
+                        Click="CancelSettingsButton_Click"/>
             </StackPanel>
         </Grid>
     </Border>

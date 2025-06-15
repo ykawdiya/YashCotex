@@ -3,28 +3,75 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <UserControl.Resources>
-        <!-- Minimal Styles -->
+        <!-- Exit Form Styles -->
+        <Style x:Key="HeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#DC3545"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+        </Style>
+        
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+        
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Margin" Value="0,0,0,5"/>
             <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="FontSize" Value="13"/>
         </Style>
         
         <Style x:Key="FieldTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Padding" Value="8"/>
             <Setter Property="BorderBrush" Value="#CCC"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="35"/>
+        </Style>
+        
+        <Style x:Key="SearchBoxStyle" TargetType="TextBox" BasedOn="{StaticResource FieldTextBoxStyle}">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="BorderBrush" Value="#007BFF"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+        
+        <Style x:Key="ReadOnlyFieldStyle" TargetType="TextBox" BasedOn="{StaticResource FieldTextBoxStyle}">
+            <Setter Property="Background" Value="#F8F9FA"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#495057"/>
+        </Style>
+        
+        <Style x:Key="WeightDisplayStyle" TargetType="TextBox" BasedOn="{StaticResource ReadOnlyFieldStyle}">
+            <Setter Property="Background" Value="#1A1A1A"/>
+            <Setter Property="Foreground" Value="#00FF41"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Height" Value="40"/>
         </Style>
         
         <Style x:Key="ButtonStyle" TargetType="Button">
-            <Setter Property="Padding" Value="25,12"/>
-            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Margin" Value="8,0"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="40"/>
+        </Style>
+        
+        <Style x:Key="SearchButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="#007BFF"/>
+            <Setter Property="Foreground" Value="White"/>
         </Style>
         
         <Style x:Key="ExitButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
@@ -32,157 +79,193 @@
             <Setter Property="Foreground" Value="White"/>
         </Style>
         
-        <Style x:Key="SearchButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
-            <Setter Property="Background" Value="#007BFF"/>
+        <Style x:Key="PrintButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="#28A745"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
+        
+        <Style x:Key="CancelButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="#6C757D"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
+        <Style x:Key="WeightComparisonStyle" TargetType="Border">
+            <Setter Property="Background" Value="#E8F5E8"/>
+            <Setter Property="BorderBrush" Value="#28A745"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="0,10,0,0"/>
+        </Style>
     </UserControl.Resources>
-    
-    <Border Background="White" CornerRadius="10" Padding="30">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            
-            <!-- Header -->
-            <StackPanel Grid.Row="0" Margin="0,0,0,25">
-                <TextBlock Text="🚚 VEHICLE EXIT" FontSize="28" FontWeight="Bold" 
-                           HorizontalAlignment="Center" Foreground="#2C3E50"/>
-                <Rectangle Fill="#DC3545" Height="3" Width="150" HorizontalAlignment="Center" Margin="0,10,0,0"/>
-            </StackPanel>
-            
-            <!-- Content -->
-            <Grid Grid.Row="1" MaxWidth="700">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="20"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                
+
+    <Border Background="White" CornerRadius="10" Padding="30" Margin="20">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid MaxWidth="700">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>  <!-- Header -->
+                    <RowDefinition Height="Auto"/>  <!-- Search Section -->
+                    <RowDefinition Height="*"/>     <!-- Entry Details -->
+                    <RowDefinition Height="Auto"/>  <!-- Weight Comparison -->
+                    <RowDefinition Height="Auto"/>  <!-- Buttons -->
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="📤 VEHICLE EXIT" Style="{StaticResource HeaderStyle}"/>
+                    <Rectangle Fill="#DC3545" Height="3" Width="120" HorizontalAlignment="Center" Margin="0,0,0,25"/>
+                </StackPanel>
+
                 <!-- Search Section -->
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="🔍 SEARCH VEHICLE" FontSize="18" FontWeight="Bold" Margin="0,0,0,20" Foreground="#DC3545"/>
-                    
+                <Border Grid.Row="1" Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" 
+                        CornerRadius="8" Padding="20" Margin="0,0,0,20">
                     <StackPanel>
-                        <TextBlock Text="Vehicle Number *" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBlock Text="🔍 SEARCH ENTRY" Style="{StaticResource SectionHeaderStyle}"/>
+                        
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="15"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             
-                            <TextBox x:Name="SearchVehicleTextBox" Grid.Column="0"
-                                     Style="{StaticResource FieldTextBoxStyle}"
-                                     CharacterCasing="Upper" MaxLength="10"
-                                     TextChanged="SearchVehicleTextBox_TextChanged"/>
-                            <Button Grid.Column="2" Content="🔍 SEARCH" 
-                                    Style="{StaticResource SearchButtonStyle}"
-                                    Click="SearchButton_Click"/>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Enter RST Number, Vehicle Number, or Phone Number" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox x:Name="SearchTextBox" Style="{StaticResource SearchBoxStyle}"
+                                         TextChanged="SearchTextBox_TextChanged" 
+                                         KeyDown="SearchTextBox_KeyDown"/>
+                            </StackPanel>
+                            
+                            <Button Grid.Column="2" x:Name="SearchButton" Content="🔍 SEARCH" 
+                                    Style="{StaticResource SearchButtonStyle}" Click="SearchButton_Click"
+                                    VerticalAlignment="Bottom"/>
+                        </Grid>
+                        
+                        <TextBlock x:Name="SearchStatusText" Text="Enter search criteria to find pending entries" 
+                                   FontSize="11" Foreground="#6C757D" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Entry Details Section -->
+                <Border Grid.Row="2" x:Name="EntryDetailsPanel" Background="White" BorderBrush="#DEE2E6" 
+                        BorderThickness="1" CornerRadius="8" Padding="20" Visibility="Collapsed">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Left Column - Entry Information -->
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="📋 ENTRY DETAILS" Style="{StaticResource SectionHeaderStyle}"/>
+                            
+                            <TextBlock Text="RST Number" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="RstNumberTextBox" Style="{StaticResource ReadOnlyFieldStyle}"/>
+                            
+                            <TextBlock Text="Vehicle Number" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="VehicleNumberTextBox" Style="{StaticResource ReadOnlyFieldStyle}"/>
+                            
+                            <TextBlock Text="Customer Name" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="CustomerNameTextBox" Style="{StaticResource ReadOnlyFieldStyle}"/>
+                            
+                            <TextBlock Text="Phone Number" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="PhoneNumberTextBox" Style="{StaticResource ReadOnlyFieldStyle}"/>
+                            
+                            <TextBlock Text="Address" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="AddressTextBox" Style="{StaticResource ReadOnlyFieldStyle}"/>
+                            
+                            <TextBlock Text="Material" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="MaterialTextBox" Style="{StaticResource ReadOnlyFieldStyle}"/>
+                        </StackPanel>
+                        
+                        <!-- Right Column - Weight Information -->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="⚖️ WEIGHT INFORMATION" Style="{StaticResource SectionHeaderStyle}"/>
+                            
+                            <TextBlock Text="Entry Weight" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="EntryWeightTextBox" Style="{StaticResource ReadOnlyFieldStyle}"/>
+                            
+                            <TextBlock Text="Entry Date &amp; Time" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="EntryDateTimeTextBox" Style="{StaticResource ReadOnlyFieldStyle}"/>
+                            
+                            <TextBlock Text="Current Exit Weight (Auto-captured)" Style="{StaticResource FieldLabelStyle}" Margin="0,15,0,5"/>
+                            <TextBox x:Name="ExitWeightTextBox" Style="{StaticResource WeightDisplayStyle}"/>
+                            
+                            <TextBlock Text="Exit Date &amp; Time" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="ExitDateTimeTextBox" Style="{StaticResource ReadOnlyFieldStyle}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Weight Comparison Section -->
+                <Border Grid.Row="3" x:Name="WeightComparisonPanel" Style="{StaticResource WeightComparisonStyle}" 
+                        Visibility="Collapsed">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                            <TextBlock Text="GROSS WEIGHT" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="GrossWeightText" Text="0.00 KG" FontSize="18" FontWeight="Bold" 
+                                       Foreground="#2C3E50" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                            <TextBlock Text="TARE WEIGHT" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="TareWeightText" Text="0.00 KG" FontSize="18" FontWeight="Bold" 
+                                       Foreground="#6C757D" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                            <TextBlock Text="NET WEIGHT" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock x:Name="NetWeightText" Text="0.00 KG" FontSize="20" FontWeight="Bold" 
+                                       Foreground="#28A745" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Action Buttons -->
+                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,25,0,0">
+                    <Button x:Name="SaveExitButton" Content="📤 SAVE EXIT (F9)" Style="{StaticResource ExitButtonStyle}"
+                            Click="SaveExitButton_Click" IsEnabled="False"/>
+                    <Button x:Name="PrintSlipButton" Content="🖨️ PRINT SLIP (F11)" Style="{StaticResource PrintButtonStyle}"
+                            Click="PrintSlipButton_Click" IsEnabled="False"/>
+                    <Button x:Name="CancelButton" Content="❌ CANCEL (ESC)" Style="{StaticResource CancelButtonStyle}"
+                            Click="CancelButton_Click"/>
+                </StackPanel>
+
+                <!-- Status Information -->
+                <Border Grid.Row="4" Background="#E3F2FD" BorderBrush="#2196F3" BorderThickness="1" 
+                        CornerRadius="5" Padding="15" Margin="0,15,0,-5">
+                    <StackPanel>
+                        <TextBlock Text="📊 EXIT STATUS" FontSize="12" FontWeight="Bold" Margin="0,0,0,8"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Search Status:" FontWeight="Bold" FontSize="11"/>
+                            <TextBlock x:Name="FormStatusText" Grid.Row="0" Grid.Column="1" Text="Ready to Search" FontSize="11" Margin="5,0,0,0"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Weight Status:" FontWeight="Bold" FontSize="11"/>
+                            <TextBlock x:Name="WeightStatusText" Grid.Row="1" Grid.Column="1" Text="Waiting for Entry" FontSize="11" Margin="5,0,0,0"/>
+                            
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Exit Status:" FontWeight="Bold" FontSize="11"/>
+                            <TextBlock x:Name="ExitStatusText" Grid.Row="2" Grid.Column="1" Text="Ready for Exit" FontSize="11" Margin="5,0,0,0"/>
                         </Grid>
                     </StackPanel>
-                    
-                    <!-- Entry Details Display -->
-                    <Border x:Name="EntryDetailsPanel" Background="#F8F9FA" BorderBrush="#DEE2E6" 
-                            BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,20,0,0" Visibility="Collapsed">
-                        <StackPanel>
-                            <TextBlock Text="📋 ENTRY DETAILS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                            
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="RST No:" FontWeight="Bold"/>
-                                <TextBlock x:Name="EntryRstNumber" Grid.Row="0" Grid.Column="1" Text="-"/>
-                                
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Customer:" FontWeight="Bold"/>
-                                <TextBlock x:Name="EntryCustomer" Grid.Row="1" Grid.Column="1" Text="-"/>
-                                
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Phone:" FontWeight="Bold"/>
-                                <TextBlock x:Name="EntryPhone" Grid.Row="2" Grid.Column="1" Text="-"/>
-                                
-                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Material:" FontWeight="Bold"/>
-                                <TextBlock x:Name="EntryMaterial" Grid.Row="3" Grid.Column="1" Text="-"/>
-                                
-                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Entry Weight:" FontWeight="Bold"/>
-                                <TextBlock x:Name="EntryWeight" Grid.Row="4" Grid.Column="1" Text="-" Foreground="#28A745"/>
-                                
-                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Entry Time:" FontWeight="Bold"/>
-                                <TextBlock x:Name="EntryTime" Grid.Row="5" Grid.Column="1" Text="-"/>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
-                
-                <!-- Exit Weight Section -->
-                <StackPanel Grid.Column="2">
-                    <TextBlock Text="⚖️ EXIT WEIGHT" FontSize="18" FontWeight="Bold" Margin="0,0,0,20" Foreground="#DC3545"/>
-                    
-                    <!-- Current Weight Display -->
-                    <Border Background="#1A1A1A" BorderBrush="#DC3545" BorderThickness="2" 
-                            CornerRadius="8" Padding="20">
-                        <StackPanel HorizontalAlignment="Center">
-                            <TextBox x:Name="ExitWeightTextBox" 
-                                     IsReadOnly="True" Background="Transparent" BorderThickness="0"
-                                     FontWeight="Bold" FontSize="32" TextAlignment="Center"
-                                     Foreground="#00FF41" Text="0.00" FontFamily="Consolas"/>
-                            <TextBlock Text="KILOGRAMS" FontWeight="Bold" FontSize="12" 
-                                       Foreground="#888" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
-                    
-                    <!-- Weight Summary -->
-                    <Border x:Name="WeightSummaryPanel" Background="#FFF3CD" BorderBrush="#F0C649" 
-                            BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,20,0,0" Visibility="Collapsed">
-                        <StackPanel>
-                            <TextBlock Text="📊 WEIGHT SUMMARY" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                            
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="120"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Entry Weight:" FontWeight="Bold"/>
-                                <TextBlock x:Name="SummaryEntryWeight" Grid.Row="0" Grid.Column="1" Text="0.00 KG" Foreground="#28A745"/>
-                                
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Exit Weight:" FontWeight="Bold"/>
-                                <TextBlock x:Name="SummaryExitWeight" Grid.Row="1" Grid.Column="1" Text="0.00 KG" Foreground="#DC3545"/>
-                                
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Net Weight:" FontWeight="Bold"/>
-                                <TextBlock x:Name="SummaryNetWeight" Grid.Row="2" Grid.Column="1" Text="0.00 KG" Foreground="#007BFF" FontWeight="Bold"/>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
+                </Border>
             </Grid>
-            
-            <!-- Buttons -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,0">
-                <Button Content="🚚 COMPLETE EXIT" x:Name="ExitButton" 
-                        Style="{StaticResource ExitButtonStyle}"
-                        Click="ExitButton_Click" IsEnabled="False"/>
-                <Button Content="🔄 RESET" x:Name="ResetButton" 
-                        Style="{StaticResource SearchButtonStyle}"
-                        Click="ResetButton_Click"/>
-            </StackPanel>
-        </Grid>
+        </ScrollViewer>
     </Border>
 </UserControl>
