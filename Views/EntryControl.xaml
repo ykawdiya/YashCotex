@@ -3,36 +3,65 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <UserControl.Resources>
-        <!-- Minimal Styles -->
+        <!-- Entry Form Styles -->
+        <Style x:Key="HeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+        </Style>
+        
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Margin" Value="0,0,0,5"/>
             <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="FontSize" Value="13"/>
         </Style>
         
         <Style x:Key="FieldTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Padding" Value="8"/>
             <Setter Property="BorderBrush" Value="#CCC"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="35"/>
         </Style>
         
         <Style x:Key="FieldComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Padding" Value="8"/>
             <Setter Property="BorderBrush" Value="#CCC"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="35"/>
+        </Style>
+        
+        <Style x:Key="ReadOnlyFieldStyle" TargetType="TextBox" BasedOn="{StaticResource FieldTextBoxStyle}">
+            <Setter Property="Background" Value="#F8F9FA"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#495057"/>
+        </Style>
+        
+        <Style x:Key="WeightDisplayStyle" TargetType="TextBox" BasedOn="{StaticResource ReadOnlyFieldStyle}">
+            <Setter Property="Background" Value="#1A1A1A"/>
+            <Setter Property="Foreground" Value="#00FF41"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Height" Value="45"/>
         </Style>
         
         <Style x:Key="ButtonStyle" TargetType="Button">
-            <Setter Property="Padding" Value="25,12"/>
-            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Margin" Value="8,0"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="40"/>
         </Style>
         
         <Style x:Key="SaveButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
@@ -45,138 +74,136 @@
             <Setter Property="Foreground" Value="#212529"/>
         </Style>
         
+        <Style x:Key="CancelButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="#6C757D"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
         <Style x:Key="ErrorTextStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="Red"/>
+            <Setter Property="Foreground" Value="#DC3545"/>
             <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Margin" Value="0,-10,0,10"/>
+            <Setter Property="Margin" Value="0,-8,0,8"/>
         </Style>
     </UserControl.Resources>
-    
-    <Border Background="White" CornerRadius="10" Padding="30">
+
+    <Border Background="White" CornerRadius="10" Padding="30" Margin="20">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <Grid>
+            <Grid MaxWidth="600">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>  <!-- Header -->
+                    <RowDefinition Height="*"/>     <!-- Form Fields -->
+                    <RowDefinition Height="Auto"/>  <!-- Buttons -->
                 </Grid.RowDefinitions>
-                
+
                 <!-- Header -->
-                <StackPanel Grid.Row="0" Margin="0,0,0,25">
-                    <TextBlock Text="🚛 VEHICLE ENTRY" FontSize="28" FontWeight="Bold" 
-                               HorizontalAlignment="Center" Foreground="#2C3E50"/>
-                    <Rectangle Fill="#28A745" Height="3" Width="150" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="📥 VEHICLE ENTRY" Style="{StaticResource HeaderStyle}"/>
+                    <Rectangle Fill="#28A745" Height="3" Width="120" HorizontalAlignment="Center" Margin="0,0,0,20"/>
                 </StackPanel>
-                
+
                 <!-- Form Fields -->
-                <Grid Grid.Row="1" MaxWidth="600">
+                <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="15"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    
+
+                    <!-- Left Column -->
                     <StackPanel Grid.Column="0">
-                        <!-- RST and ID Row -->
-                        <Grid Margin="0,0,0,15">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="15"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="RST Number" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox x:Name="RstNumberTextBox" IsReadOnly="True" 
-                                         Style="{StaticResource FieldTextBoxStyle}"
-                                         Background="#F8F9FA"/>
-                            </StackPanel>
-                            
-                            <StackPanel Grid.Column="2">
-                                <TextBlock Text="Customer ID" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox x:Name="IdTextBox" IsReadOnly="True" 
-                                         Style="{StaticResource FieldTextBoxStyle}"
-                                         Background="#F8F9FA"/>
-                            </StackPanel>
-                        </Grid>
+                        <!-- RST Number (Auto-generated, Read-only) -->
+                        <TextBlock Text="RST Number *" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox x:Name="RstNumberTextBox" Style="{StaticResource ReadOnlyFieldStyle}" 
+                                 ToolTip="Auto-generated sequential number"/>
+                        
+                        <!-- ID (Auto-generated, Read-only) -->
+                        <TextBlock Text="Customer ID *" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox x:Name="CustomerIdTextBox" Style="{StaticResource ReadOnlyFieldStyle}" 
+                                 ToolTip="Auto-assigned per phone number"/>
                         
                         <!-- Vehicle Number -->
-                        <StackPanel>
-                            <TextBlock Text="Vehicle Number *" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="VehicleNumberTextBox" 
-                                     Style="{StaticResource FieldTextBoxStyle}"
-                                     CharacterCasing="Upper" MaxLength="10"
-                                     TextChanged="VehicleNumberTextBox_TextChanged"/>
-                            <TextBlock x:Name="VehicleNumberError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
-                        </StackPanel>
+                        <TextBlock Text="Vehicle Number * (9-10 characters)" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox x:Name="VehicleNumberTextBox" Style="{StaticResource FieldTextBoxStyle}"
+                                 MaxLength="10" CharacterCasing="Upper"
+                                 TextChanged="VehicleNumberTextBox_TextChanged"/>
+                        <TextBlock x:Name="VehicleNumberError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
                         
                         <!-- Phone Number -->
-                        <StackPanel>
-                            <TextBlock Text="Phone Number *" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="PhoneNumberTextBox" 
-                                     Style="{StaticResource FieldTextBoxStyle}"
-                                     MaxLength="10"
-                                     TextChanged="PhoneNumberTextBox_TextChanged"
-                                     PreviewTextInput="PhoneNumberTextBox_PreviewTextInput"/>
-                            <TextBlock x:Name="PhoneNumberError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
-                        </StackPanel>
+                        <TextBlock Text="Phone Number * (10 digits only)" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox x:Name="PhoneNumberTextBox" Style="{StaticResource FieldTextBoxStyle}"
+                                 MaxLength="10" TextChanged="PhoneNumberTextBox_TextChanged"/>
+                        <TextBlock x:Name="PhoneNumberError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
                         
-                        <!-- Name -->
-                        <StackPanel>
-                            <TextBlock Text="Customer Name *" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="NameTextBox" 
-                                     Style="{StaticResource FieldTextBoxStyle}"
-                                     TextChanged="NameTextBox_TextChanged"/>
-                            <TextBlock x:Name="NameError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
-                        </StackPanel>
+                        <!-- Name (Auto-complete if exists) -->
+                        <TextBlock Text="Customer Name * (Title Case)" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox x:Name="NameTextBox" Style="{StaticResource FieldTextBoxStyle}"
+                                 TextChanged="NameTextBox_TextChanged"/>
+                        <TextBlock x:Name="NameError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
                     </StackPanel>
-                    
+
+                    <!-- Right Column -->
                     <StackPanel Grid.Column="2">
-                        <!-- Address -->
-                        <StackPanel>
-                            <TextBlock Text="Address *" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="AddressTextBox" 
-                                     Style="{StaticResource FieldTextBoxStyle}"
-                                     TextChanged="AddressTextBox_TextChanged"/>
-                            <TextBlock x:Name="AddressError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
-                        </StackPanel>
+                        <!-- Address (Dropdown, Title Case) -->
+                        <TextBlock Text="Address * (Title Case)" Style="{StaticResource FieldLabelStyle}"/>
+                        <ComboBox x:Name="AddressComboBox" Style="{StaticResource FieldComboBoxStyle}"
+                                  IsEditable="True" SelectionChanged="AddressComboBox_SelectionChanged"/>
+                        <TextBlock x:Name="AddressError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
                         
-                        <!-- Material -->
-                        <StackPanel>
-                            <TextBlock Text="Material *" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="MaterialComboBox" 
-                                      Style="{StaticResource FieldComboBoxStyle}"
-                                      SelectionChanged="MaterialComboBox_SelectionChanged"/>
-                            <TextBlock x:Name="MaterialError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
-                        </StackPanel>
+                        <!-- Material (Dropdown, No manual input) -->
+                        <TextBlock Text="Material * (Select from list)" Style="{StaticResource FieldLabelStyle}"/>
+                        <ComboBox x:Name="MaterialComboBox" Style="{StaticResource FieldComboBoxStyle}"
+                                  IsEditable="False" SelectionChanged="MaterialComboBox_SelectionChanged"/>
+                        <TextBlock x:Name="MaterialError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
                         
-                        <!-- Weight Display -->
-                        <StackPanel>
-                            <TextBlock Text="Entry Weight" Style="{StaticResource FieldLabelStyle}"/>
-                            <Border Background="#1A1A1A" BorderBrush="#28A745" BorderThickness="2" 
-                                    CornerRadius="8" Padding="20" HorizontalAlignment="Stretch">
-                                <StackPanel HorizontalAlignment="Center">
-                                    <TextBox x:Name="WeightTextBox" 
-                                             IsReadOnly="True" Background="Transparent" BorderThickness="0"
-                                             FontWeight="Bold" FontSize="24" TextAlignment="Center"
-                                             Foreground="#00FF41" Text="0.00" FontFamily="Consolas"/>
-                                    <TextBlock Text="KILOGRAMS" FontWeight="Bold" FontSize="12" 
-                                               Foreground="#888" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
+                        <!-- Weight (Auto-captured when form opens) -->
+                        <TextBlock Text="Entry Weight * (Auto-captured)" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox x:Name="WeightTextBox" Style="{StaticResource WeightDisplayStyle}" 
+                                 ToolTip="Weight captured automatically when entry button clicked"/>
+                        
+                        <!-- Date & Time (Auto-filled, Read-only) -->
+                        <TextBlock Text="Entry Date &amp; Time *" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox x:Name="DateTimeTextBox" Style="{StaticResource ReadOnlyFieldStyle}" 
+                                 ToolTip="Auto-filled with current date and time"/>
                     </StackPanel>
                 </Grid>
-                
+
                 <!-- Buttons -->
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,0">
-                    <Button Content="💾 SAVE ENTRY" x:Name="SaveButton" 
-                            Style="{StaticResource SaveButtonStyle}"
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                    <Button x:Name="SaveButton" Content="💾 SAVE ENTRY (F9)" Style="{StaticResource SaveButtonStyle}"
                             Click="SaveButton_Click" IsEnabled="False"/>
-                    <Button Content="🗑️ CLEAR FORM" x:Name="ClearButton" 
-                            Style="{StaticResource ClearButtonStyle}"
+                    <Button x:Name="ClearButton" Content="🔄 CLEAR (F10)" Style="{StaticResource ClearButtonStyle}"
                             Click="ClearButton_Click"/>
+                    <Button x:Name="CancelButton" Content="❌ CANCEL (ESC)" Style="{StaticResource CancelButtonStyle}"
+                            Click="CancelButton_Click"/>
                 </StackPanel>
+
+                <!-- Status Information -->
+                <Border Grid.Row="2" Background="#E3F2FD" BorderBrush="#2196F3" BorderThickness="1" 
+                        CornerRadius="5" Padding="15" Margin="0,10,0,-5">
+                    <StackPanel>
+                        <TextBlock Text="📋 ENTRY STATUS" FontSize="12" FontWeight="Bold" Margin="0,0,0,8"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Form Status:" FontWeight="Bold" FontSize="11"/>
+                            <TextBlock x:Name="FormStatusText" Grid.Row="0" Grid.Column="1" Text="Ready for Input" FontSize="11" Margin="5,0,0,0"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Weight Status:" FontWeight="Bold" FontSize="11"/>
+                            <TextBlock x:Name="WeightStatusText" Grid.Row="1" Grid.Column="1" Text="Weight Captured" FontSize="11" Margin="5,0,0,0"/>
+                            
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Validation:" FontWeight="Bold" FontSize="11"/>
+                            <TextBlock x:Name="ValidationStatusText" Grid.Row="2" Grid.Column="1" Text="Pending Input" FontSize="11" Margin="5,0,0,0"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
             </Grid>
         </ScrollViewer>
     </Border>

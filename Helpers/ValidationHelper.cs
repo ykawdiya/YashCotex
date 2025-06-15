@@ -259,6 +259,62 @@ public static class ValidationHelper
         
         return string.Empty;
     }
+    
+    // Additional methods needed by EntryControl
+    public static bool ValidateVehicleNumber(string vehicleNumber, out string error)
+    {
+        var result = ValidateVehicleNumber(vehicleNumber);
+        error = result.Message;
+        return result.IsValid;
+    }
+    
+    public static bool ValidatePhoneNumber(string phoneNumber, out string error)
+    {
+        var result = ValidatePhoneNumber(phoneNumber);
+        error = result.Message;
+        return result.IsValid;
+    }
+    
+    public static bool ValidateName(string name, out string error)
+    {
+        var result = ValidateName(name);
+        error = result.Message;
+        return result.IsValid;
+    }
+    
+    public static bool ValidateAddress(string address, out string error)
+    {
+        var result = ValidateAddress(address);
+        error = result.Message;
+        return result.IsValid;
+    }
+    
+    
+    public static string FormatToTitleCase(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return string.Empty;
+        
+        var words = input.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        
+        // Title case each word
+        for (int i = 0; i < words.Length; i++)
+        {
+            if (words[i].Length > 0)
+            {
+                words[i] = char.ToUpper(words[i][0]) + (words[i].Length > 1 ? words[i][1..].ToLower() : "");
+            }
+        }
+        
+        return string.Join(" ", words);
+    }
+    
+    public static string GenerateUniqueId(string phoneNumber, string name, string address)
+    {
+        // Generate unique ID based on phone number + name + address combination
+        var combinedString = $"{phoneNumber}{name}{address}".ToLower().Replace(" ", "");
+        var hash = combinedString.GetHashCode();
+        return Math.Abs(hash).ToString();
+    }
 }
 
 public class ValidationResult

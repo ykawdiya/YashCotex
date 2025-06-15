@@ -25,6 +25,12 @@ namespace WeighbridgeSoftwareYashCotex.Views
             InitializeComponent();
             _databaseService = new DatabaseService();
             
+            // Load data after control is fully loaded
+            this.Loaded += PrintControl_Loaded;
+        }
+        
+        private void PrintControl_Loaded(object sender, RoutedEventArgs e)
+        {
             LoadInitialData();
         }
 
@@ -34,12 +40,15 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 // Load materials for filter
                 var materials = _databaseService.GetMaterials();
-                MaterialFilterComboBox.ItemsSource = materials;
+                if (MaterialFilterComboBox != null)
+                {
+                    MaterialFilterComboBox.ItemsSource = materials;
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading data: {ex.Message}", "Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                // Log error but don't show MessageBox during initialization
+                System.Diagnostics.Debug.WriteLine($"Error loading initial data: {ex.Message}");
             }
         }
 
