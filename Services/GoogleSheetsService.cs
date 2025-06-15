@@ -62,10 +62,22 @@ namespace WeighbridgeSoftwareYashCotex.Services
                 
                 return true;
             }
+            catch (Google.GoogleApiException gex)
+            {
+                var fullMessage = $"Google API error ({gex.HttpStatusCode}): {gex.Message}";
+                if (gex.Error != null)
+                {
+                    fullMessage += $"\nDetails: {gex.Error.Message}";
+                }
+
+                _isConfigured = false;
+                SyncStatusChanged?.Invoke(this, fullMessage);
+                return false;
+            }
             catch (Exception ex)
             {
                 _isConfigured = false;
-                SyncStatusChanged?.Invoke(this, $"Configuration failed: {ex.Message}");
+                SyncStatusChanged?.Invoke(this, $"Unknown error: {ex.Message}");
                 return false;
             }
         }
