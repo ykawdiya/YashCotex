@@ -11,6 +11,7 @@ using Microsoft.Win32;
 using WeighbridgeSoftwareYashCotex.Services;
 using WeighbridgeSoftwareYashCotex.Models;
 using Models = WeighbridgeSoftwareYashCotex.Models;
+using Newtonsoft.Json;
 
 namespace WeighbridgeSoftwareYashCotex.Views
 {
@@ -343,27 +344,27 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         private void ResetCompanyInfoTab()
         {
-            CompanyNameTextBox.Text = "YASH COTEX PRIVATE LIMITED";
-            AddressLine1TextBox.Text = "Industrial Area, Phase 1, Sector 58";
-            AddressLine2TextBox.Text = "Mohali, Punjab - 160059";
-            CompanyEmailTextBox.Text = "info@yashcotex.com";
-            CompanyPhoneTextBox.Text = "+91-9876543210";
-            GstNumberTextBox.Text = "22AAAAA0000A1Z5";
+            CompanyNameTextBox.Text = "YASH COTEX";
+            AddressLine1TextBox.Text = "Survey Number 20, Pahur Road, Takli Budruk, Jamner";
+            AddressLine2TextBox.Text = "District: Jalgaon, State: Maharashtra, PIN: 424206";
+            CompanyEmailTextBox.Text = "accounts@yashcotex.com";
+            CompanyPhoneTextBox.Text = "9764493781";
+            GstNumberTextBox.Text = "27AAFFD7766F1Z7";
         }
 
         private void ResetHardwareTab()
         {
-            MaxCapacityTextBox.Text = "50000";
+            MaxCapacityTextBox.Text = "60000";
             BaudRateComboBox.SelectedIndex = 0;
             ScaleComPortComboBox.SelectedIndex = 0;
         }
 
         private void ResetCamerasTab()
         {
-            Camera1IpTextBox.Text = "192.168.1.101";
-            Camera2IpTextBox.Text = "192.168.1.102";
-            Camera3IpTextBox.Text = "192.168.1.103";
-            Camera4IpTextBox.Text = "192.168.1.104";
+            Camera1IpTextBox.Text = "192.168.0.111";
+            Camera2IpTextBox.Text = "192.168.0.111";
+            Camera3IpTextBox.Text = "192.168.0.111";
+            Camera4IpTextBox.Text = "192.168.0.111";
             Camera1EnabledCheckBox.IsChecked = true;
             Camera2EnabledCheckBox.IsChecked = true;
             Camera3EnabledCheckBox.IsChecked = true;
@@ -2518,6 +2519,18 @@ namespace WeighbridgeSoftwareYashCotex.Views
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error during cleanup: {ex.Message}");
+            }
+        }
+        
+        public void SaveSettings()
+        {
+            try
+            {
+                _settingsService.SaveSettings(); // ✅ Calls the actual logic in SettingsService
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Settings save failed: " + ex.Message);
             }
         }
     }
