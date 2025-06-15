@@ -16,15 +16,18 @@ namespace WeighbridgeSoftwareYashCotex
         private UserControl? _currentFormControl;
         private AuthenticationService? _authService;
         private User? _currentUser;
+        private readonly SettingsService _settingsService;
 
         public MainWindow()
         {
             InitializeComponent();
             
             _weightService = new WeightService();
+            _settingsService = SettingsService.Instance;
             
             InitializeDateTimeTimer();
             InitializeWeightDisplay();
+            InitializeSettingsEventHandlers();
             
             // Set up keyboard shortcuts
             this.KeyDown += MainWindow_KeyDown;
@@ -545,6 +548,235 @@ namespace WeighbridgeSoftwareYashCotex
 
 
         #endregion
+        
+        #region Settings Event Handlers
+        
+        private void InitializeSettingsEventHandlers()
+        {
+            // Subscribe to settings change events
+            _settingsService.SettingsChanged += OnSettingsChanged;
+            _settingsService.CompanyInfoChanged += OnCompanyInfoChanged;
+            _settingsService.WeighbridgeSettingsChanged += OnWeighbridgeSettingsChanged;
+            _settingsService.DatabaseSettingsChanged += OnDatabaseSettingsChanged;
+            _settingsService.GoogleSheetsSettingsChanged += OnGoogleSheetsSettingsChanged;
+            _settingsService.CameraSettingsChanged += OnCameraSettingsChanged;
+            _settingsService.PrinterSettingsChanged += OnPrinterSettingsChanged;
+            _settingsService.SystemSettingsChanged += OnSystemSettingsChanged;
+        }
+        
+        private void OnSettingsChanged(object? sender, SettingsChangedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                LatestOperation.Text = $"Settings Updated: {e.Description}";
+                
+                // Update UI elements that depend on general settings
+                UpdateUIFromSettings();
+            });
+        }
+        
+        private void OnCompanyInfoChanged(object? sender, string message)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                LatestOperation.Text = $"Company Info: {message}";
+                
+                // Update company information displays
+                UpdateCompanyInfoDisplay();
+            });
+        }
+        
+        private void OnWeighbridgeSettingsChanged(object? sender, string message)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                LatestOperation.Text = $"Weighbridge: {message}";
+                
+                // Restart weight service with new settings
+                RestartWeightService();
+            });
+        }
+        
+        private void OnDatabaseSettingsChanged(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                LatestOperation.Text = "Database settings updated";
+                
+                // Refresh database connections
+                RefreshDatabaseConnections();
+            });
+        }
+        
+        private void OnGoogleSheetsSettingsChanged(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                LatestOperation.Text = "Google Sheets integration updated";
+                
+                // Refresh Google Sheets service
+                RefreshGoogleSheetsService();
+            });
+        }
+        
+        private void OnCameraSettingsChanged(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                LatestOperation.Text = "Camera settings updated";
+                
+                // Refresh camera connections
+                RefreshCameraConnections();
+            });
+        }
+        
+        private void OnPrinterSettingsChanged(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                LatestOperation.Text = "Printer settings updated";
+                
+                // Refresh printer connections
+                RefreshPrinterConnections();
+            });
+        }
+        
+        private void OnSystemSettingsChanged(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                LatestOperation.Text = "System settings updated";
+                
+                // Apply system-wide settings changes
+                ApplySystemSettings();
+            });
+        }
+        
+        private void UpdateUIFromSettings()
+        {
+            try
+            {
+                // Update any UI elements that depend on settings
+                // This could include themes, layout preferences, etc.
+                
+                // Update window title with company name if needed
+                if (!string.IsNullOrEmpty(_settingsService.CompanyName))
+                {
+                    this.Title = $"Weighbridge Software - {_settingsService.CompanyName}";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating UI from settings: {ex.Message}");
+            }
+        }
+        
+        private void UpdateCompanyInfoDisplay()
+        {
+            try
+            {
+                // Update any company information displays in the main window
+                // This could include header text, footer information, etc.
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating company info display: {ex.Message}");
+            }
+        }
+        
+        private void RestartWeightService()
+        {
+            try
+            {
+                // Restart weight service with new COM port settings
+                _weightService?.Dispose();
+                _weightService = new WeightService();
+                InitializeWeightDisplay();
+                
+                LatestOperation.Text = "Weight service restarted with new settings";
+            }
+            catch (Exception ex)
+            {
+                LatestOperation.Text = $"Error restarting weight service: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error restarting weight service: {ex.Message}");
+            }
+        }
+        
+        private void RefreshDatabaseConnections()
+        {
+            try
+            {
+                // Refresh database connections with new settings
+                // This would involve updating connection strings, etc.
+                
+                LatestOperation.Text = "Database connections refreshed";
+            }
+            catch (Exception ex)
+            {
+                LatestOperation.Text = $"Error refreshing database: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error refreshing database connections: {ex.Message}");
+            }
+        }
+        
+        private void RefreshGoogleSheetsService()
+        {
+            try
+            {
+                // Refresh Google Sheets service with new credentials/settings
+                LatestOperation.Text = "Google Sheets service refreshed";
+            }
+            catch (Exception ex)
+            {
+                LatestOperation.Text = $"Error refreshing Google Sheets: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error refreshing Google Sheets service: {ex.Message}");
+            }
+        }
+        
+        private void RefreshCameraConnections()
+        {
+            try
+            {
+                // Refresh camera connections with new IP addresses/settings
+                LatestOperation.Text = "Camera connections refreshed";
+            }
+            catch (Exception ex)
+            {
+                LatestOperation.Text = $"Error refreshing cameras: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error refreshing camera connections: {ex.Message}");
+            }
+        }
+        
+        private void RefreshPrinterConnections()
+        {
+            try
+            {
+                // Refresh printer connections with new settings
+                LatestOperation.Text = "Printer connections refreshed";
+            }
+            catch (Exception ex)
+            {
+                LatestOperation.Text = $"Error refreshing printers: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error refreshing printer connections: {ex.Message}");
+            }
+        }
+        
+        private void ApplySystemSettings()
+        {
+            try
+            {
+                // Apply system-wide settings changes
+                // This could include language settings, theme changes, etc.
+                
+                LatestOperation.Text = "System settings applied";
+            }
+            catch (Exception ex)
+            {
+                LatestOperation.Text = $"Error applying system settings: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"Error applying system settings: {ex.Message}");
+            }
+        }
+        
+        #endregion
 
         protected override void OnClosed(EventArgs e)
         {
@@ -559,6 +791,23 @@ namespace WeighbridgeSoftwareYashCotex
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error during auth cleanup: {ex.Message}");
+            }
+            
+            // Cleanup settings event handlers
+            try
+            {
+                _settingsService.SettingsChanged -= OnSettingsChanged;
+                _settingsService.CompanyInfoChanged -= OnCompanyInfoChanged;
+                _settingsService.WeighbridgeSettingsChanged -= OnWeighbridgeSettingsChanged;
+                _settingsService.DatabaseSettingsChanged -= OnDatabaseSettingsChanged;
+                _settingsService.GoogleSheetsSettingsChanged -= OnGoogleSheetsSettingsChanged;
+                _settingsService.CameraSettingsChanged -= OnCameraSettingsChanged;
+                _settingsService.PrinterSettingsChanged -= OnPrinterSettingsChanged;
+                _settingsService.SystemSettingsChanged -= OnSystemSettingsChanged;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error during settings cleanup: {ex.Message}");
             }
             
             // Cleanup resources

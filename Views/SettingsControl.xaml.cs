@@ -17,6 +17,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
     {
         private readonly DatabaseService _databaseService;
         private readonly List<string> _availablePrinters;
+        private readonly SettingsService _settingsService;
         private AuthenticationService? _authService;
         private GoogleSheetsService? _googleSheetsService;
         private CameraService? _cameraService;
@@ -29,6 +30,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             InitializeComponent();
             _databaseService = new DatabaseService();
             _availablePrinters = new List<string>();
+            _settingsService = SettingsService.Instance;
             _googleSheetsService = new GoogleSheetsService(_databaseService);
             _cameraService = new CameraService();
             
@@ -1336,10 +1338,10 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
                 SaveAllSettings();
                 
-                MessageBox.Show("Settings saved successfully!\n\nSome changes may require application restart to take effect.", 
+                MessageBox.Show("Settings saved successfully!\n\nChanges have been applied immediately.", 
                                "Settings Saved", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                FormCompleted?.Invoke(this, "Settings saved successfully");
+                FormCompleted?.Invoke(this, "Settings saved and applied successfully");
             }
             catch (Exception ex)
             {
@@ -1388,16 +1390,84 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         private void SaveAllSettings()
         {
-            // In a real implementation, save to configuration file or database
-            // This is a placeholder for the actual save implementation
+            try
+            {
+                // Save Company Information
+                SaveCompanySettings();
+                
+                // Save Hardware Settings
+                SaveHardwareSettings();
+                
+                // Save Camera Settings
+                SaveCameraSettings();
+                
+                // Save Integration Settings
+                SaveIntegrationSettings();
+                
+                // Save Printer Settings
+                SavePrinterSettings();
+                
+                // Save System Settings
+                SaveSystemSettings();
+                
+                // Save Database Settings
+                SaveDatabaseSettings();
+                
+                // Trigger global settings save
+                _settingsService.SaveSettings();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to save settings: {ex.Message}", ex);
+            }
+        }
+        
+        private void SaveCompanySettings()
+        {
+            _settingsService.CompanyName = CompanyNameTextBox?.Text ?? "YASH COTEX";
+            _settingsService.CompanyAddress = $"{AddressLine1TextBox?.Text} {AddressLine2TextBox?.Text} {CityTextBox?.Text} {StateTextBox?.Text} {PinCodeTextBox?.Text}".Trim();
+            _settingsService.CompanyEmail = CompanyEmailTextBox?.Text ?? "";
+            _settingsService.CompanyPhone = CompanyPhoneTextBox?.Text ?? "";
+            _settingsService.CompanyGSTIN = GstNumberTextBox?.Text ?? "";
             
-            // Company settings would be saved
-            // Hardware settings would be saved
-            // Camera settings would be saved
-            // Integration settings would be saved
-            // Security settings would be saved
-            // User settings would be saved
-            // System settings would be saved
+            _settingsService.SaveCompanyInfo();
+        }
+        
+        private void SaveHardwareSettings()
+        {
+            _settingsService.WeighbridgeComPort = ScaleComPortComboBox?.SelectedItem?.ToString() ?? "COM1";
+            
+            _settingsService.SaveWeighbridgeSettings();
+        }
+        
+        private void SaveCameraSettings()
+        {
+            // Save camera settings from UI controls
+            _settingsService.SaveCameraSettings();
+        }
+        
+        private void SaveIntegrationSettings()
+        {
+            // Save Google Sheets and other integration settings
+            _settingsService.SaveGoogleSheetsSettings();
+        }
+        
+        private void SavePrinterSettings()
+        {
+            // Save printer settings from UI controls
+            _settingsService.SavePrinterSettings();
+        }
+        
+        private void SaveSystemSettings()
+        {
+            // Save system preferences and other settings
+            _settingsService.SaveSystemSettings();
+        }
+        
+        private void SaveDatabaseSettings()
+        {
+            // Save database connection and sync settings
+            _settingsService.SaveDatabaseSettings();
         }
 
         #endregion

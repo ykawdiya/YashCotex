@@ -16,6 +16,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
     {
         private readonly DatabaseService _databaseService;
         private readonly WeightService _weightService;
+        private readonly SettingsService _settingsService;
         private double _capturedWeight;
         
         public event EventHandler<string>? FormCompleted;
@@ -25,6 +26,11 @@ namespace WeighbridgeSoftwareYashCotex.Views
             InitializeComponent();
             _databaseService = new DatabaseService();
             _weightService = new WeightService();
+            _settingsService = SettingsService.Instance;
+            
+            // Subscribe to settings changes that affect entry form
+            _settingsService.CompanyInfoChanged += OnCompanyInfoChanged;
+            _settingsService.WeighbridgeSettingsChanged += OnWeighbridgeSettingsChanged;
             
             this.Loaded += EntryControl_Loaded;
             this.KeyDown += EntryControl_KeyDown;
@@ -650,12 +656,47 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             try
             {
+                // Unsubscribe from settings events
+                _settingsService.CompanyInfoChanged -= OnCompanyInfoChanged;
+                _settingsService.WeighbridgeSettingsChanged -= OnWeighbridgeSettingsChanged;
+                
                 _databaseService?.Dispose();
                 _weightService?.Dispose();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error during cleanup: {ex.Message}");
+            }
+        }
+        
+        private void OnCompanyInfoChanged(object? sender, string message)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                // Refresh company-related data if needed
+                LoadCompanyData();
+            });
+        }
+        
+        private void OnWeighbridgeSettingsChanged(object? sender, string message)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                // Recapture weight with new settings
+                CaptureCurrentWeight();
+            });
+        }
+        
+        private void LoadCompanyData()
+        {
+            try
+            {
+                // Update any company-related fields in the entry form
+                // This could include updating default values, validation rules, etc.
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading company data: {ex.Message}");
             }
         }
     }

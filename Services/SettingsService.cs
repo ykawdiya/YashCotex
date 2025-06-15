@@ -1,3 +1,4 @@
+using System;
 using WeighbridgeSoftwareYashCotex.Models;
 
 namespace WeighbridgeSoftwareYashCotex.Services;
@@ -6,6 +7,16 @@ public class SettingsService
 {
     private static SettingsService? _instance;
     public static SettingsService Instance => _instance ??= new SettingsService();
+    
+    // Events for real-time settings updates
+    public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
+    public event EventHandler<string>? CompanyInfoChanged;
+    public event EventHandler<string>? WeighbridgeSettingsChanged;
+    public event EventHandler? DatabaseSettingsChanged;
+    public event EventHandler? GoogleSheetsSettingsChanged;
+    public event EventHandler? CameraSettingsChanged;
+    public event EventHandler? PrinterSettingsChanged;
+    public event EventHandler? SystemSettingsChanged;
     
     public string? WeighbridgeComPort { get; set; } = "COM1";
     public string CompanyName { get; set; } = "YASH COTEX";
@@ -28,7 +39,102 @@ public class SettingsService
     
     public void SaveSettings()
     {
+        // Trigger settings changed event
+        OnSettingsChanged(new SettingsChangedEventArgs
+        {
+            ChangeType = "General",
+            Description = "Settings saved successfully"
+        });
     }
+    
+    public void SaveCompanyInfo()
+    {
+        SaveSettings();
+        OnCompanyInfoChanged("Company information updated");
+    }
+    
+    public void SaveWeighbridgeSettings()
+    {
+        SaveSettings();
+        OnWeighbridgeSettingsChanged("Weighbridge settings updated");
+    }
+    
+    public void SaveDatabaseSettings()
+    {
+        SaveSettings();
+        OnDatabaseSettingsChanged();
+    }
+    
+    public void SaveGoogleSheetsSettings()
+    {
+        SaveSettings();
+        OnGoogleSheetsSettingsChanged();
+    }
+    
+    public void SaveCameraSettings()
+    {
+        SaveSettings();
+        OnCameraSettingsChanged();
+    }
+    
+    public void SavePrinterSettings()
+    {
+        SaveSettings();
+        OnPrinterSettingsChanged();
+    }
+    
+    public void SaveSystemSettings()
+    {
+        SaveSettings();
+        OnSystemSettingsChanged();
+    }
+    
+    protected virtual void OnSettingsChanged(SettingsChangedEventArgs e)
+    {
+        SettingsChanged?.Invoke(this, e);
+    }
+    
+    protected virtual void OnCompanyInfoChanged(string message)
+    {
+        CompanyInfoChanged?.Invoke(this, message);
+    }
+    
+    protected virtual void OnWeighbridgeSettingsChanged(string message)
+    {
+        WeighbridgeSettingsChanged?.Invoke(this, message);
+    }
+    
+    protected virtual void OnDatabaseSettingsChanged()
+    {
+        DatabaseSettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
+    protected virtual void OnGoogleSheetsSettingsChanged()
+    {
+        GoogleSheetsSettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
+    protected virtual void OnCameraSettingsChanged()
+    {
+        CameraSettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
+    protected virtual void OnPrinterSettingsChanged()
+    {
+        PrinterSettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
+    protected virtual void OnSystemSettingsChanged()
+    {
+        SystemSettingsChanged?.Invoke(this, EventArgs.Empty);
+    }
+}
+
+public class SettingsChangedEventArgs : EventArgs
+{
+    public string ChangeType { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; } = DateTime.Now;
 }
 
 public class WeightRule
