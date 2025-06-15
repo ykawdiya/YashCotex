@@ -64,11 +64,6 @@ namespace WeighbridgeSoftwareYashCotex
                     
                     LatestOperation.Text = $"Welcome, {_currentUser.FullName}! ({_currentUser.Role})";
                     
-                    // Check if Super Admin needs to set up 2FA
-                    if (_currentUser.Role == UserRole.SuperAdmin)
-                    {
-                        await CheckAndPromptTwoFactorSetup();
-                    }
                 }
                 else
                 {
@@ -548,70 +543,6 @@ namespace WeighbridgeSoftwareYashCotex
             });
         }
 
-        private async System.Threading.Tasks.Task CheckAndPromptTwoFactorSetup()
-        {
-            try
-            {
-                if (_authService == null || _currentUser == null) return;
-                
-                // Check if 2FA is already enabled
-                var status = await _authService.GetTwoFactorStatusAsync(_currentUser.Username);
-                
-                if (!status.IsEnabled)
-                {
-                    // Show 2FA setup prompt
-                    var result = MessageBox.Show(
-                        "🔐 ENHANCED SECURITY RECOMMENDED\n\n" +
-                        "Two-Factor Authentication (2FA) is not enabled for your Super Admin account.\n\n" +
-                        "For enhanced security, we strongly recommend enabling 2FA to protect:\n" +
-                        "• Weight modification operations\n" +
-                        "• Administrative functions\n" +
-                        "• Sensitive system settings\n\n" +
-                        "Would you like to set up 2FA now?\n\n" +
-                        "(You can also set it up later from Settings → Admin Tools)",
-                        "Setup Two-Factor Authentication",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Information);
-
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        // Open 2FA setup window
-                        var setupWindow = new Views.TwoFactorSetupWindow(_currentUser.Username);
-                        setupWindow.Owner = this;
-                        setupWindow.ShowDialog();
-
-                        if (setupWindow.SetupCompleted)
-                        {
-                            MessageBox.Show(
-                                "🔐 Two-Factor Authentication Enabled!\n\n" +
-                                $"✅ Method: {setupWindow.EnabledMethod}\n" +
-                                "✅ Your account is now more secure\n" +
-                                "✅ Backup codes have been generated\n\n" +
-                                "You will need verification codes for future logins and sensitive operations.",
-                                "2FA Setup Complete",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Information);
-                        }
-                    }
-                    else
-                    {
-                        // Show reminder about 2FA importance
-                        MessageBox.Show(
-                            "⚠️ Security Reminder\n\n" +
-                            "Two-Factor Authentication can be enabled anytime from:\n" +
-                            "Settings → Admin Tools → Security Management\n\n" +
-                            "We recommend enabling 2FA for maximum account security.",
-                            "2FA Setup Reminder",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error checking 2FA setup: {ex.Message}");
-            }
-        }
 
         #endregion
 

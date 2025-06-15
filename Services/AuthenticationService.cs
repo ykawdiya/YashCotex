@@ -39,6 +39,7 @@ namespace WeighbridgeSoftwareYashCotex.Services
             _privilegeTimers = new Dictionary<int, System.Timers.Timer>();
             _escalatedPrivileges = new Dictionary<int, UserRole>();
             
+            
             InitializeDefaultUsers();
         }
 
@@ -54,7 +55,6 @@ namespace WeighbridgeSoftwareYashCotex.Services
                     FullName = "System Administrator",
                     Role = UserRole.SuperAdmin,
                     Email = "admin@yashcotex.com",
-                    IsTwoFactorEnabled = true,
                     IsActive = true,
                     CreatedDate = DateTime.Now.AddDays(-30)
                 },
@@ -155,41 +155,6 @@ namespace WeighbridgeSoftwareYashCotex.Services
                     };
                 }
 
-                // Check 2FA for Super Admin - only if 2FA is actually set up
-                if (user.Role == UserRole.SuperAdmin)
-                {
-                    // Check if 2FA is actually configured
-                    var twoFactorStatus = GetTwoFactorStatusAsync(user.Username).Result;
-                    
-                    if (twoFactorStatus.IsEnabled)
-                    {
-                        if (string.IsNullOrEmpty(request.TwoFactorCode))
-                        {
-                            return new LoginResult
-                            {
-                                IsSuccess = false,
-                                RequiresTwoFactor = true,
-                                Message = "Two-factor authentication required",
-                                User = user
-                            };
-                        }
-
-                        if (!VerifyTwoFactorCode(user, request.TwoFactorCode))
-                        {
-                            user.FailedLoginAttempts++;
-                            return new LoginResult
-                            {
-                                IsSuccess = false,
-                                Message = "Invalid two-factor authentication code"
-                            };
-                        }
-                    }
-                    else
-                    {
-                        // 2FA not set up yet - allow login but show setup prompt later
-                        System.Diagnostics.Debug.WriteLine($"Super Admin {user.Username} logged in without 2FA - setup required");
-                    }
-                }
 
                 // Successful login
                 user.FailedLoginAttempts = 0;
@@ -268,15 +233,6 @@ namespace WeighbridgeSoftwareYashCotex.Services
                 if (CurrentUser.Role < request.RequiredRole)
                     return false;
 
-                // For Super Admin operations, require 2FA
-                if (request.RequiredRole == UserRole.SuperAdmin)
-                {
-                    if (CurrentUser.IsTwoFactorEnabled && string.IsNullOrEmpty(request.TwoFactorCode))
-                        return false;
-
-                    if (CurrentUser.IsTwoFactorEnabled && !VerifyTwoFactorCode(CurrentUser, request.TwoFactorCode))
-                        return false;
-                }
 
                 // Grant privilege escalation
                 _escalatedPrivileges[CurrentUser.UserId] = request.RequiredRole;
@@ -364,7 +320,6 @@ namespace WeighbridgeSoftwareYashCotex.Services
                 existingUser.Email = user.Email;
                 existingUser.Role = user.Role;
                 existingUser.IsActive = user.IsActive;
-                existingUser.IsTwoFactorEnabled = user.IsTwoFactorEnabled;
                 existingUser.RecoveryEmail = user.RecoveryEmail;
 
                 return true;
@@ -413,123 +368,6 @@ namespace WeighbridgeSoftwareYashCotex.Services
 
         #endregion
 
-        #region Two-Factor Authentication
-
-        private readonly TwoFactorAuthService _twoFactorService = new TwoFactorAuthService();
-
-        public string GenerateTwoFactorSecret()
-        {
-            return _twoFactorService.GenerateSecretKey();
-        }
-
-        public bool VerifyTwoFactorCode(User user, string code)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(code))
-                    return false;
-
-                // Get user's 2FA status and method
-                var status = _twoFactorService.GetTwoFactorStatusAsync(user.Username).Result;
-                
-                if (!status.IsEnabled)
-                    return false;
-
-                // For TOTP, we need the secret key (in real implementation, this would be stored securely)
-                if (status.Method == TwoFactorMethod.TOTP)
-                {
-                    // For demo purposes, generate a consistent secret based on username
-                    var secretKey = GenerateConsistentSecret(user.Username);
-                    return _twoFactorService.ValidateTOTPCode(secretKey, code);
-                }
-                
-                // For Email/SMS, validate against pending codes
-                return _twoFactorService.ValidateVerificationCode(user.Username, code, status.Method);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"2FA verification error: {ex.Message}");
-                return false;
-            }
-        }
-
-        public async Task<TwoFactorChallenge> InitiateTwoFactorAuthAsync(string username)
-        {
-            try
-            {
-                return await _twoFactorService.InitiateTwoFactorChallengeAsync(username);
-            }
-            catch (Exception ex)
-            {
-                return new TwoFactorChallenge
-                {
-                    Success = false,
-                    Message = $"Failed to initiate 2FA: {ex.Message}"
-                };
-            }
-        }
-
-        public async Task<bool> EnableTwoFactorAsync(string username, TwoFactorMethod method, string secretKey = "")
-        {
-            try
-            {
-                return await _twoFactorService.EnableTwoFactorAsync(username, method, secretKey);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Enable 2FA error: {ex.Message}");
-                return false;
-            }
-        }
-
-        public async Task<bool> DisableTwoFactorAsync(string username)
-        {
-            try
-            {
-                return await _twoFactorService.DisableTwoFactorAsync(username);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Disable 2FA error: {ex.Message}");
-                return false;
-            }
-        }
-
-        public async Task<TwoFactorStatus> GetTwoFactorStatusAsync(string username)
-        {
-            try
-            {
-                return await _twoFactorService.GetTwoFactorStatusAsync(username);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Get 2FA status error: {ex.Message}");
-                return new TwoFactorStatus { IsEnabled = false };
-            }
-        }
-
-        public List<string> GenerateRecoveryCodes()
-        {
-            return _twoFactorService.GenerateBackupCodes(10);
-        }
-
-        private string GenerateConsistentSecret(string username)
-        {
-            // Generate a consistent secret key based on username for demo purposes
-            // In production, this would be stored securely in the database
-            using var sha256 = SHA256.Create();
-            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes($"weighbridge_secret_{username}"));
-            var base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-            var secret = "";
-            
-            for (int i = 0; i < 32; i++)
-            {
-                secret += base32Chars[hashBytes[i % hashBytes.Length] % base32Chars.Length];
-            }
-            
-            return secret;
-        }
-
         // Simple validation for demonstration purposes
         public async Task<bool> GetUserByUsernameAsync(string username)
         {
@@ -543,8 +381,6 @@ namespace WeighbridgeSoftwareYashCotex.Services
                 return false;
             }
         }
-
-        #endregion
 
         #region Session Management
 

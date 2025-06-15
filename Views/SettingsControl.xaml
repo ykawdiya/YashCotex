@@ -954,18 +954,6 @@
                                                     x:Name="ViewActivityButton" Click="ViewActivityButton_Click"/>
                                         </StackPanel>
                                         
-                                        <!-- Security Management -->
-                                        <StackPanel Grid.Column="2" Margin="10,0,0,0">
-                                            <TextBlock Text="🔐 Security Management" FontWeight="Bold" Margin="0,0,0,10"/>
-                                            <Button Content="🔐 Setup Two-Factor Auth" Padding="8,5" Margin="0,0,0,5" 
-                                                    x:Name="Setup2FAButton" Click="Setup2FAButton_Click"
-                                                    Background="#28a745" Foreground="White" BorderThickness="0"/>
-                                            <Button Content="🔧 Manage 2FA Settings" Padding="8,5" Margin="0,0,0,5" 
-                                                    x:Name="Manage2FAButton" Click="Manage2FAButton_Click"/>
-                                            <Button Content="🚨 Disable 2FA (Emergency)" Padding="8,5" Margin="0,0,0,5" 
-                                                    x:Name="Disable2FAButton" Click="Disable2FAButton_Click"
-                                                    Background="#dc3545" Foreground="White" BorderThickness="0"/>
-                                        </StackPanel>
                                     </Grid>
                                 </StackPanel>
                             </GroupBox>

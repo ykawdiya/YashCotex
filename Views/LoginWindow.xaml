@@ -157,19 +157,6 @@
                     <PasswordBox x:Name="PasswordBox" Style="{StaticResource LoginPasswordBoxStyle}" 
                                  Margin="0,0,0,20" Password="password123"/>
 
-                    <!-- Two-Factor Code (Initially Hidden) -->
-                    <StackPanel x:Name="TwoFactorPanel" Visibility="Collapsed" Margin="0,0,0,20">
-                        <TextBlock Text="Two-Factor Authentication Code" FontSize="14" FontWeight="SemiBold" 
-                                   Foreground="#2C3E50" Margin="0,0,0,8"/>
-                        <TextBox x:Name="TwoFactorCodeTextBox" Style="{StaticResource LoginTextBoxStyle}" 
-                                 MaxLength="6" Text="123456"/>
-                        <TextBlock Text="Enter the 6-digit code from your authenticator app" 
-                                   FontSize="12" Foreground="#7F8C8D" Margin="0,5,0,0"/>
-                        <Button x:Name="Cancel2FAButton" Content="← Back to Password" 
-                                Background="Transparent" BorderThickness="0" Foreground="#e74c3c" 
-                                Cursor="Hand" FontSize="12" Padding="5" Margin="0,10,0,0"
-                                HorizontalAlignment="Left" Click="Cancel2FAButton_Click"/>
-                    </StackPanel>
 
                     <!-- Remember Me -->
                     <CheckBox x:Name="RememberMeCheckBox" Content="Remember me" 

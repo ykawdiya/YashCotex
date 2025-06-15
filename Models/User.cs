@@ -12,15 +12,12 @@ namespace WeighbridgeSoftwareYashCotex.Models
         public string FullName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
-        public bool IsTwoFactorEnabled { get; set; } = false;
-        public string? TwoFactorSecret { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime LastLogin { get; set; }
         public DateTime? LastPasswordChange { get; set; }
         public int FailedLoginAttempts { get; set; } = 0;
         public DateTime? LockoutUntil { get; set; }
         public string? RecoveryEmail { get; set; }
-        public string? RecoveryCodes { get; set; } // JSON array of recovery codes
     }
 
     public enum UserRole
@@ -34,7 +31,6 @@ namespace WeighbridgeSoftwareYashCotex.Models
     {
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public string? TwoFactorCode { get; set; }
         public bool RememberMe { get; set; } = false;
     }
 
@@ -43,7 +39,6 @@ namespace WeighbridgeSoftwareYashCotex.Models
         public bool IsSuccess { get; set; }
         public string Message { get; set; } = string.Empty;
         public User? User { get; set; }
-        public bool RequiresTwoFactor { get; set; } = false;
         public bool IsLockedOut { get; set; } = false;
         public TimeSpan? LockoutDuration { get; set; }
     }
@@ -65,6 +60,5 @@ namespace WeighbridgeSoftwareYashCotex.Models
         public UserRole RequiredRole { get; set; }
         public string Purpose { get; set; } = string.Empty;
         public DateTime RequestedAt { get; set; } = DateTime.Now;
-        public string? TwoFactorCode { get; set; }
     }
 }

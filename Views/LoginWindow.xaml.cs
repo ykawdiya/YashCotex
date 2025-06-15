@@ -10,8 +10,6 @@ namespace WeighbridgeSoftwareYashCotex.Views
     public partial class LoginWindow : Window
     {
         private readonly AuthenticationService _authService;
-        private bool _isTwoFactorRequired = false;
-        private User? _pendingUser = null;
 
         public User? LoggedInUser { get; private set; }
         public bool IsLoginSuccessful { get; private set; } = false;
@@ -24,7 +22,6 @@ namespace WeighbridgeSoftwareYashCotex.Views
             this.KeyDown += LoginWindow_KeyDown;
             UsernameTextBox.KeyDown += Field_KeyDown;
             PasswordBox.KeyDown += Field_KeyDown;
-            TwoFactorCodeTextBox.KeyDown += Field_KeyDown;
             
             // Focus username field on load
             this.Loaded += (s, e) => UsernameTextBox.Focus();
@@ -61,11 +58,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 {
                     PasswordBox.Focus();
                 }
-                else if (sender == PasswordBox && !_isTwoFactorRequired)
-                {
-                    LoginButton_Click(this, new RoutedEventArgs());
-                }
-                else if (sender == TwoFactorCodeTextBox)
+                else if (sender == PasswordBox)
                 {
                     LoginButton_Click(this, new RoutedEventArgs());
                 }
@@ -94,18 +87,12 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     return;
                 }
 
-                if (_isTwoFactorRequired && string.IsNullOrWhiteSpace(TwoFactorCodeTextBox.Text))
-                {
-                    ShowStatus("Please enter two-factor authentication code", true);
-                    return;
-                }
 
                 // Create login request
                 var loginRequest = new LoginRequest
                 {
                     Username = UsernameTextBox.Text.Trim(),
                     Password = PasswordBox.Password,
-                    TwoFactorCode = _isTwoFactorRequired ? TwoFactorCodeTextBox.Text.Trim() : null,
                     RememberMe = RememberMeCheckBox.IsChecked == true
                 };
 
@@ -126,18 +113,6 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     DialogResult = true;
                     Close();
                 }
-                else if (result.RequiresTwoFactor)
-                {
-                    // Two-factor authentication required
-                    _isTwoFactorRequired = true;
-                    _pendingUser = result.User;
-                    
-                    TwoFactorPanel.Visibility = Visibility.Visible;
-                    TwoFactorCodeTextBox.Focus();
-                    
-                    ShowStatus("Please enter your two-factor authentication code", false);
-                    LoginButton.Content = "🔐 VERIFY & SIGN IN";
-                }
                 else if (result.IsLockedOut)
                 {
                     // Account locked
@@ -156,33 +131,9 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     
                     // Clear password field on failed login
                     PasswordBox.Clear();
-                    
-                    // If 2FA was required but failed, reset 2FA state
-                    if (_isTwoFactorRequired)
-                    {
-                        TwoFactorCodeTextBox.Clear();
-                        
-                        // If 2FA code was wrong, reset to password entry
-                        if (result.Message.Contains("two-factor", StringComparison.OrdinalIgnoreCase) || 
-                            result.Message.Contains("verification", StringComparison.OrdinalIgnoreCase))
-                        {
-                            _isTwoFactorRequired = false;
-                            _pendingUser = null;
-                            TwoFactorPanel.Visibility = Visibility.Collapsed;
-                            LoginButton.Content = "🔐 SIGN IN";
-                            PasswordBox.Focus();
-                        }
-                        else
-                        {
-                            // Focus back to 2FA field if it's still required
-                            TwoFactorCodeTextBox.Focus();
-                        }
-                    }
-                    else
-                    {
-                        // Focus back to password field for regular login failures
-                        PasswordBox.Focus();
-                    }
+
+                    // Focus back to password field for regular login failures
+                    PasswordBox.Focus();
                 }
             }
             catch (Exception ex)
@@ -195,7 +146,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 LoginButton.IsEnabled = true;
                 if (LoginButton.Content.ToString()?.Contains("SIGNING IN") == true)
                 {
-                    LoginButton.Content = _isTwoFactorRequired ? "🔐 VERIFY & SIGN IN" : "🔐 SIGN IN";
+                    LoginButton.Content = "🔐 SIGN IN";
                 }
             }
         }
@@ -241,18 +192,6 @@ namespace WeighbridgeSoftwareYashCotex.Views
             Close();
         }
 
-        private void Cancel2FAButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Reset 2FA state and go back to password entry
-            _isTwoFactorRequired = false;
-            _pendingUser = null;
-            TwoFactorPanel.Visibility = Visibility.Collapsed;
-            LoginButton.Content = "🔐 SIGN IN";
-            TwoFactorCodeTextBox.Clear();
-            PasswordBox.Clear();
-            StatusTextBlock.Visibility = Visibility.Collapsed;
-            PasswordBox.Focus();
-        }
 
         #region Quick Login Buttons
 
@@ -260,23 +199,13 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             UsernameTextBox.Text = "admin";
             PasswordBox.Password = "password123";
-            TwoFactorCodeTextBox.Text = "123456";
-            
-            if (_isTwoFactorRequired)
-            {
-                TwoFactorCodeTextBox.Focus();
-            }
-            else
-            {
-                PasswordBox.Focus();
-            }
+            PasswordBox.Focus();
         }
 
         private void SetManagerCredentials(object sender, RoutedEventArgs e)
         {
             UsernameTextBox.Text = "manager";
             PasswordBox.Password = "password123";
-            TwoFactorCodeTextBox.Clear();
             
             PasswordBox.Focus();
         }
@@ -285,7 +214,6 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             UsernameTextBox.Text = "operator1";
             PasswordBox.Password = "password123";
-            TwoFactorCodeTextBox.Clear();
             
             PasswordBox.Focus();
         }
