@@ -275,8 +275,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     BorderBrush = System.Windows.Media.Brushes.LightGray,
                     BorderThickness = new Thickness(1),
                     CornerRadius = new System.Windows.CornerRadius(3),
-                    Padding = new Thickness(10, 5),
-                    Margin = new Thickness(0, 2)
+                    Padding = new Thickness(10, 5, 10, 5),
+                    Margin = new Thickness(0, 2, 0, 2)
                 };
 
                 var stackPanel = new StackPanel { Orientation = Orientation.Horizontal };

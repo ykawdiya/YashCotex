@@ -100,8 +100,7 @@
                                 <TextBlock Text="Receive verification codes via email" 
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
                                 <TextBlock Text="⚠️ Requires internet connection" Foreground="#ffc107" FontWeight="Bold"/>
-                                <TextBox x:Name="EmailAddressTextBox" Padding="8" Margin="0,10,0,0" 
-                                         Watermark="Enter email address"/>
+                                <TextBox x:Name="EmailAddressTextBox" Padding="8" Margin="0,10,0,0"/>
                                 <Button x:Name="SelectEmailButton" Content="📧 Set up Email 2FA" 
                                         Style="{StaticResource PrimaryButton}" 
                                         Click="SelectEmailButton_Click" Margin="0,10,0,0"/>
@@ -114,8 +113,7 @@
                                 <TextBlock Text="Receive verification codes via SMS" 
                                            TextWrapping="Wrap" Margin="0,0,0,10"/>
                                 <TextBlock Text="⚠️ Requires phone network" Foreground="#ffc107" FontWeight="Bold"/>
-                                <TextBox x:Name="PhoneNumberTextBox" Padding="8" Margin="0,10,0,0" 
-                                         Watermark="Enter phone number (+1234567890)"/>
+                                <TextBox x:Name="PhoneNumberTextBox" Padding="8" Margin="0,10,0,0"/>
                                 <Button x:Name="SelectSMSButton" Content="📱 Set up SMS 2FA" 
                                         Style="{StaticResource PrimaryButton}" 
                                         Click="SelectSMSButton_Click" Margin="0,10,0,0"/>
@@ -176,7 +174,7 @@
                                 <TextBox x:Name="VerificationCodeTextBox" Padding="8" MaxLength="6" 
                                          Margin="0,5,0,10" Width="150" HorizontalAlignment="Left"
                                          FontFamily="Consolas" FontSize="16"/>
-                                <Button x:Name="VerifyTOTPButton" Content="✅ Verify & Enable 2FA" 
+                                <Button x:Name="VerifyTOTPButton" Content="✅ Verify and Enable 2FA" 
                                         Style="{StaticResource SuccessButton}" 
                                         Click="VerifyTOTPButton_Click" HorizontalAlignment="Left"/>
                             </StackPanel>

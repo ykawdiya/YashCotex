@@ -929,10 +929,11 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         
                                         <!-- Database Management -->
-                                        <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
                                             <TextBlock Text="🗄️ Database Management" FontWeight="Bold" Margin="0,0,0,10"/>
                                             <Button Content="🔒 Force Database Backup" Padding="8,5" Margin="0,0,0,5" 
                                                     x:Name="ForceBackupButton" Click="ForceBackupButton_Click"/>
@@ -943,7 +944,7 @@
                                         </StackPanel>
                                         
                                         <!-- User Management -->
-                                        <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                                        <StackPanel Grid.Column="1" Margin="10,0">
                                             <TextBlock Text="👥 User Management" FontWeight="Bold" Margin="0,0,0,10"/>
                                             <Button Content="👤 Manage User Accounts" Padding="8,5" Margin="0,0,0,5" 
                                                     x:Name="ManageUsersButton" Click="ManageUsersButton_Click"/>
@@ -951,6 +952,19 @@
                                                     x:Name="ResetPasswordsButton" Click="ResetPasswordsButton_Click"/>
                                             <Button Content="📈 View User Activity" Padding="8,5" Margin="0,0,0,5" 
                                                     x:Name="ViewActivityButton" Click="ViewActivityButton_Click"/>
+                                        </StackPanel>
+                                        
+                                        <!-- Security Management -->
+                                        <StackPanel Grid.Column="2" Margin="10,0,0,0">
+                                            <TextBlock Text="🔐 Security Management" FontWeight="Bold" Margin="0,0,0,10"/>
+                                            <Button Content="🔐 Setup Two-Factor Auth" Padding="8,5" Margin="0,0,0,5" 
+                                                    x:Name="Setup2FAButton" Click="Setup2FAButton_Click"
+                                                    Background="#28a745" Foreground="White" BorderThickness="0"/>
+                                            <Button Content="🔧 Manage 2FA Settings" Padding="8,5" Margin="0,0,0,5" 
+                                                    x:Name="Manage2FAButton" Click="Manage2FAButton_Click"/>
+                                            <Button Content="🚨 Disable 2FA (Emergency)" Padding="8,5" Margin="0,0,0,5" 
+                                                    x:Name="Disable2FAButton" Click="Disable2FAButton_Click"
+                                                    Background="#dc3545" Foreground="White" BorderThickness="0"/>
                                         </StackPanel>
                                     </Grid>
                                 </StackPanel>

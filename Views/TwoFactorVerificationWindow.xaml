@@ -44,7 +44,6 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="5"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="TextDecorations" Value="Underline"/>
         </Style>
     </Window.Resources>
 
