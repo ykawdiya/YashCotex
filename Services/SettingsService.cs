@@ -2,6 +2,7 @@ using System.IO;
 using System.Text.Json;
 using System;
 using WeighbridgeSoftwareYashCotex.Models;
+using Newtonsoft.Json;
 
 namespace WeighbridgeSoftwareYashCotex.Services;
 
@@ -54,9 +55,10 @@ public class SettingsService
             try
             {
                 var json = File.ReadAllText(SettingsFilePath);
-                var loaded = JsonSerializer.Deserialize<SettingsService>(json);
+                var loaded = Newtonsoft.Json.JsonConvert.DeserializeObject<SettingsService>(json);
                 if (loaded != null)
                 {
+                    // Copy values one by one (to avoid replacing singleton _instance)
                     CompanyName = loaded.CompanyName;
                     CompanyAddress = loaded.CompanyAddress;
                     CompanyEmail = loaded.CompanyEmail;
@@ -87,7 +89,7 @@ public class SettingsService
     {
         try
         {
-            var json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(this, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(SettingsFilePath, json);
         }
         catch (Exception ex)
