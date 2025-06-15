@@ -155,28 +155,39 @@ namespace WeighbridgeSoftwareYashCotex.Services
                     };
                 }
 
-                // Check 2FA for Super Admin
-                if (user.Role == UserRole.SuperAdmin && user.IsTwoFactorEnabled)
+                // Check 2FA for Super Admin - only if 2FA is actually set up
+                if (user.Role == UserRole.SuperAdmin)
                 {
-                    if (string.IsNullOrEmpty(request.TwoFactorCode))
+                    // Check if 2FA is actually configured
+                    var twoFactorStatus = GetTwoFactorStatusAsync(user.Username).Result;
+                    
+                    if (twoFactorStatus.IsEnabled)
                     {
-                        return new LoginResult
+                        if (string.IsNullOrEmpty(request.TwoFactorCode))
                         {
-                            IsSuccess = false,
-                            RequiresTwoFactor = true,
-                            Message = "Two-factor authentication required",
-                            User = user
-                        };
-                    }
+                            return new LoginResult
+                            {
+                                IsSuccess = false,
+                                RequiresTwoFactor = true,
+                                Message = "Two-factor authentication required",
+                                User = user
+                            };
+                        }
 
-                    if (!VerifyTwoFactorCode(user, request.TwoFactorCode))
-                    {
-                        user.FailedLoginAttempts++;
-                        return new LoginResult
+                        if (!VerifyTwoFactorCode(user, request.TwoFactorCode))
                         {
-                            IsSuccess = false,
-                            Message = "Invalid two-factor authentication code"
-                        };
+                            user.FailedLoginAttempts++;
+                            return new LoginResult
+                            {
+                                IsSuccess = false,
+                                Message = "Invalid two-factor authentication code"
+                            };
+                        }
+                    }
+                    else
+                    {
+                        // 2FA not set up yet - allow login but show setup prompt later
+                        System.Diagnostics.Debug.WriteLine($"Super Admin {user.Username} logged in without 2FA - setup required");
                     }
                 }
 

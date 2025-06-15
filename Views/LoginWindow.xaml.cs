@@ -156,9 +156,32 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     
                     // Clear password field on failed login
                     PasswordBox.Clear();
+                    
+                    // If 2FA was required but failed, reset 2FA state
                     if (_isTwoFactorRequired)
                     {
                         TwoFactorCodeTextBox.Clear();
+                        
+                        // If 2FA code was wrong, reset to password entry
+                        if (result.Message.Contains("two-factor", StringComparison.OrdinalIgnoreCase) || 
+                            result.Message.Contains("verification", StringComparison.OrdinalIgnoreCase))
+                        {
+                            _isTwoFactorRequired = false;
+                            _pendingUser = null;
+                            TwoFactorPanel.Visibility = Visibility.Collapsed;
+                            LoginButton.Content = "🔐 SIGN IN";
+                            PasswordBox.Focus();
+                        }
+                        else
+                        {
+                            // Focus back to 2FA field if it's still required
+                            TwoFactorCodeTextBox.Focus();
+                        }
+                    }
+                    else
+                    {
+                        // Focus back to password field for regular login failures
+                        PasswordBox.Focus();
                     }
                 }
             }
@@ -216,6 +239,19 @@ namespace WeighbridgeSoftwareYashCotex.Views
             IsLoginSuccessful = false;
             DialogResult = false;
             Close();
+        }
+
+        private void Cancel2FAButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Reset 2FA state and go back to password entry
+            _isTwoFactorRequired = false;
+            _pendingUser = null;
+            TwoFactorPanel.Visibility = Visibility.Collapsed;
+            LoginButton.Content = "🔐 SIGN IN";
+            TwoFactorCodeTextBox.Clear();
+            PasswordBox.Clear();
+            StatusTextBlock.Visibility = Visibility.Collapsed;
+            PasswordBox.Focus();
         }
 
         #region Quick Login Buttons

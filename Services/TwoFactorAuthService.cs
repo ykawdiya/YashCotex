@@ -262,8 +262,16 @@ namespace WeighbridgeSoftwareYashCotex.Services
         {
             try
             {
+                // Store 2FA configuration for the user
+                _userTwoFactorStatus[username] = new TwoFactorStatus
+                {
+                    IsEnabled = true,
+                    Method = method,
+                    BackupCodesRemaining = 10, // Default backup codes
+                    LastUsed = null
+                };
+                
                 // In a real implementation, you would store this in the database
-                // For now, we'll simulate the operation
                 await Task.Delay(100);
                 
                 System.Diagnostics.Debug.WriteLine($"[2FA] Enabled {method} for user {username}");
@@ -279,6 +287,12 @@ namespace WeighbridgeSoftwareYashCotex.Services
         {
             try
             {
+                // Remove 2FA configuration for the user
+                if (_userTwoFactorStatus.ContainsKey(username))
+                {
+                    _userTwoFactorStatus.Remove(username);
+                }
+                
                 // In a real implementation, you would update the database
                 await Task.Delay(100);
                 
@@ -291,6 +305,8 @@ namespace WeighbridgeSoftwareYashCotex.Services
             }
         }
 
+        private readonly Dictionary<string, TwoFactorStatus> _userTwoFactorStatus = new();
+
         public async Task<TwoFactorStatus> GetTwoFactorStatusAsync(string username)
         {
             try
@@ -298,18 +314,13 @@ namespace WeighbridgeSoftwareYashCotex.Services
                 // In a real implementation, you would query the database
                 await Task.Delay(50);
                 
-                // For Super Admin, we'll simulate that 2FA is available
-                if (username.Contains("admin", StringComparison.OrdinalIgnoreCase))
+                // Check if user has configured 2FA
+                if (_userTwoFactorStatus.ContainsKey(username))
                 {
-                    return new TwoFactorStatus
-                    {
-                        IsEnabled = true,
-                        Method = TwoFactorMethod.TOTP,
-                        BackupCodesRemaining = 8,
-                        LastUsed = DateTime.Now.AddDays(-2)
-                    };
+                    return _userTwoFactorStatus[username];
                 }
                 
+                // Default: 2FA not enabled
                 return new TwoFactorStatus
                 {
                     IsEnabled = false,
