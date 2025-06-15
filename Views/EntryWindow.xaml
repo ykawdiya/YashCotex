@@ -148,7 +148,13 @@
             <StackPanel Margin="0">
                 
                 <!-- Header Section -->
-                <Border Background="Linear Gradient, #4A90E2, #357ABD" Padding="30">
+                <Border Padding="30">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#4A90E2" Offset="0"/>
+                            <GradientStop Color="#357ABD" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <StackPanel>
                         <TextBlock Text="🚛 VEHICLE ENTRY" FontSize="28" FontWeight="Bold" 
                                   Foreground="White" HorizontalAlignment="Center"/>
@@ -198,10 +204,10 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Vehicle & Customer Information Section -->
+                <!-- Vehicle and Customer Information Section -->
                 <Border Grid.Row="1" Style="{StaticResource FormSectionStyle}">
                     <StackPanel>
-                        <TextBlock Text="🚗 Vehicle & Customer Information" FontSize="16" FontWeight="Bold" 
+                        <TextBlock Text="🚗 Vehicle &amp; Customer Information" FontSize="16" FontWeight="Bold" 
                                   Foreground="#2C3E50" Margin="0,0,0,15"/>
                         
                         <!-- Vehicle and Phone Row -->
@@ -298,9 +304,9 @@
                                 <TextBlock x:Name="MaterialValidation" Style="{StaticResource ValidationMessageStyle}"/>
                             </StackPanel>
 
-                            <!-- Date & Time -->
+                            <!-- Date and Time -->
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Entry Date & Time" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBlock Text="Entry Date &amp; Time" Style="{StaticResource FieldLabelStyle}"/>
                                 <TextBox x:Name="DateTimeTextBox" IsReadOnly="True" 
                                         Background="#F8F9FA" FontWeight="SemiBold"
                                         Padding="12,8" BorderBrush="#E1E4E8" BorderThickness="2"/>
@@ -385,7 +391,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Form Status & Actions Section -->
+                <!-- Form Status and Actions Section -->
                 </Grid>
                 
                 <!-- Form Status Bar -->
