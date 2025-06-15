@@ -4,9 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Threading;
 using WeighbridgeSoftwareYashCotex.Models;
 using WeighbridgeSoftwareYashCotex.Services;
 using WeighbridgeSoftwareYashCotex.Helpers;
@@ -18,8 +16,6 @@ namespace WeighbridgeSoftwareYashCotex.Views
         private readonly DatabaseService _databaseService;
         private readonly WeightService _weightService;
         private int _currentRstNumber;
-        private int _validFieldsCount = 0;
-        private readonly DispatcherTimer _autoSaveTimer;
         private bool _isFormValid = false;
 
         public EntryWindow()
@@ -34,38 +30,57 @@ namespace WeighbridgeSoftwareYashCotex.Views
             this.KeyDown += EntryWindow_KeyDown;
             this.Closed += EntryWindow_Closed;
             
-            // Initialize auto-save timer
-            _autoSaveTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(30)
-            };
-            _autoSaveTimer.Tick += AutoSaveTimer_Tick;
-            
             VehicleNumberTextBox.Focus();
         }
 
         private void InitializeForm()
         {
-            _currentRstNumber = _databaseService.GetNextRstNumber();
-            RstNumberTextBox.Text = _currentRstNumber.ToString();
-            
-            var nextId = _databaseService.GetNextId();
-            IdTextBox.Text = nextId.ToString();
-            
-            DateTimeTextBox.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-            
-            WeightTextBox.Text = "0.00";
+            try
+            {
+                _currentRstNumber = _databaseService.GetNextRstNumber();
+                RstNumberTextBox.Text = _currentRstNumber.ToString();
+                
+                // Initialize with placeholder ID - will be calculated later
+                IdTextBox.Text = "Auto-Generated";
+                
+                // Auto-capture weight immediately
+                CaptureWeightAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error initializing form: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void CaptureWeightAsync()
+        {
+            try
+            {
+                // Simulate weight capture
+                await Task.Delay(500);
+                var weight = _weightService.GetCurrentWeight();
+                WeightTextBox.Text = weight.ToString("F2");
+            }
+            catch (Exception ex)
+            {
+                WeightTextBox.Text = "0.00";
+                System.Diagnostics.Debug.WriteLine($"Weight capture error: {ex.Message}");
+            }
         }
 
         private void LoadData()
         {
-            var addresses = _databaseService.GetAddresses();
-            AddressComboBox.ItemsSource = addresses;
-            
-            var materials = _databaseService.GetMaterials();
-            MaterialComboBox.ItemsSource = materials;
-            if (materials.Any())
-                MaterialComboBox.SelectedIndex = 0;
+            try
+            {
+                var materials = _databaseService.GetMaterials();
+                MaterialComboBox.ItemsSource = materials;
+                if (materials.Any())
+                    MaterialComboBox.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading data: {ex.Message}");
+            }
         }
 
         private void EntryWindow_KeyDown(object sender, KeyEventArgs e)
@@ -73,354 +88,218 @@ namespace WeighbridgeSoftwareYashCotex.Views
             switch (e.Key)
             {
                 case Key.F6:
-                    SaveButton_Click(this, new RoutedEventArgs());
+                    if (SaveButton.IsEnabled)
+                        SaveButton_Click(this, new RoutedEventArgs());
                     break;
                 case Key.F7:
                     ClearButton_Click(this, new RoutedEventArgs());
                     break;
                 case Key.Escape:
-                    CloseButton_Click(this, new RoutedEventArgs());
+                    this.Close();
                     break;
             }
         }
 
-        private void VehicleNumberTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ValidateVehicleNumber();
-        }
-
-        private void PhoneNumberTextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ValidatePhoneNumber();
-        }
-
-        private void NameComboBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            ValidateName();
-        }
-
-        private void NameComboBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ValidateName();
-        }
-
-        private void AddressComboBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            ValidateAddress();
-        }
-
-        private void AddressComboBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ValidateAddress();
-        }
-
-        private void MaterialComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ValidateMaterial();
-        }
-
-        private void ValidateVehicleNumber()
+        private void VehicleNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
-                var result = ValidationHelper.ValidateVehicleNumber(VehicleNumberTextBox?.Text ?? "");
-                ValidationHelper.ApplyValidationStyle(VehicleNumberTextBox, result);
-                ValidationHelper.ShowValidationMessage(VehicleNumberValidation, result);
-                UpdateFormProgress();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error validating vehicle number: {ex.Message}");
-            }
-        }
-
-        private void ValidatePhoneNumber()
-        {
-            try
-            {
-                var result = ValidationHelper.ValidatePhoneNumber(PhoneNumberTextBox?.Text ?? "");
-                ValidationHelper.ApplyValidationStyle(PhoneNumberTextBox, result);
-                ValidationHelper.ShowValidationMessage(PhoneNumberValidation, result);
-                UpdateFormProgress();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error validating phone number: {ex.Message}");
-            }
-        }
-
-        private void ValidateName()
-        {
-            try
-            {
-                var result = ValidationHelper.ValidateName(NameComboBox?.Text ?? "");
-                ValidationHelper.ApplyValidationStyle(NameComboBox, result);
-                ValidationHelper.ShowValidationMessage(NameValidation, result);
-                UpdateFormProgress();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error validating name: {ex.Message}");
-            }
-        }
-
-        private void ValidateAddress()
-        {
-            try
-            {
-                var result = ValidationHelper.ValidateAddress(AddressComboBox?.Text ?? "");
-                ValidationHelper.ApplyValidationStyle(AddressComboBox, result);
-                ValidationHelper.ShowValidationMessage(AddressValidation, result);
-                UpdateFormProgress();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error validating address: {ex.Message}");
-            }
-        }
-
-        private void ValidateMaterial()
-        {
-            var result = ValidationHelper.ValidateMaterial(MaterialComboBox.Text);
-            ValidationHelper.ApplyValidationStyle(MaterialComboBox, result);
-            ValidationHelper.ShowValidationMessage(MaterialValidation, result);
-            UpdateFormProgress();
-        }
-
-        private void ValidateWeight()
-        {
-            try
-            {
-                var result = ValidationHelper.ValidateWeight(WeightTextBox?.Text ?? "");
-                ValidationHelper.ApplyValidationStyle(WeightTextBox, result);
-                ValidationHelper.ShowValidationMessage(WeightValidation, result);
-                UpdateFormProgress();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error validating weight: {ex.Message}");
-            }
-        }
-
-        private void UpdateFormProgress()
-        {
-            try
-            {
-                _validFieldsCount = 0;
+                var textBox = sender as TextBox;
+                var originalText = textBox?.Text ?? "";
                 
-                // Check each required field with null safety
-                if (ValidationHelper.ValidateVehicleNumber(VehicleNumberTextBox?.Text ?? "").IsValid)
-                    _validFieldsCount++;
-                if (ValidationHelper.ValidatePhoneNumber(PhoneNumberTextBox?.Text ?? "").IsValid)
-                    _validFieldsCount++;
-                if (ValidationHelper.ValidateName(NameComboBox?.Text ?? "").IsValid)
-                    _validFieldsCount++;
-                if (ValidationHelper.ValidateAddress(AddressComboBox?.Text ?? "").IsValid)
-                    _validFieldsCount++;
-                if (ValidationHelper.ValidateWeight(WeightTextBox?.Text ?? "").IsValid)
-                    _validFieldsCount++;
-
-                if (FormProgressBar != null)
-                    FormProgressBar.Value = _validFieldsCount;
-                    
-                _isFormValid = _validFieldsCount == 5;
+                // Format the input (auto caps and limit length)
+                var formattedText = ValidationHelper.FormatVehicleNumber(originalText);
                 
-                if (SaveButton != null)
-                    SaveButton.IsEnabled = _isFormValid;
-
-                // Update status text
-                if (FormStatusText != null)
+                if (formattedText != originalText)
                 {
-                    if (_isFormValid)
-                    {
-                        FormStatusText.Text = "✅ All fields are valid. Ready to save!";
-                        FormStatusText.Foreground = System.Windows.Media.Brushes.Green;
-                    }
-                    else
-                    {
-                        FormStatusText.Text = $"Please complete {5 - _validFieldsCount} more required field(s)";
-                        FormStatusText.Foreground = System.Windows.Media.Brushes.Gray;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error updating form progress: {ex.Message}");
-            }
-        }
-
-        private async void ShowLoadingIndicator(ProgressBar progressBar, int durationMs = 1000)
-        {
-            progressBar.Visibility = Visibility.Visible;
-            await Task.Delay(durationMs);
-            progressBar.Visibility = Visibility.Collapsed;
-        }
-
-        private void AutoSaveTimer_Tick(object? sender, EventArgs e)
-        {
-            // Auto-save draft functionality could be implemented here
-            _autoSaveTimer.Stop();
-        }
-
-        private async void VehicleNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var textBox = sender as TextBox;
-            var originalText = textBox?.Text ?? "";
-            
-            // Format the input
-            var formattedText = ValidationHelper.FormatVehicleNumber(originalText);
-            
-            if (formattedText != originalText)
-            {
-                var cursorPosition = textBox.CaretIndex;
-                textBox.Text = formattedText;
-                textBox.CaretIndex = Math.Min(cursorPosition, formattedText.Length);
-            }
-            
-            // Auto-complete from database
-            if (formattedText.Length >= 4)
-            {
-                VehicleNumberLoading.Visibility = Visibility.Visible;
-                
-                // Simulate async database lookup
-                await Task.Delay(300);
-                
-                var customer = _databaseService.GetCustomerByVehicleNumber(formattedText);
-                if (customer != null)
-                {
-                    PhoneNumberTextBox.Text = customer.PhoneNumber;
-                    NameComboBox.Text = customer.Name;
-                    AddressComboBox.Text = customer.Address;
-                    
-                    // Show success message
-                    VehicleNumberValidation.Text = "✅ Customer found and auto-filled";
-                    VehicleNumberValidation.Foreground = System.Windows.Media.Brushes.Green;
-                    VehicleNumberValidation.Visibility = Visibility.Visible;
+                    var cursorPosition = textBox.CaretIndex;
+                    textBox.Text = formattedText;
+                    textBox.CaretIndex = Math.Min(cursorPosition, formattedText.Length);
                 }
                 
-                VehicleNumberLoading.Visibility = Visibility.Collapsed;
+                ValidateField(formattedText, ValidationHelper.ValidateVehicleNumber, VehicleNumberError);
+                UpdateFormValidation();
             }
-            
-            // Real-time validation
-            if (formattedText.Length > 0)
+            catch (Exception ex)
             {
-                ValidateVehicleNumber();
+                System.Diagnostics.Debug.WriteLine($"Error in vehicle number change: {ex.Message}");
             }
         }
 
         private void PhoneNumberTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+            // Only allow digits
             if (!Regex.IsMatch(e.Text, @"^[0-9]+$"))
             {
                 e.Handled = true;
             }
         }
 
-        private async void PhoneNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var textBox = sender as TextBox;
-            var originalText = textBox?.Text ?? "";
-            
-            // Format the input
-            var formattedText = ValidationHelper.FormatPhoneNumber(originalText);
-            
-            if (formattedText != originalText)
-            {
-                var cursorPosition = textBox.CaretIndex;
-                textBox.Text = formattedText;
-                textBox.CaretIndex = Math.Min(cursorPosition, formattedText.Length);
-            }
-            
-            // Auto-complete from database
-            if (formattedText.Length == 10)
-            {
-                PhoneNumberLoading.Visibility = Visibility.Visible;
-                
-                // Simulate async database lookup
-                await Task.Delay(300);
-                
-                var customer = _databaseService.GetCustomerByPhoneNumber(formattedText);
-                if (customer != null)
-                {
-                    VehicleNumberTextBox.Text = customer.VehicleNumber;
-                    NameComboBox.Text = customer.Name;
-                    AddressComboBox.Text = customer.Address;
-                    
-                    // Show success message
-                    PhoneNumberValidation.Text = "✅ Customer found and auto-filled";
-                    PhoneNumberValidation.Foreground = System.Windows.Media.Brushes.Green;
-                    PhoneNumberValidation.Visibility = Visibility.Visible;
-                }
-                
-                PhoneNumberLoading.Visibility = Visibility.Collapsed;
-            }
-            
-            // Real-time validation
-            if (formattedText.Length > 0)
-            {
-                ValidatePhoneNumber();
-            }
-        }
-
-        private async void CaptureWeight_Click(object sender, RoutedEventArgs e)
+        private void PhoneNumberTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
-                var button = sender as Button;
-                button.IsEnabled = false;
-                button.Content = "⏳ Capturing...";
+                var textBox = sender as TextBox;
+                var originalText = textBox?.Text ?? "";
                 
-                WeightLoading.Visibility = Visibility.Visible;
+                // Format the input (digits only, limit to 10)
+                var formattedText = ValidationHelper.FormatPhoneNumber(originalText);
                 
-                // Simulate weight capture delay
-                await Task.Delay(1500);
-                
-                var weight = _weightService.GetCurrentWeight();
-                WeightTextBox.Text = weight.ToString("F2");
-                
-                // Show success animation
-                WeightValidation.Text = "✅ Weight captured successfully!";
-                WeightValidation.Foreground = System.Windows.Media.Brushes.Green;
-                WeightValidation.Visibility = Visibility.Visible;
-                
-                ValidateWeight();
-                
-                // Auto-hide success message
-                var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
-                timer.Tick += (s, args) =>
+                if (formattedText != originalText)
                 {
-                    WeightValidation.Visibility = Visibility.Collapsed;
-                    timer.Stop();
-                };
-                timer.Start();
+                    var cursorPosition = textBox.CaretIndex;
+                    textBox.Text = formattedText;
+                    textBox.CaretIndex = Math.Min(cursorPosition, formattedText.Length);
+                }
+                
+                ValidateField(formattedText, ValidationHelper.ValidatePhoneNumber, PhoneNumberError);
+                UpdateFormValidation();
             }
             catch (Exception ex)
             {
-                WeightValidation.Text = $"❌ Error: {ex.Message}";
-                WeightValidation.Foreground = System.Windows.Media.Brushes.Red;
-                WeightValidation.Visibility = Visibility.Visible;
-            }
-            finally
-            {
-                WeightLoading.Visibility = Visibility.Collapsed;
-                var button = sender as Button;
-                button.IsEnabled = true;
-                button.Content = "📏 Capture Weight";
+                System.Diagnostics.Debug.WriteLine($"Error in phone number change: {ex.Message}");
             }
         }
 
-        private void NameComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void NameTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var comboBox = sender as ComboBox;
-            if (comboBox?.SelectedItem is string selectedName)
+            try
             {
-                var customer = _databaseService.GetCustomerByPhoneNumber(""); // Need to implement search by name
-                if (customer != null)
+                var textBox = sender as TextBox;
+                var originalText = textBox?.Text ?? "";
+                
+                // Format the input (title case, limit to 2 words)
+                var formattedText = ValidationHelper.FormatName(originalText);
+                
+                if (formattedText != originalText && !string.IsNullOrEmpty(formattedText))
                 {
-                    PhoneNumberTextBox.Text = customer.PhoneNumber;
-                    VehicleNumberTextBox.Text = customer.VehicleNumber;
-                    AddressComboBox.Text = customer.Address;
+                    var cursorPosition = textBox.CaretIndex;
+                    textBox.Text = formattedText;
+                    textBox.CaretIndex = Math.Min(cursorPosition, formattedText.Length);
                 }
+                
+                ValidateField(textBox.Text, ValidationHelper.ValidateName, NameError);
+                UpdateFormValidation();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in name change: {ex.Message}");
+            }
+        }
+
+        private void AddressTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                var textBox = sender as TextBox;
+                var originalText = textBox?.Text ?? "";
+                
+                // Format the input (title case, one word only)
+                var formattedText = ValidationHelper.FormatAddress(originalText);
+                
+                if (formattedText != originalText && !string.IsNullOrEmpty(formattedText))
+                {
+                    var cursorPosition = textBox.CaretIndex;
+                    textBox.Text = formattedText;
+                    textBox.CaretIndex = Math.Min(cursorPosition, formattedText.Length);
+                }
+                
+                ValidateField(textBox.Text, ValidationHelper.ValidateAddress, AddressError);
+                UpdateFormValidation();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in address change: {ex.Message}");
+            }
+        }
+
+        private void MaterialComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                var comboBox = sender as ComboBox;
+                var selectedMaterial = comboBox?.SelectedItem?.ToString() ?? "";
+                
+                ValidateField(selectedMaterial, ValidationHelper.ValidateMaterial, MaterialError);
+                UpdateFormValidation();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in material selection: {ex.Message}");
+            }
+        }
+
+        private void ValidateField(string value, Func<string, Helpers.ValidationResult> validator, TextBlock errorBlock)
+        {
+            try
+            {
+                var result = validator(value);
+                
+                if (result.IsValid)
+                {
+                    errorBlock.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    errorBlock.Text = result.Message;
+                    errorBlock.Visibility = Visibility.Visible;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error validating field: {ex.Message}");
+            }
+        }
+
+        private void UpdateFormValidation()
+        {
+            try
+            {
+                // Check all required fields
+                var vehicleValid = ValidationHelper.ValidateVehicleNumber(VehicleNumberTextBox?.Text ?? "").IsValid;
+                var phoneValid = ValidationHelper.ValidatePhoneNumber(PhoneNumberTextBox?.Text ?? "").IsValid;
+                var nameValid = ValidationHelper.ValidateName(NameTextBox?.Text ?? "").IsValid;
+                var addressValid = ValidationHelper.ValidateAddress(AddressTextBox?.Text ?? "").IsValid;
+                var materialValid = ValidationHelper.ValidateMaterial(MaterialComboBox?.SelectedItem?.ToString() ?? "").IsValid;
+                
+                _isFormValid = vehicleValid && phoneValid && nameValid && addressValid && materialValid;
+                
+                if (SaveButton != null)
+                    SaveButton.IsEnabled = _isFormValid;
+                
+                // Update ID when all customer fields are valid
+                if (phoneValid && nameValid && addressValid)
+                {
+                    UpdateCustomerId();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating form validation: {ex.Message}");
+            }
+        }
+
+        private void UpdateCustomerId()
+        {
+            try
+            {
+                var phone = PhoneNumberTextBox?.Text ?? "";
+                var name = NameTextBox?.Text ?? "";
+                var address = AddressTextBox?.Text ?? "";
+                
+                if (!string.IsNullOrEmpty(phone) && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(address))
+                {
+                    // Generate unique ID based on phone + name + address
+                    var combinedString = phone + name + address;
+                    var hash = combinedString.GetHashCode();
+                    var uniqueId = Math.Abs(hash);
+                    
+                    IdTextBox.Text = uniqueId.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating customer ID: {ex.Message}");
             }
         }
 
@@ -428,73 +307,85 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             try
             {
+                if (!_isFormValid)
+                {
+                    MessageBox.Show("Please fill all required fields correctly.", "Validation Error", 
+                                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 var entry = new WeighmentEntry
                 {
                     RstNumber = _currentRstNumber,
+                    Id = int.Parse(IdTextBox.Text),
                     VehicleNumber = VehicleNumberTextBox.Text,
                     PhoneNumber = PhoneNumberTextBox.Text,
-                    Name = NameComboBox.Text,
-                    Address = AddressComboBox.Text,
-                    Material = MaterialComboBox.Text,
+                    Name = NameTextBox.Text,
+                    Address = AddressTextBox.Text,
+                    Material = MaterialComboBox.SelectedItem?.ToString() ?? "",
                     EntryWeight = double.Parse(WeightTextBox.Text),
                     EntryDateTime = DateTime.Now
                 };
 
                 _databaseService.SaveEntry(entry);
-                MessageBox.Show("Entry saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 
+                MessageBox.Show("Entry saved successfully!", "Success", 
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+                
+                // Auto-close after successful save
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving entry: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error saving entry: {ex.Message}", "Error", 
+                                MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show(
-                "Are you sure you want to clear all form data?",
-                "Clear Form",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            try
             {
-                // Clear all form fields
-                VehicleNumberTextBox.Clear();
-                PhoneNumberTextBox.Clear();
-                NameComboBox.Text = "";
-                AddressComboBox.SelectedIndex = -1;
-                MaterialComboBox.SelectedIndex = 0;
-                WeightTextBox.Text = "0.00";
-                
-                // Clear all validation messages and styles
-                ValidationHelper.ClearValidation(VehicleNumberTextBox, VehicleNumberValidation);
-                ValidationHelper.ClearValidation(PhoneNumberTextBox, PhoneNumberValidation);
-                ValidationHelper.ClearValidation(NameComboBox, NameValidation);
-                ValidationHelper.ClearValidation(AddressComboBox, AddressValidation);
-                ValidationHelper.ClearValidation(MaterialComboBox, MaterialValidation);
-                ValidationHelper.ClearValidation(WeightTextBox, WeightValidation);
-                
-                // Reset form progress
-                UpdateFormProgress();
-                
-                // Reset RST and ID numbers
-                InitializeForm();
-                
-                VehicleNumberTextBox.Focus();
-            }
-        }
+                var result = MessageBox.Show("Clear all fields?", "Confirm", 
+                                             MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
+                if (result == MessageBoxResult.Yes)
+                {
+                    VehicleNumberTextBox.Clear();
+                    PhoneNumberTextBox.Clear();
+                    NameTextBox.Clear();
+                    AddressTextBox.Clear();
+                    MaterialComboBox.SelectedIndex = 0;
+                    
+                    // Hide all error messages
+                    VehicleNumberError.Visibility = Visibility.Collapsed;
+                    PhoneNumberError.Visibility = Visibility.Collapsed;
+                    NameError.Visibility = Visibility.Collapsed;
+                    AddressError.Visibility = Visibility.Collapsed;
+                    MaterialError.Visibility = Visibility.Collapsed;
+                    
+                    // Reset form
+                    InitializeForm();
+                    VehicleNumberTextBox.Focus();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error clearing form: {ex.Message}");
+            }
         }
 
         private void EntryWindow_Closed(object? sender, EventArgs e)
         {
-            _weightService?.Dispose();
+            try
+            {
+                _weightService?.Dispose();
+                _databaseService?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error during cleanup: {ex.Message}");
+            }
         }
     }
 }

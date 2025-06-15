@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -7,10 +8,11 @@ namespace WeighbridgeSoftwareYashCotex.Helpers;
 
 public static class ValidationHelper
 {
-    // Vehicle number validation patterns
-    private static readonly Regex VehicleNumberPattern = new(@"^[A-Z0-9]{4,10}$", RegexOptions.Compiled);
+    // Vehicle number validation patterns - STRICT: 9-10 characters only
+    private static readonly Regex VehicleNumberPattern = new(@"^[A-Z0-9]{9,10}$", RegexOptions.Compiled);
     private static readonly Regex PhoneNumberPattern = new(@"^[6-9]\d{9}$", RegexOptions.Compiled);
-    private static readonly Regex NamePattern = new(@"^[A-Za-z\s\.]{2,50}$", RegexOptions.Compiled);
+    private static readonly Regex NamePattern = new(@"^[A-Z][a-z]+ [A-Z][a-z]+$", RegexOptions.Compiled); // Exactly two words
+    private static readonly Regex AddressPattern = new(@"^[A-Z][a-z]+$", RegexOptions.Compiled); // Exactly one word
 
     public static ValidationResult ValidateVehicleNumber(string vehicleNumber)
     {
@@ -19,11 +21,11 @@ public static class ValidationHelper
 
         var cleaned = vehicleNumber.Trim().ToUpper().Replace(" ", "");
         
-        if (cleaned.Length < 4)
-            return new ValidationResult(false, "Vehicle number must be at least 4 characters");
+        if (cleaned.Length < 9)
+            return new ValidationResult(false, "Vehicle number must be exactly 9-10 characters");
         
         if (cleaned.Length > 10)
-            return new ValidationResult(false, "Vehicle number cannot exceed 10 characters");
+            return new ValidationResult(false, "Vehicle number must be exactly 9-10 characters");
 
         if (!VehicleNumberPattern.IsMatch(cleaned))
             return new ValidationResult(false, "Vehicle number can only contain letters and numbers");
@@ -54,14 +56,13 @@ public static class ValidationHelper
 
         var trimmed = name.Trim();
         
-        if (trimmed.Length < 2)
-            return new ValidationResult(false, "Name must be at least 2 characters");
-        
-        if (trimmed.Length > 50)
-            return new ValidationResult(false, "Name cannot exceed 50 characters");
+        // Check if exactly two words in title case
+        var words = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length != 2)
+            return new ValidationResult(false, "Name must be exactly two words");
 
         if (!NamePattern.IsMatch(trimmed))
-            return new ValidationResult(false, "Name can only contain letters, spaces, and dots");
+            return new ValidationResult(false, "Name must be in title case (e.g., 'John Smith')");
 
         return new ValidationResult(true, "Valid name");
     }
@@ -73,11 +74,13 @@ public static class ValidationHelper
 
         var trimmed = address.Trim();
         
-        if (trimmed.Length < 5)
-            return new ValidationResult(false, "Address must be at least 5 characters");
-        
-        if (trimmed.Length > 200)
-            return new ValidationResult(false, "Address cannot exceed 200 characters");
+        // Check if exactly one word in title case
+        var words = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length != 1)
+            return new ValidationResult(false, "Address must be exactly one word");
+
+        if (!AddressPattern.IsMatch(trimmed))
+            return new ValidationResult(false, "Address must be in title case (e.g., 'Mumbai')");
 
         return new ValidationResult(true, "Valid address");
     }
@@ -190,11 +193,17 @@ public static class ValidationHelper
         }
     }
 
-    // Format input methods
+    // Format input methods with strict enforcement
     public static string FormatVehicleNumber(string input)
     {
         if (string.IsNullOrEmpty(input)) return string.Empty;
-        return input.ToUpper().Replace(" ", "");
+        var formatted = input.ToUpper().Replace(" ", "");
+        
+        // Limit to 10 characters maximum
+        if (formatted.Length > 10)
+            formatted = formatted.Substring(0, 10);
+            
+        return formatted;
     }
 
     public static string FormatPhoneNumber(string input)
@@ -204,7 +213,7 @@ public static class ValidationHelper
         // Remove all non-digits
         var digits = Regex.Replace(input, @"\D", "");
         
-        // Limit to 10 digits
+        // Limit to exactly 10 digits
         if (digits.Length > 10)
             digits = digits.Substring(0, 10);
             
@@ -215,8 +224,40 @@ public static class ValidationHelper
     {
         if (string.IsNullOrEmpty(input)) return string.Empty;
         
-        // Capitalize first letter of each word
-        return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input.ToLower());
+        var words = input.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        
+        // Limit to exactly 2 words
+        if (words.Length > 2)
+        {
+            words = words.Take(2).ToArray();
+        }
+        
+        // Title case each word
+        for (int i = 0; i < words.Length; i++)
+        {
+            if (words[i].Length > 0)
+            {
+                words[i] = char.ToUpper(words[i][0]) + (words[i].Length > 1 ? words[i][1..].ToLower() : "");
+            }
+        }
+        
+        return string.Join(" ", words);
+    }
+
+    public static string FormatAddress(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return string.Empty;
+        
+        var words = input.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        
+        // Take only the first word
+        if (words.Length > 0)
+        {
+            var word = words[0];
+            return char.ToUpper(word[0]) + (word.Length > 1 ? word[1..].ToLower() : "");
+        }
+        
+        return string.Empty;
     }
 }
 

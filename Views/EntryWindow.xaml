@@ -1,430 +1,169 @@
 ﻿<Window x:Class="WeighbridgeSoftwareYashCotex.Views.EntryWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Entry - Weighbridge Software" 
-        Width="900" Height="700"
-        WindowStartupLocation="CenterOwner">
+        Title="Entry Form" 
+        Width="500" Height="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
     
     <Window.Resources>
-        <!-- Embedded Validation Styles -->
-        <Style x:Key="ValidatedTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Padding" Value="8,6"/>
-            <Setter Property="BorderBrush" Value="#CCCCCC"/>
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Style.Triggers>
-                <Trigger Property="Tag" Value="Valid">
-                    <Setter Property="BorderBrush" Value="#28A745"/>
-                    <Setter Property="Background" Value="#F8FFF9"/>
-                </Trigger>
-                <Trigger Property="Tag" Value="Invalid">
-                    <Setter Property="BorderBrush" Value="#DC3545"/>
-                    <Setter Property="Background" Value="#FFF8F8"/>
-                </Trigger>
-                <Trigger Property="IsFocused" Value="True">
-                    <Setter Property="BorderBrush" Value="#007BFF"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="ValidationMessageStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Foreground" Value="#DC3545"/>
-            <Setter Property="Margin" Value="0,2,0,5"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="Visibility" Value="Collapsed"/>
-        </Style>
-
-        <Style x:Key="LoadingIndicatorStyle" TargetType="ProgressBar">
-            <Setter Property="Height" Value="3"/>
-            <Setter Property="IsIndeterminate" Value="True"/>
-            <Setter Property="Foreground" Value="#007BFF"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Visibility" Value="Collapsed"/>
-        </Style>
-
-        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#007BFF"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Padding" Value="16,8"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#0056B3"/>
-                </Trigger>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Background" Value="#6C757D"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="SuccessButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
-            <Setter Property="Background" Value="#28A745"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#218838"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="WarningButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
-            <Setter Property="Background" Value="#FFC107"/>
-            <Setter Property="Foreground" Value="#212529"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#E0A800"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
-            <Setter Property="Background" Value="#DC3545"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#C82333"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="ValidatedComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="Padding" Value="8,6"/>
-            <Setter Property="BorderBrush" Value="#CCCCCC"/>
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Style.Triggers>
-                <Trigger Property="Tag" Value="Valid">
-                    <Setter Property="BorderBrush" Value="#28A745"/>
-                    <Setter Property="Background" Value="#F8FFF9"/>
-                </Trigger>
-                <Trigger Property="Tag" Value="Invalid">
-                    <Setter Property="BorderBrush" Value="#DC3545"/>
-                    <Setter Property="Background" Value="#FFF8F8"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- Enhanced Form Section Style -->
-        <Style x:Key="FormSectionStyle" TargetType="Border">
-            <Setter Property="Background" Value="#FAFBFC"/>
-            <Setter Property="BorderBrush" Value="#E1E4E8"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="8"/>
-            <Setter Property="Padding" Value="20"/>
-            <Setter Property="Margin" Value="0,10"/>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Color="#E0E0E0" Opacity="0.3"/>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Field Label Style -->
+        <!-- Minimal Styles -->
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Foreground" Value="#24292E"/>
-            <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="Margin" Value="0,8,10,0"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+            <Setter Property="Foreground" Value="#333"/>
         </Style>
-
-        <!-- Required Field Indicator -->
-        <Style x:Key="RequiredIndicatorStyle" TargetType="TextBlock">
-            <Setter Property="Text" Value="*"/>
-            <Setter Property="Foreground" Value="#DC3545"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="VerticalAlignment" Value="Top"/>
-            <Setter Property="Margin" Value="2,8,0,0"/>
+        
+        <Style x:Key="FieldTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+        
+        <Style x:Key="FieldComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+        
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style x:Key="SaveButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="#28A745"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
+        <Style x:Key="ClearButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="#FFC107"/>
+            <Setter Property="Foreground" Value="#212529"/>
+        </Style>
+        
+        <Style x:Key="ErrorTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="Red"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Margin" Value="0,-10,0,10"/>
         </Style>
     </Window.Resources>
     
-    <Border Background="White" Padding="0" BorderBrush="#E1E4E8" BorderThickness="1">
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="0">
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="Entry Form" 
+                   FontSize="24" FontWeight="Bold" 
+                   HorizontalAlignment="Center" 
+                   Margin="0,0,0,20"/>
+        
+        <!-- Form Fields -->
+        <StackPanel Grid.Row="1">
+            
+            <!-- RST and ID Row -->
+            <Grid Margin="0,0,0,15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
                 
-                <!-- Header Section -->
-                <Border Padding="30">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#4A90E2" Offset="0"/>
-                            <GradientStop Color="#357ABD" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
-                    <StackPanel>
-                        <TextBlock Text="🚛 VEHICLE ENTRY" FontSize="28" FontWeight="Bold" 
-                                  Foreground="White" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Enter vehicle details and capture entry weight" 
-                                  FontSize="14" Foreground="#E8F4FD" HorizontalAlignment="Center" 
-                                  Margin="0,5,0,0" FontStyle="Italic"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- Main Form Container -->
-                <Grid Margin="30">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                <!-- Entry Information Section -->
-                <Border Grid.Row="0" Style="{StaticResource FormSectionStyle}">
-                    <StackPanel>
-                        <TextBlock Text="📋 Entry Information" FontSize="16" FontWeight="Bold" 
-                                  Foreground="#2C3E50" Margin="0,0,0,15"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="20"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            
-                            <!-- RST Number -->
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="RST Number" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox x:Name="RstNumberTextBox" IsReadOnly="True" 
-                                        Background="#F8F9FA" FontWeight="Bold" FontSize="16"
-                                        Padding="12,8" BorderBrush="#E1E4E8" BorderThickness="2"/>
-                            </StackPanel>
-
-                            <!-- ID -->
-                            <StackPanel Grid.Column="2">
-                                <TextBlock Text="Entry ID" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox x:Name="IdTextBox" IsReadOnly="True" 
-                                        Background="#F8F9FA" FontWeight="Bold" FontSize="16"
-                                        Padding="12,8" BorderBrush="#E1E4E8" BorderThickness="2"/>
-                            </StackPanel>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- Vehicle and Customer Information Section -->
-                <Border Grid.Row="1" Style="{StaticResource FormSectionStyle}">
-                    <StackPanel>
-                        <TextBlock Text="🚗 Vehicle &amp; Customer Information" FontSize="16" FontWeight="Bold" 
-                                  Foreground="#2C3E50" Margin="0,0,0,15"/>
-                        
-                        <!-- Vehicle and Phone Row -->
-                        <Grid Margin="0,0,0,15">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="20"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            
-                            <!-- Vehicle Number -->
-                            <StackPanel Grid.Column="0">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Vehicle Number" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Style="{StaticResource RequiredIndicatorStyle}"/>
-                                </StackPanel>
-                                <TextBox x:Name="VehicleNumberTextBox" 
-                                        Style="{StaticResource ValidatedTextBoxStyle}"
-                                        CharacterCasing="Upper" MaxLength="10"
-                                        TextChanged="VehicleNumberTextBox_TextChanged"
-                                        LostFocus="VehicleNumberTextBox_LostFocus"
-                                        ToolTip="Enter vehicle registration number (4-10 characters)"/>
-                                <TextBlock x:Name="VehicleNumberValidation" Style="{StaticResource ValidationMessageStyle}"/>
-                                <ProgressBar x:Name="VehicleNumberLoading" Style="{StaticResource LoadingIndicatorStyle}"/>
-                            </StackPanel>
-
-                            <!-- Phone Number -->
-                            <StackPanel Grid.Column="2">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Phone Number" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Style="{StaticResource RequiredIndicatorStyle}"/>
-                                </StackPanel>
-                                <TextBox x:Name="PhoneNumberTextBox" 
-                                        Style="{StaticResource ValidatedTextBoxStyle}"
-                                        MaxLength="10"
-                                        TextChanged="PhoneNumberTextBox_TextChanged"
-                                        LostFocus="PhoneNumberTextBox_LostFocus"
-                                        PreviewTextInput="PhoneNumberTextBox_PreviewTextInput"
-                                        ToolTip="Enter 10-digit mobile number"/>
-                                <TextBlock x:Name="PhoneNumberValidation" Style="{StaticResource ValidationMessageStyle}"/>
-                                <ProgressBar x:Name="PhoneNumberLoading" Style="{StaticResource LoadingIndicatorStyle}"/>
-                            </StackPanel>
-                        </Grid>
-
-                        <!-- Customer Name -->
-                        <StackPanel Margin="0,0,0,15">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Customer Name" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBlock Style="{StaticResource RequiredIndicatorStyle}"/>
-                            </StackPanel>
-                            <ComboBox x:Name="NameComboBox" 
-                                     Style="{StaticResource ValidatedComboBoxStyle}"
-                                     IsEditable="True"
-                                     TextBoxBase.TextChanged="NameComboBox_TextChanged"
-                                     LostFocus="NameComboBox_LostFocus"
-                                     SelectionChanged="NameComboBox_SelectionChanged"
-                                     ToolTip="Enter customer name (auto-complete available)"/>
-                            <TextBlock x:Name="NameValidation" Style="{StaticResource ValidationMessageStyle}"/>
-                        </StackPanel>
-
-                        <!-- Address -->
-                        <StackPanel Margin="0,0,0,15">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Address" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBlock Style="{StaticResource RequiredIndicatorStyle}"/>
-                            </StackPanel>
-                            <ComboBox x:Name="AddressComboBox" 
-                                     Style="{StaticResource ValidatedComboBoxStyle}"
-                                     IsEditable="True"
-                                     TextBoxBase.TextChanged="AddressComboBox_TextChanged"
-                                     LostFocus="AddressComboBox_LostFocus"
-                                     ToolTip="Enter customer address (auto-complete available)"/>
-                            <TextBlock x:Name="AddressValidation" Style="{StaticResource ValidationMessageStyle}"/>
-                        </StackPanel>
-
-                        <!-- Material -->
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="20"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            
-                            <StackPanel Grid.Column="0">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Material Type" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Style="{StaticResource RequiredIndicatorStyle}"/>
-                                </StackPanel>
-                                <ComboBox x:Name="MaterialComboBox" 
-                                         Style="{StaticResource ValidatedComboBoxStyle}"
-                                         SelectedIndex="0"
-                                         SelectionChanged="MaterialComboBox_SelectionChanged"
-                                         ToolTip="Select material type"/>
-                                <TextBlock x:Name="MaterialValidation" Style="{StaticResource ValidationMessageStyle}"/>
-                            </StackPanel>
-
-                            <!-- Date and Time -->
-                            <StackPanel Grid.Column="2">
-                                <TextBlock Text="Entry Date &amp; Time" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox x:Name="DateTimeTextBox" IsReadOnly="True" 
-                                        Background="#F8F9FA" FontWeight="SemiBold"
-                                        Padding="12,8" BorderBrush="#E1E4E8" BorderThickness="2"/>
-                            </StackPanel>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- Weight Capture Section -->
-                <Border Grid.Row="2" Style="{StaticResource FormSectionStyle}">
-                    <StackPanel>
-                        <TextBlock Text="⚖️ Weight Capture" FontSize="16" FontWeight="Bold" 
-                                  Foreground="#2C3E50" Margin="0,0,0,15"/>
-                        
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="200"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            
-                            <!-- Weight Display -->
-                            <StackPanel Grid.Column="0">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Entry Weight" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBlock Style="{StaticResource RequiredIndicatorStyle}"/>
-                                </StackPanel>
-                                <Border Background="#FFF3CD" BorderBrush="#F0C649" BorderThickness="2" 
-                                       CornerRadius="6" Padding="15,10">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <TextBox x:Name="WeightTextBox" 
-                                                Style="{StaticResource ValidatedTextBoxStyle}"
-                                                IsReadOnly="True" Background="Transparent" BorderThickness="0"
-                                                FontWeight="Bold" FontSize="24" TextAlignment="Center"
-                                                Width="120" ToolTip="Current weight from weighbridge"/>
-                                        <TextBlock Text="KG" FontWeight="Bold" FontSize="18" 
-                                                  VerticalAlignment="Center" Margin="5,0,0,0" Foreground="#856404"/>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <!-- Capture Button -->
-                            <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="20,0,0,0">
-                                <Button Content="📏 Capture Weight" 
-                                       Style="{StaticResource PrimaryButtonStyle}"
-                                       Click="CaptureWeight_Click" FontSize="16" Padding="20,12"/>
-                                <TextBlock Text="Click to get current weight from weighbridge" 
-                                          FontSize="11" Foreground="#6C757D" 
-                                          HorizontalAlignment="Center" Margin="0,5,0,0"/>
-                            </StackPanel>
-                        </Grid>
-                        
-                        <TextBlock x:Name="WeightValidation" Style="{StaticResource ValidationMessageStyle}"/>
-                        <ProgressBar x:Name="WeightLoading" Style="{StaticResource LoadingIndicatorStyle}"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- Instructions Section -->
-                <Border Grid.Row="3" Background="#E7F3FF" BorderBrush="#B6E5FF" BorderThickness="1" 
-                       CornerRadius="8" Padding="20" Margin="0,10">
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                            <TextBlock Text="💡" FontSize="16" Margin="0,0,8,0"/>
-                            <TextBlock Text="Quick Tips" FontWeight="Bold" FontSize="14" Foreground="#0B5394"/>
-                        </StackPanel>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="• Vehicle Number: 4-10 characters (letters/digits)" FontSize="12" Margin="0,2"/>
-                                <TextBlock Text="• Phone Number: Exactly 10 digits" FontSize="12" Margin="0,2"/>
-                                <TextBlock Text="• Auto-complete works for existing customers" FontSize="12" Margin="0,2"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="1">
-                                <TextBlock Text="• Use TAB to navigate between fields" FontSize="12" Margin="0,2"/>
-                                <TextBlock Text="• All required fields marked with *" FontSize="12" Margin="0,2"/>
-                                <TextBlock Text="• Progress bar shows completion status" FontSize="12" Margin="0,2"/>
-                            </StackPanel>
-                        </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- Form Status and Actions Section -->
-                </Grid>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="RST Number" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBox x:Name="RstNumberTextBox" IsReadOnly="True" 
+                             Style="{StaticResource FieldTextBoxStyle}"
+                             Background="#F5F5F5"/>
+                </StackPanel>
                 
-                <!-- Form Status Bar -->
-                <Border Background="#F8F9FA" BorderBrush="#E1E4E8" BorderThickness="0,1,0,0" Padding="30,20">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        
-                        <!-- Progress Status -->
-                        <StackPanel Grid.Row="0" Margin="0,0,0,20">
-                            <TextBlock x:Name="FormStatusText" Text="Please fill all required fields to save entry" 
-                                      FontStyle="Italic" Foreground="#6C757D" HorizontalAlignment="Center" FontSize="14"/>
-                            <ProgressBar x:Name="FormProgressBar" Height="6" Margin="0,10,0,0" 
-                                        Maximum="5" Value="0" Foreground="#28A745" Background="#E9ECEF"/>
-                        </StackPanel>
-
-                        <!-- Action Buttons -->
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                            <Button Content="💾 Save Entry (F6)" x:Name="SaveButton" 
-                                   Style="{StaticResource SuccessButtonStyle}"
-                                   Click="SaveButton_Click" IsEnabled="False" FontSize="16" Padding="24,12"/>
-                            <Button Content="🗑️ Clear Form (F7)" x:Name="ClearButton" 
-                                   Style="{StaticResource WarningButtonStyle}"
-                                   Click="ClearButton_Click" FontSize="16" Padding="24,12"/>
-                            <Button Content="❌ Close (Esc)" x:Name="CloseButton" 
-                                   Style="{StaticResource DangerButtonStyle}"
-                                   Click="CloseButton_Click" FontSize="16" Padding="24,12"/>
-                        </StackPanel>
-                    </Grid>
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="ID" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBox x:Name="IdTextBox" IsReadOnly="True" 
+                             Style="{StaticResource FieldTextBoxStyle}"
+                             Background="#F5F5F5"/>
+                </StackPanel>
+            </Grid>
+            
+            <!-- Vehicle Number -->
+            <StackPanel>
+                <TextBlock Text="Vehicle Number *" Style="{StaticResource FieldLabelStyle}"/>
+                <TextBox x:Name="VehicleNumberTextBox" 
+                         Style="{StaticResource FieldTextBoxStyle}"
+                         CharacterCasing="Upper" MaxLength="10"
+                         TextChanged="VehicleNumberTextBox_TextChanged"/>
+                <TextBlock x:Name="VehicleNumberError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
+            </StackPanel>
+            
+            <!-- Phone Number -->
+            <StackPanel>
+                <TextBlock Text="Phone Number *" Style="{StaticResource FieldLabelStyle}"/>
+                <TextBox x:Name="PhoneNumberTextBox" 
+                         Style="{StaticResource FieldTextBoxStyle}"
+                         MaxLength="10"
+                         TextChanged="PhoneNumberTextBox_TextChanged"
+                         PreviewTextInput="PhoneNumberTextBox_PreviewTextInput"/>
+                <TextBlock x:Name="PhoneNumberError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
+            </StackPanel>
+            
+            <!-- Name -->
+            <StackPanel>
+                <TextBlock Text="Name *" Style="{StaticResource FieldLabelStyle}"/>
+                <TextBox x:Name="NameTextBox" 
+                         Style="{StaticResource FieldTextBoxStyle}"
+                         TextChanged="NameTextBox_TextChanged"/>
+                <TextBlock x:Name="NameError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
+            </StackPanel>
+            
+            <!-- Address -->
+            <StackPanel>
+                <TextBlock Text="Address *" Style="{StaticResource FieldLabelStyle}"/>
+                <TextBox x:Name="AddressTextBox" 
+                         Style="{StaticResource FieldTextBoxStyle}"
+                         TextChanged="AddressTextBox_TextChanged"/>
+                <TextBlock x:Name="AddressError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
+            </StackPanel>
+            
+            <!-- Material -->
+            <StackPanel>
+                <TextBlock Text="Material *" Style="{StaticResource FieldLabelStyle}"/>
+                <ComboBox x:Name="MaterialComboBox" 
+                          Style="{StaticResource FieldComboBoxStyle}"
+                          SelectionChanged="MaterialComboBox_SelectionChanged"/>
+                <TextBlock x:Name="MaterialError" Style="{StaticResource ErrorTextStyle}" Visibility="Collapsed"/>
+            </StackPanel>
+            
+            <!-- Weight Display -->
+            <StackPanel>
+                <TextBlock Text="Entry Weight" Style="{StaticResource FieldLabelStyle}"/>
+                <Border Background="#FFF3CD" BorderBrush="#F0C649" BorderThickness="2" 
+                        CornerRadius="4" Padding="15">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBox x:Name="WeightTextBox" 
+                                 IsReadOnly="True" Background="Transparent" BorderThickness="0"
+                                 FontWeight="Bold" FontSize="20" TextAlignment="Center"
+                                 Width="100" Text="0.00"/>
+                        <TextBlock Text="KG" FontWeight="Bold" FontSize="16" 
+                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    </StackPanel>
                 </Border>
             </StackPanel>
-        </ScrollViewer>
-    </Border>
+        </StackPanel>
+        
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+            <Button Content="Save Entry" x:Name="SaveButton" 
+                    Style="{StaticResource SaveButtonStyle}"
+                    Click="SaveButton_Click" IsEnabled="False"/>
+            <Button Content="Clear" x:Name="ClearButton" 
+                    Style="{StaticResource ClearButtonStyle}"
+                    Click="ClearButton_Click"/>
+        </StackPanel>
+    </Grid>
 </Window>
