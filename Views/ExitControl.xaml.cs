@@ -7,6 +7,7 @@ using System.Windows.Media;
 using WeighbridgeSoftwareYashCotex.Services;
 using WeighbridgeSoftwareYashCotex.Models;
 using System.Windows.Documents;
+using System.IO;
 
 namespace WeighbridgeSoftwareYashCotex.Views
 {
@@ -14,6 +15,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
     {
         private readonly DatabaseService _databaseService;
         private readonly WeightService _weightService;
+        private readonly PdfGenerationService _pdfService;
         private WeighmentEntry? _currentEntry;
         private double _capturedExitWeight;
         
@@ -24,6 +26,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             InitializeComponent();
             _databaseService = new DatabaseService();
             _weightService = new WeightService();
+            _pdfService = new PdfGenerationService();
             
             this.Loaded += ExitControl_Loaded;
             this.KeyDown += ExitControl_KeyDown;
@@ -569,25 +572,26 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 PrintSlipButton.IsEnabled = true;
                 SaveExitButton.IsEnabled = false;
                 
-                // Auto-print by default
-                var result = MessageBox.Show(
-                    $"Exit saved successfully!\n\nRST: {_currentEntry.RstNumber}\nNet Weight: {_currentEntry.NetWeight:F2} KG\n\nDo you want to print the weighment slip now?", 
+                // Offer PDF generation with camera captures
+                var pdfResult = MessageBox.Show(
+                    $"Exit saved successfully!\n\nRST: {_currentEntry.RstNumber}\nNet Weight: {_currentEntry.NetWeight:F2} KG\n\nGenerate PDF report with camera captures?", 
                     "Exit Completed", 
-                    MessageBoxButton.YesNo, 
+                    MessageBoxButton.YesNoCancel, 
                     MessageBoxImage.Question);
                 
-                if (result == MessageBoxResult.Yes)
+                if (pdfResult == MessageBoxResult.Yes)
                 {
-                    PrintWeighmentSlip();
+                    _ = GeneratePdfReportAsync(true); // With camera captures
                 }
-                
-                // Ask for reprint option
-                var reprintResult = MessageBox.Show("Do you want to print another copy?", "Reprint", 
-                                                   MessageBoxButton.YesNo, MessageBoxImage.Question);
-                
-                if (reprintResult == MessageBoxResult.Yes)
+                else if (pdfResult == MessageBoxResult.No)
                 {
-                    PrintWeighmentSlip();
+                    // Ask for print instead
+                    var printResult = MessageBox.Show("Print weighment slip instead?", "Print Option", 
+                                                     MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (printResult == MessageBoxResult.Yes)
+                    {
+                        PrintWeighmentSlip();
+                    }
                 }
                 
                 // Notify completion and auto-close
@@ -726,6 +730,53 @@ namespace WeighbridgeSoftwareYashCotex.Views
             ExitStatusText.Text = message;
             ExitStatusText.Foreground = new SolidColorBrush(isSuccess ? 
                 Color.FromRgb(40, 167, 69) : Color.FromRgb(220, 53, 69));
+        }
+
+        #endregion
+
+        #region PDF Generation
+
+        private async Task GeneratePdfReportAsync(bool includeImages)
+        {
+            try
+            {
+                if (_currentEntry == null) return;
+
+                UpdateExitStatus("Generating PDF report...", true);
+
+                var pdfPath = await _pdfService.GenerateWeighmentSlipAsync(_currentEntry, includeImages);
+                
+                UpdateExitStatus("PDF generated successfully!", true);
+
+                var openResult = MessageBox.Show(
+                    $"PDF report generated successfully!\n\nLocation: {Path.GetFileName(pdfPath)}\n\nDo you want to open the PDF now?", 
+                    "PDF Generated", 
+                    MessageBoxButton.YesNo, 
+                    MessageBoxImage.Information);
+
+                if (openResult == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = pdfPath,
+                            UseShellExecute = true
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Could not open PDF: {ex.Message}\n\nFile saved to: {pdfPath}", 
+                                       "Open PDF Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateExitStatus($"PDF generation failed: {ex.Message}", false);
+                MessageBox.Show($"Failed to generate PDF report: {ex.Message}", "PDF Generation Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         #endregion

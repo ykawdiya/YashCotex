@@ -10,6 +10,7 @@ public class WeighbridgeDbContext : DbContext
     public DbSet<WeighmentEntry> WeighmentEntries { get; set; }
     public DbSet<Material> Materials { get; set; }
     public DbSet<Address> Addresses { get; set; }
+    public DbSet<WeightAudit> WeightAudits { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -57,6 +58,25 @@ public class WeighbridgeDbContext : DbContext
             entity.HasKey(a => a.Id);
             entity.Property(a => a.Name).IsRequired().HasMaxLength(200);
             entity.HasIndex(a => a.Name).IsUnique();
+        });
+        
+        modelBuilder.Entity<WeightAudit>(entity =>
+        {
+            entity.HasKey(w => w.Id);
+            entity.Property(w => w.WeightType).IsRequired().HasMaxLength(10);
+            entity.Property(w => w.Reason).IsRequired().HasMaxLength(500);
+            entity.Property(w => w.ModifiedBy).IsRequired().HasMaxLength(50);
+            entity.Property(w => w.VehicleNumber).IsRequired().HasMaxLength(10);
+            entity.Property(w => w.CustomerName).IsRequired().HasMaxLength(100);
+            entity.Property(w => w.SystemInfo).HasMaxLength(500);
+            entity.Property(w => w.Notes).HasMaxLength(1000);
+            entity.Property(w => w.ApprovedBy).HasMaxLength(50);
+            entity.Property(w => w.ReversedBy).HasMaxLength(50);
+            entity.Property(w => w.ReversalReason).HasMaxLength(500);
+            entity.Property(w => w.OriginalWeight).HasPrecision(10, 2);
+            entity.Property(w => w.NewWeight).HasPrecision(10, 2);
+            entity.HasIndex(w => w.RstNumber);
+            entity.HasIndex(w => w.ModifiedDateTime);
         });
         
         SeedData(modelBuilder);

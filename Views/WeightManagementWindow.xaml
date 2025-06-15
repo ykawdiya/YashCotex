@@ -1,0 +1,327 @@
+<Window x:Class="WeighbridgeSoftwareYashCotex.Views.WeightManagementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        Title="⚖️ Weight Management - Super Admin Only" 
+        Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="#f8f9fa">
+
+    <Window.Resources>
+        <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#2c3e50"/>
+        </Style>
+        
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        
+        <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="#007bff"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="#dc3545"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
+        <Style x:Key="WarningButton" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="#ffc107"/>
+            <Setter Property="Foreground" Value="#212529"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#343a40" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="⚖️ WEIGHT MANAGEMENT SYSTEM" 
+                               FontSize="20" FontWeight="Bold" 
+                               Foreground="White" Margin="0,0,0,5"/>
+                    <TextBlock Text="Super Admin Weight Modification and Audit Controls" 
+                               FontSize="12" Foreground="#adb5bd"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock x:Name="CurrentUserText" 
+                               Text="User: Super Admin" 
+                               Foreground="White" FontWeight="Bold" 
+                               VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock x:Name="CurrentTimeText" 
+                               Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat='{}{0:dd/MM/yyyy HH:mm:ss}'}" 
+                               Foreground="#adb5bd" 
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <TabControl Grid.Row="1" Background="White" BorderThickness="1" BorderBrush="#dee2e6">
+            
+            <!-- Weight Modification Tab -->
+            <TabItem Header="🔧 Weight Modification">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Search Section -->
+                    <GroupBox Grid.Row="0" Header="Search Entry for Modification" Margin="0,0,0,20">
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0" Text="RST Number:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBox x:Name="SearchRstTextBox" Grid.Column="1" Padding="8" Margin="0,0,10,0"/>
+                            <Button x:Name="SearchButton" Grid.Column="2" Content="🔍 Search" 
+                                    Style="{StaticResource PrimaryButton}" Click="SearchButton_Click"/>
+                            <TextBlock x:Name="SearchStatusText" Grid.Column="3" 
+                                       Text="Enter RST number to search for entry" 
+                                       VerticalAlignment="Center" Margin="20,0,0,0" 
+                                       Foreground="#6c757d"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Entry Details Section -->
+                    <GroupBox x:Name="EntryDetailsGroup" Grid.Row="1" Header="Entry Details" 
+                              Margin="0,0,0,20" Visibility="Collapsed">
+                        <Grid Margin="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!-- Entry Info -->
+                            <Grid Grid.Row="0" Margin="0,0,0,15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                                    <TextBlock Text="RST Number:" Style="{StaticResource HeaderTextStyle}"/>
+                                    <TextBlock x:Name="RstNumberText" Text="-" FontSize="16"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Column="1" Margin="0,0,15,0">
+                                    <TextBlock Text="Vehicle Number:" Style="{StaticResource HeaderTextStyle}"/>
+                                    <TextBlock x:Name="VehicleNumberText" Text="-" FontSize="16"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Column="2" Margin="0,0,15,0">
+                                    <TextBlock Text="Customer Name:" Style="{StaticResource HeaderTextStyle}"/>
+                                    <TextBlock x:Name="CustomerNameText" Text="-" FontSize="16"/>
+                                </StackPanel>
+                                
+                                <StackPanel Grid.Column="3">
+                                    <TextBlock Text="Material:" Style="{StaticResource HeaderTextStyle}"/>
+                                    <TextBlock x:Name="MaterialText" Text="-" FontSize="16"/>
+                                </StackPanel>
+                            </Grid>
+                            
+                            <!-- Weight Modification -->
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Entry Weight -->
+                                <GroupBox Grid.Column="0" Header="Entry Weight Modification" Margin="0,0,10,0">
+                                    <StackPanel Margin="10">
+                                        <TextBlock Text="Current Entry Weight:" FontWeight="Bold"/>
+                                        <TextBlock x:Name="CurrentEntryWeightText" Text="-" FontSize="18" 
+                                                   Foreground="#007bff" Margin="0,0,0,10"/>
+                                        
+                                        <TextBlock Text="New Entry Weight (KG):" FontWeight="Bold"/>
+                                        <TextBox x:Name="NewEntryWeightTextBox" Padding="8" Margin="0,5,0,10"/>
+                                        
+                                        <TextBlock Text="Reason for Modification:" FontWeight="Bold"/>
+                                        <TextBox x:Name="EntryReasonTextBox" Padding="8" Height="60" 
+                                                 TextWrapping="Wrap" AcceptsReturn="True" Margin="0,5,0,10"/>
+                                        
+                                        <Button x:Name="ModifyEntryWeightButton" Content="⚖️ Modify Entry Weight" 
+                                                Style="{StaticResource WarningButton}" Click="ModifyEntryWeightButton_Click"/>
+                                    </StackPanel>
+                                </GroupBox>
+                                
+                                <!-- Exit Weight -->
+                                <GroupBox Grid.Column="1" Header="Exit Weight Modification" Margin="10,0,0,0">
+                                    <StackPanel Margin="10">
+                                        <TextBlock Text="Current Exit Weight:" FontWeight="Bold"/>
+                                        <TextBlock x:Name="CurrentExitWeightText" Text="-" FontSize="18" 
+                                                   Foreground="#28a745" Margin="0,0,0,10"/>
+                                        
+                                        <TextBlock Text="New Exit Weight (KG):" FontWeight="Bold"/>
+                                        <TextBox x:Name="NewExitWeightTextBox" Padding="8" Margin="0,5,0,10"/>
+                                        
+                                        <TextBlock Text="Reason for Modification:" FontWeight="Bold"/>
+                                        <TextBox x:Name="ExitReasonTextBox" Padding="8" Height="60" 
+                                                 TextWrapping="Wrap" AcceptsReturn="True" Margin="0,5,0,10"/>
+                                        
+                                        <Button x:Name="ModifyExitWeightButton" Content="⚖️ Modify Exit Weight" 
+                                                Style="{StaticResource WarningButton}" Click="ModifyExitWeightButton_Click"/>
+                                    </StackPanel>
+                                </GroupBox>
+                            </Grid>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Status -->
+                    <TextBlock x:Name="ModificationStatusText" Grid.Row="2" 
+                               Text="Ready for weight modifications" 
+                               FontSize="14" FontWeight="Bold" 
+                               Foreground="#6c757d" VerticalAlignment="Top"/>
+                </Grid>
+            </TabItem>
+
+            <!-- Audit History Tab -->
+            <TabItem Header="📋 Audit History">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Filter Controls -->
+                    <GroupBox Grid.Row="0" Header="Filter Audit Records" Margin="0,0,0,20">
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0" Text="RST:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <TextBox x:Name="FilterRstTextBox" Grid.Column="1" Padding="5" Margin="0,0,15,0"/>
+                            
+                            <TextBlock Grid.Column="2" Text="From:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <DatePicker x:Name="FilterFromDatePicker" Grid.Column="3" Margin="0,0,15,0"/>
+                            
+                            <TextBlock Grid.Column="4" Text="To:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <DatePicker x:Name="FilterToDatePicker" Grid.Column="5" Margin="0,0,15,0"/>
+                            
+                            <Button x:Name="LoadAuditButton" Grid.Column="6" Content="📊 Load Audit" 
+                                    Style="{StaticResource PrimaryButton}" Click="LoadAuditButton_Click"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Audit Records -->
+                    <DataGrid x:Name="AuditDataGrid" Grid.Row="1" AutoGenerateColumns="False" 
+                              IsReadOnly="True" CanUserReorderColumns="True" CanUserSortColumns="True"
+                              GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                              Margin="0,0,0,15" BorderThickness="1" BorderBrush="#dee2e6">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Audit ID" Binding="{Binding Id}" Width="80"/>
+                            <DataGridTextColumn Header="RST" Binding="{Binding RstNumber}" Width="60"/>
+                            <DataGridTextColumn Header="Type" Binding="{Binding WeightType}" Width="60"/>
+                            <DataGridTextColumn Header="Original (KG)" Binding="{Binding OriginalWeight, StringFormat=F2}" Width="100"/>
+                            <DataGridTextColumn Header="New (KG)" Binding="{Binding NewWeight, StringFormat=F2}" Width="100"/>
+                            <DataGridTextColumn Header="Difference" Binding="{Binding WeightDifference, StringFormat=F2}" Width="80"/>
+                            <DataGridTextColumn Header="Reason" Binding="{Binding Reason}" Width="200"/>
+                            <DataGridTextColumn Header="Modified By" Binding="{Binding ModifiedBy}" Width="100"/>
+                            <DataGridTextColumn Header="Date/Time" Binding="{Binding ModifiedDateTime, StringFormat=dd/MM/yyyy HH:mm}" Width="120"/>
+                            <DataGridTextColumn Header="Vehicle" Binding="{Binding VehicleNumber}" Width="80"/>
+                            <DataGridCheckBoxColumn Header="Reversed" Binding="{Binding IsReversed}" Width="70"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Audit Actions -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                        <Button x:Name="ReverseModificationButton" Content="↩️ Reverse Selected" 
+                                Style="{StaticResource DangerButton}" Click="ReverseModificationButton_Click"/>
+                        <Button x:Name="ExportAuditButton" Content="📄 Export to PDF" 
+                                Style="{StaticResource PrimaryButton}" Click="ExportAuditButton_Click"/>
+                        <TextBlock x:Name="AuditStatusText" Text="Ready" 
+                                   VerticalAlignment="Center" Margin="20,0,0,0" 
+                                   FontWeight="Bold" Foreground="#6c757d"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Summary Tab -->
+            <TabItem Header="📊 Summary Report">
+                <Grid Margin="20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Date Range -->
+                    <GroupBox Grid.Row="0" Header="Generate Summary Report" Margin="0,0,0,20">
+                        <StackPanel Orientation="Horizontal" Margin="10">
+                            <TextBlock Text="From:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <DatePicker x:Name="SummaryFromDatePicker" Margin="0,0,15,0"/>
+                            <TextBlock Text="To:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                            <DatePicker x:Name="SummaryToDatePicker" Margin="0,0,15,0"/>
+                            <Button x:Name="GenerateSummaryButton" Content="📊 Generate Summary" 
+                                    Style="{StaticResource PrimaryButton}" Click="GenerateSummaryButton_Click"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Summary Display -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="SummaryPanel">
+                            <TextBlock Text="📊 Select date range and click 'Generate Summary' to view weight modification statistics" 
+                                       FontSize="14" Foreground="#6c757d" 
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                       Margin="0,50,0,0"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+
+        <!-- Footer -->
+        <Border Grid.Row="2" Background="#f1f3f4" CornerRadius="8" Padding="15" Margin="0,20,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" 
+                           Text="⚠️ WARNING: Weight modifications are permanently logged and audited. Use only when necessary." 
+                           FontWeight="Bold" Foreground="#dc3545" VerticalAlignment="Center"/>
+                
+                <Button Grid.Column="1" Content="❌ Close" 
+                        Style="{StaticResource ButtonStyle}" 
+                        Background="#6c757d" Foreground="White" Click="CloseButton_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

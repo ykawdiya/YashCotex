@@ -5,17 +5,21 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Input;
 using WeighbridgeSoftwareYashCotex.Services;
 using WeighbridgeSoftwareYashCotex.Models;
 using Microsoft.Win32;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace WeighbridgeSoftwareYashCotex.Views
 {
     public partial class PrintControl : UserControl
     {
         private readonly DatabaseService _databaseService;
+        private readonly PdfGenerationService _pdfService;
+        private readonly CameraService? _cameraService;
         private List<WeighmentEntry> _currentData = new();
 
         public event EventHandler<string>? FormCompleted;
@@ -24,6 +28,25 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             InitializeComponent();
             _databaseService = new DatabaseService();
+            
+            // Try to get camera service from the application
+            try
+            {
+                // Check if MainWindow has camera service available
+                if (Application.Current.MainWindow is MainWindow mainWindow)
+                {
+                    var cameraServiceField = mainWindow.GetType().GetField("_cameraService", 
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    _cameraService = cameraServiceField?.GetValue(mainWindow) as CameraService;
+                }
+            }
+            catch
+            {
+                // Camera service not available, continue without it
+                _cameraService = null;
+            }
+            
+            _pdfService = new PdfGenerationService(_cameraService, _databaseService);
             
             // Load data after control is fully loaded
             this.Loaded += PrintControl_Loaded;
@@ -186,6 +209,100 @@ namespace WeighbridgeSoftwareYashCotex.Views
             if (IncludeFooterCheckBox.IsChecked == true)
             {
                 AddReportFooter();
+            }
+
+            // Add PDF generation button if we have data
+            if (_currentData.Any())
+            {
+                AddPdfGenerationButton();
+            }
+        }
+
+        private void AddPdfGenerationButton()
+        {
+            var buttonPanel = new StackPanel 
+            { 
+                Orientation = Orientation.Horizontal, 
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 20, 0, 0)
+            };
+
+            var generatePdfButton = new Button
+            {
+                Content = "📄 Generate PDF with Camera Captures",
+                Padding = new Thickness(15, 8, 15, 8),
+                Margin = new Thickness(10, 0, 10, 0),
+                Background = new SolidColorBrush(Color.FromRgb(0, 123, 255)),
+                Foreground = Brushes.White,
+                BorderThickness = new Thickness(0),
+                Cursor = Cursors.Hand
+            };
+
+            generatePdfButton.Click += async (s, e) =>
+            {
+                await GeneratePreviewPdfAsync(true);
+            };
+
+            var generateBasicPdfButton = new Button
+            {
+                Content = "📄 Generate Basic PDF",
+                Padding = new Thickness(15, 8, 15, 8),
+                Margin = new Thickness(10, 0, 10, 0),
+                Background = new SolidColorBrush(Color.FromRgb(108, 117, 125)),
+                Foreground = Brushes.White,
+                BorderThickness = new Thickness(0),
+                Cursor = Cursors.Hand
+            };
+
+            generateBasicPdfButton.Click += async (s, e) =>
+            {
+                await GeneratePreviewPdfAsync(false);
+            };
+
+            buttonPanel.Children.Add(generatePdfButton);
+            buttonPanel.Children.Add(generateBasicPdfButton);
+            PreviewPanel.Children.Add(buttonPanel);
+        }
+
+        private async Task GeneratePreviewPdfAsync(bool includeImages)
+        {
+            try
+            {
+                if (!_currentData.Any()) return;
+
+                var reportType = ((ComboBoxItem)ReportTypeComboBox.SelectedItem).Content.ToString();
+                
+                string pdfPath;
+                
+                if (reportType == "Individual Weighment Slip" && _currentData.Count == 1)
+                {
+                    pdfPath = await _pdfService.GenerateWeighmentSlipAsync(_currentData.First(), includeImages);
+                }
+                else
+                {
+                    var reportDate = FromDatePicker.SelectedDate ?? DateTime.Today;
+                    pdfPath = await _pdfService.GenerateDailyReportAsync(reportDate);
+                }
+
+                var openResult = MessageBox.Show(
+                    $"PDF generated successfully!\n\nFile: {Path.GetFileName(pdfPath)}\n\nOpen the PDF now?", 
+                    "PDF Generated", 
+                    MessageBoxButton.YesNo, 
+                    MessageBoxImage.Information);
+
+                if (openResult == MessageBoxResult.Yes)
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = pdfPath,
+                        UseShellExecute = true
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error generating PDF: {ex.Message}", "PDF Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -461,32 +578,83 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
         }
 
-        private void SavePdfButton_Click(object sender, RoutedEventArgs e)
+        private async void SavePdfButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var saveDialog = new SaveFileDialog
+                if (!_currentData.Any())
                 {
-                    Filter = "PDF files (*.pdf)|*.pdf",
-                    FileName = $"WeighbridgeReport_{DateTime.Now:yyyyMMdd_HHmmss}.pdf"
-                };
-
-                if (saveDialog.ShowDialog() == true)
-                {
-                    // For now, save as HTML (PDF generation would require additional libraries)
-                    var htmlContent = GenerateHtmlReport();
-                    var htmlFileName = saveDialog.FileName.Replace(".pdf", ".html");
-                    File.WriteAllText(htmlFileName, htmlContent);
-                    
-                    MessageBox.Show($"Report saved as HTML: {htmlFileName}\n\nNote: PDF generation requires additional libraries.", 
-                                   "Report Saved", MessageBoxButton.OK, MessageBoxImage.Information);
-                    
-                    FormCompleted?.Invoke(this, "Report saved successfully");
+                    MessageBox.Show("No data available to generate PDF.", "No Data", 
+                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
+
+                var reportType = ((ComboBoxItem)ReportTypeComboBox.SelectedItem).Content.ToString();
+                
+                // Ask user if they want to include camera captures
+                var includeCamerasResult = MessageBox.Show(
+                    "Include camera captures in the PDF report?\n\nYes - Include camera images (larger file)\nNo - PDF without images",
+                    "Camera Captures", 
+                    MessageBoxButton.YesNoCancel, 
+                    MessageBoxImage.Question);
+
+                if (includeCamerasResult == MessageBoxResult.Cancel)
+                    return;
+
+                var includeImages = includeCamerasResult == MessageBoxResult.Yes;
+
+                // Generate PDF based on report type
+                SavePdfButton.IsEnabled = false;
+                SavePdfButton.Content = "📄 Generating PDF...";
+
+                string pdfPath;
+                
+                if (reportType == "Individual Weighment Slip" && _currentData.Count == 1)
+                {
+                    // Generate individual weighment slip
+                    pdfPath = await _pdfService.GenerateWeighmentSlipAsync(_currentData.First(), includeImages);
+                }
+                else
+                {
+                    // For daily/date range reports, generate daily report format
+                    var reportDate = FromDatePicker.SelectedDate ?? DateTime.Today;
+                    pdfPath = await _pdfService.GenerateDailyReportAsync(reportDate);
+                }
+
+                SavePdfButton.Content = "💾 Save PDF";
+                SavePdfButton.IsEnabled = true;
+
+                var openResult = MessageBox.Show(
+                    $"PDF report generated successfully!\n\nLocation: {Path.GetFileName(pdfPath)}\n\nDo you want to open the PDF now?", 
+                    "PDF Generated", 
+                    MessageBoxButton.YesNo, 
+                    MessageBoxImage.Information);
+
+                if (openResult == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = pdfPath,
+                            UseShellExecute = true
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Could not open PDF: {ex.Message}\n\nFile saved to: {pdfPath}", 
+                                       "Open PDF Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+                
+                FormCompleted?.Invoke(this, $"PDF report generated: {Path.GetFileName(pdfPath)}");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving report: {ex.Message}", "Save Error", 
+                SavePdfButton.Content = "💾 Save PDF";
+                SavePdfButton.IsEnabled = true;
+                
+                MessageBox.Show($"Error generating PDF: {ex.Message}", "PDF Generation Error", 
                                MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -550,6 +718,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             try
             {
                 _databaseService?.Dispose();
+                _cameraService?.Dispose();
             }
             catch (Exception ex)
             {

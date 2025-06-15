@@ -404,41 +404,133 @@ namespace WeighbridgeSoftwareYashCotex.Services
 
         #region Two-Factor Authentication
 
+        private readonly TwoFactorAuthService _twoFactorService = new TwoFactorAuthService();
+
         public string GenerateTwoFactorSecret()
         {
-            var random = new Random();
-            var secret = new byte[20];
-            random.NextBytes(secret);
-            return Convert.ToBase64String(secret);
+            return _twoFactorService.GenerateSecretKey();
         }
 
         public bool VerifyTwoFactorCode(User user, string code)
         {
-            // Simulate 2FA verification
-            // In real implementation, would use TOTP algorithm
-            if (string.IsNullOrEmpty(code))
-                return false;
+            try
+            {
+                if (string.IsNullOrEmpty(code))
+                    return false;
 
-            // For demo purposes, accept "123456" as valid code
-            return code == "123456" || code.Length == 6 && code.All(char.IsDigit);
+                // Get user's 2FA status and method
+                var status = _twoFactorService.GetTwoFactorStatusAsync(user.Username).Result;
+                
+                if (!status.IsEnabled)
+                    return false;
+
+                // For TOTP, we need the secret key (in real implementation, this would be stored securely)
+                if (status.Method == TwoFactorMethod.TOTP)
+                {
+                    // For demo purposes, generate a consistent secret based on username
+                    var secretKey = GenerateConsistentSecret(user.Username);
+                    return _twoFactorService.ValidateTOTPCode(secretKey, code);
+                }
+                
+                // For Email/SMS, validate against pending codes
+                return _twoFactorService.ValidateVerificationCode(user.Username, code, status.Method);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"2FA verification error: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<TwoFactorChallenge> InitiateTwoFactorAuthAsync(string username)
+        {
+            try
+            {
+                return await _twoFactorService.InitiateTwoFactorChallengeAsync(username);
+            }
+            catch (Exception ex)
+            {
+                return new TwoFactorChallenge
+                {
+                    Success = false,
+                    Message = $"Failed to initiate 2FA: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<bool> EnableTwoFactorAsync(string username, TwoFactorMethod method, string secretKey = "")
+        {
+            try
+            {
+                return await _twoFactorService.EnableTwoFactorAsync(username, method, secretKey);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Enable 2FA error: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> DisableTwoFactorAsync(string username)
+        {
+            try
+            {
+                return await _twoFactorService.DisableTwoFactorAsync(username);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Disable 2FA error: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<TwoFactorStatus> GetTwoFactorStatusAsync(string username)
+        {
+            try
+            {
+                return await _twoFactorService.GetTwoFactorStatusAsync(username);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Get 2FA status error: {ex.Message}");
+                return new TwoFactorStatus { IsEnabled = false };
+            }
         }
 
         public List<string> GenerateRecoveryCodes()
         {
-            var codes = new List<string>();
-            var random = new Random();
+            return _twoFactorService.GenerateBackupCodes(10);
+        }
 
-            for (int i = 0; i < 10; i++)
+        private string GenerateConsistentSecret(string username)
+        {
+            // Generate a consistent secret key based on username for demo purposes
+            // In production, this would be stored securely in the database
+            using var sha256 = SHA256.Create();
+            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes($"weighbridge_secret_{username}"));
+            var base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+            var secret = "";
+            
+            for (int i = 0; i < 32; i++)
             {
-                var code = "";
-                for (int j = 0; j < 8; j++)
-                {
-                    code += random.Next(0, 10).ToString();
-                }
-                codes.Add(code);
+                secret += base32Chars[hashBytes[i % hashBytes.Length] % base32Chars.Length];
             }
+            
+            return secret;
+        }
 
-            return codes;
+        // Simple validation for demonstration purposes
+        public async Task<bool> GetUserByUsernameAsync(string username)
+        {
+            try
+            {
+                await Task.Delay(50); // Simulate async operation
+                return !string.IsNullOrEmpty(username) && username.Contains("admin", StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         #endregion

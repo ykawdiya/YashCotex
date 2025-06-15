@@ -838,6 +838,146 @@
                     </ScrollViewer>
                 </TabItem>
 
+                <!-- Tab 9: Admin Tools (Super Admin Only) -->
+                <TabItem x:Name="AdminToolsTab" Header="⚖️ Admin Tools" Visibility="Collapsed">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+                        <StackPanel MaxWidth="800">
+                            <TextBlock Text="ADMIN TOOLS (SUPER ADMIN ONLY)" Style="{StaticResource SectionHeaderStyle}"/>
+                            
+                            <!-- Weight Management Section -->
+                            <Border Background="#FFF3CD" BorderBrush="#FFEAA7" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                        <TextBlock Text="⚠️" FontSize="20" Margin="0,0,10,0"/>
+                                        <TextBlock Text="WARNING: Admin tools are for authorized personnel only. All actions are logged and audited." 
+                                                   FontWeight="Bold" TextWrapping="Wrap" Foreground="#856404"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Weight Management -->
+                            <GroupBox Header="⚖️ Weight Management System" Margin="0,0,0,25">
+                                <StackPanel Margin="15">
+                                    <TextBlock Text="Modify recorded weights with proper audit trails and access controls." 
+                                               TextWrapping="Wrap" Margin="0,0,0,15" Foreground="#6c757d"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- Weight Modification -->
+                                        <Border Grid.Column="0" Background="#E3F2FD" BorderBrush="#90CAF9" 
+                                                BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,10,0">
+                                            <StackPanel>
+                                                <TextBlock Text="🔧 WEIGHT MODIFICATION" FontWeight="Bold" 
+                                                           HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                                                <TextBlock Text="• Modify entry weights" FontSize="11" Margin="0,0,0,3"/>
+                                                <TextBlock Text="• Modify exit weights" FontSize="11" Margin="0,0,0,3"/>
+                                                <TextBlock Text="• Validation rules applied" FontSize="11" Margin="0,0,0,10"/>
+                                                <Button x:Name="OpenWeightManagementButton" Content="⚖️ Open Weight Manager" 
+                                                        Padding="8,5" HorizontalAlignment="Center" 
+                                                        Background="#2196F3" Foreground="White" BorderThickness="0"
+                                                        Click="OpenWeightManagementButton_Click"/>
+                                            </StackPanel>
+                                        </Border>
+                                        
+                                        <!-- Audit History -->
+                                        <Border Grid.Column="1" Background="#F3E5F5" BorderBrush="#CE93D8" 
+                                                BorderThickness="1" CornerRadius="8" Padding="15" Margin="5,0">
+                                            <StackPanel>
+                                                <TextBlock Text="📋 AUDIT HISTORY" FontWeight="Bold" 
+                                                           HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                                                <TextBlock Text="• View all modifications" FontSize="11" Margin="0,0,0,3"/>
+                                                <TextBlock Text="• Filter by date/user" FontSize="11" Margin="0,0,0,3"/>
+                                                <TextBlock Text="• Export audit reports" FontSize="11" Margin="0,0,0,10"/>
+                                                <Button x:Name="ViewAuditHistoryButton" Content="📋 View Audit History" 
+                                                        Padding="8,5" HorizontalAlignment="Center" 
+                                                        Background="#9C27B0" Foreground="White" BorderThickness="0"
+                                                        Click="ViewAuditHistoryButton_Click"/>
+                                            </StackPanel>
+                                        </Border>
+                                        
+                                        <!-- Reversal Operations -->
+                                        <Border Grid.Column="2" Background="#FFEBEE" BorderBrush="#FFCDD2" 
+                                                BorderThickness="1" CornerRadius="8" Padding="15" Margin="10,0,0,0">
+                                            <StackPanel>
+                                                <TextBlock Text="↩️ REVERSAL OPS" FontWeight="Bold" 
+                                                           HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                                                <TextBlock Text="• Reverse modifications" FontSize="11" Margin="0,0,0,3"/>
+                                                <TextBlock Text="• Restore original weights" FontSize="11" Margin="0,0,0,3"/>
+                                                <TextBlock Text="• Full audit trail" FontSize="11" Margin="0,0,0,10"/>
+                                                <Button x:Name="ReverseOperationsButton" Content="↩️ Reversal Operations" 
+                                                        Padding="8,5" HorizontalAlignment="Center" 
+                                                        Background="#F44336" Foreground="White" BorderThickness="0"
+                                                        Click="ReverseOperationsButton_Click"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <!-- System Administration -->
+                            <GroupBox Header="🔐 System Administration" Margin="0,0,0,25">
+                                <StackPanel Margin="15">
+                                    <TextBlock Text="Advanced system controls and user management features." 
+                                               TextWrapping="Wrap" Margin="0,0,0,15" Foreground="#6c757d"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- Database Management -->
+                                        <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                                            <TextBlock Text="🗄️ Database Management" FontWeight="Bold" Margin="0,0,0,10"/>
+                                            <Button Content="🔒 Force Database Backup" Padding="8,5" Margin="0,0,0,5" 
+                                                    x:Name="ForceBackupButton" Click="ForceBackupButton_Click"/>
+                                            <Button Content="📊 Database Integrity Check" Padding="8,5" Margin="0,0,0,5" 
+                                                    x:Name="IntegrityCheckButton" Click="IntegrityCheckButton_Click"/>
+                                            <Button Content="🗑️ Cleanup Old Records" Padding="8,5" Margin="0,0,0,5" 
+                                                    x:Name="CleanupRecordsButton" Click="CleanupRecordsButton_Click"/>
+                                        </StackPanel>
+                                        
+                                        <!-- User Management -->
+                                        <StackPanel Grid.Column="1" Margin="15,0,0,0">
+                                            <TextBlock Text="👥 User Management" FontWeight="Bold" Margin="0,0,0,10"/>
+                                            <Button Content="👤 Manage User Accounts" Padding="8,5" Margin="0,0,0,5" 
+                                                    x:Name="ManageUsersButton" Click="ManageUsersButton_Click"/>
+                                            <Button Content="🔑 Reset User Passwords" Padding="8,5" Margin="0,0,0,5" 
+                                                    x:Name="ResetPasswordsButton" Click="ResetPasswordsButton_Click"/>
+                                            <Button Content="📈 View User Activity" Padding="8,5" Margin="0,0,0,5" 
+                                                    x:Name="ViewActivityButton" Click="ViewActivityButton_Click"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <!-- Emergency Functions -->
+                            <GroupBox Header="🚨 Emergency Functions" Margin="0,0,0,25">
+                                <StackPanel Margin="15">
+                                    <Border Background="#FFEBEE" BorderBrush="#FFCDD2" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,15">
+                                        <TextBlock Text="🚨 These functions should only be used in emergency situations and are irreversible." 
+                                                   FontWeight="Bold" Foreground="#C62828" TextWrapping="Wrap"/>
+                                    </Border>
+                                    
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="🔄 Emergency System Reset" Padding="10,8" Margin="0,0,15,0" 
+                                                Background="#F44336" Foreground="White" BorderThickness="0"
+                                                x:Name="EmergencyResetButton" Click="EmergencyResetButton_Click"/>
+                                        <Button Content="🛡️ Enable Maintenance Mode" Padding="10,8" 
+                                                Background="#FF9800" Foreground="White" BorderThickness="0"
+                                                x:Name="MaintenanceModeButton" Click="MaintenanceModeButton_Click"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
             </TabControl>
 
             <!-- Action Buttons -->

@@ -204,6 +204,14 @@ public class DatabaseService : IDisposable
             .ToList();
     }
     
+    public List<WeighmentEntry> GetWeighmentsByDateRange(DateTime startDate, DateTime endDate)
+    {
+        return _context.WeighmentEntries
+            .Where(w => w.EntryDateTime >= startDate && w.EntryDateTime <= endDate)
+            .OrderBy(w => w.EntryDateTime)
+            .ToList();
+    }
+    
     public void Dispose()
     {
         _context?.Dispose();
