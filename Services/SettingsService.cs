@@ -197,6 +197,22 @@ public class SettingsService
     {
         SystemSettingsChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    public void RefreshAll()
+    {
+        OnCompanyInfoChanged("Auto-refreshed");
+        OnWeighbridgeSettingsChanged("Auto-refreshed");
+        OnDatabaseSettingsChanged();
+        OnGoogleSheetsSettingsChanged();
+        OnCameraSettingsChanged();
+        OnPrinterSettingsChanged();
+        OnSystemSettingsChanged();
+        OnSettingsChanged(new SettingsChangedEventArgs
+        {
+            ChangeType = "All",
+            Description = "All settings refreshed"
+        });
+    }
 }
 
 public class SettingsChangedEventArgs : EventArgs
@@ -218,18 +234,3 @@ public class WeightRule
         return weight;
     }
 }
-    public void RefreshAll()
-    {
-        OnCompanyInfoChanged("Auto-refreshed");
-        OnWeighbridgeSettingsChanged("Auto-refreshed");
-        OnDatabaseSettingsChanged();
-        OnGoogleSheetsSettingsChanged();
-        OnCameraSettingsChanged();
-        OnPrinterSettingsChanged();
-        OnSystemSettingsChanged();
-        OnSettingsChanged(new SettingsChangedEventArgs
-        {
-            ChangeType = "All",
-            Description = "All settings refreshed"
-        });
-    }
