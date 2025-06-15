@@ -1453,18 +1453,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 AddressesListBox.Items.Add(address);
 
             // Cameras
-            var cameras = _settingsService.Cameras?
-                .Select(c => new WeighbridgeSoftwareYashCotex.Models.CameraConfiguration
-                {
-                    Name = c.Name,
-                    Protocol = c.Protocol,
-                    IpAddress = c.IpAddress,
-                    Port = c.Port,
-                    StreamPath = c.StreamPath,
-                    Username = c.Username,
-                    Password = c.Password,
-                    IsEnabled = c.IsEnabled
-                }).ToList() ?? new List<WeighbridgeSoftwareYashCotex.Models.CameraConfiguration>();
+            var cameras = _settingsService.Cameras ?? new List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration>();
             if (cameras.Count > 0)
                 Camera1NameTextBox.Text = cameras[0].Name;
             if (cameras.Count > 1)
