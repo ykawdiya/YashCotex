@@ -10,6 +10,7 @@ using System.Windows.Media;
 using Microsoft.Win32;
 using WeighbridgeSoftwareYashCotex.Services;
 using WeighbridgeSoftwareYashCotex.Models;
+using Models = WeighbridgeSoftwareYashCotex.Models;
 
 namespace WeighbridgeSoftwareYashCotex.Views
 {
@@ -33,7 +34,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             _settingsService = SettingsService.Instance;
             _googleSheetsService = new GoogleSheetsService(_databaseService);
             _cameraService = new CameraService();
-            
+
             // Subscribe to Google Sheets events
             _googleSheetsService.SyncStatusChanged += OnSyncStatusChanged;
             _googleSheetsService.SyncStatusChanged += (s, msg) =>
@@ -46,15 +47,15 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 }
             };
             _googleSheetsService.SyncProgressChanged += OnSyncProgressChanged;
-            
+
             // Subscribe to Camera events
             _cameraService.StatusChanged += OnCameraStatusChanged;
             _cameraService.ImageUpdated += OnCameraImageUpdated;
-            
+
             this.Loaded += SettingsControl_Loaded;
             this.KeyDown += SettingsControl_KeyDown;
         }
-        
+
         private void SettingsControl_Loaded(object sender, RoutedEventArgs e)
         {
             LoadSettings();
@@ -64,7 +65,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             UpdateSystemInformation();
             SetupAccessControl();
         }
-        
+
         private void SettingsControl_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -139,7 +140,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
         private void HandleEnterKeyInSettings()
         {
             var focusedElement = Keyboard.FocusedElement;
-            
+
             // Special handling for buttons
             if (focusedElement is Button button && button.IsEnabled)
             {
@@ -156,15 +157,15 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             var currentIndex = SettingsTabControl.SelectedIndex;
             var nextIndex = (currentIndex + 1) % SettingsTabControl.Items.Count;
-            
+
             // Skip disabled tabs
-            while (nextIndex != currentIndex && 
-                   SettingsTabControl.Items[nextIndex] is TabItem tab && 
+            while (nextIndex != currentIndex &&
+                   SettingsTabControl.Items[nextIndex] is TabItem tab &&
                    !tab.IsEnabled)
             {
                 nextIndex = (nextIndex + 1) % SettingsTabControl.Items.Count;
             }
-            
+
             SettingsTabControl.SelectedIndex = nextIndex;
         }
 
@@ -172,15 +173,15 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             var currentIndex = SettingsTabControl.SelectedIndex;
             var prevIndex = currentIndex == 0 ? SettingsTabControl.Items.Count - 1 : currentIndex - 1;
-            
+
             // Skip disabled tabs
-            while (prevIndex != currentIndex && 
-                   SettingsTabControl.Items[prevIndex] is TabItem tab && 
+            while (prevIndex != currentIndex &&
+                   SettingsTabControl.Items[prevIndex] is TabItem tab &&
                    !tab.IsEnabled)
             {
                 prevIndex = prevIndex == 0 ? SettingsTabControl.Items.Count - 1 : prevIndex - 1;
             }
-            
+
             SettingsTabControl.SelectedIndex = prevIndex;
         }
 
@@ -189,7 +190,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             try
             {
                 var results = new List<string>();
-                
+
                 // Test database connection
                 try
                 {
@@ -200,7 +201,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 {
                     results.Add("❌ Database: Connection failed");
                 }
-                
+
                 // Test Google Sheets connection
                 if (GoogleSheetsEnabledCheckBox.IsChecked == true)
                 {
@@ -224,7 +225,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 {
                     results.Add("ℹ️ Google Sheets: Disabled");
                 }
-                
+
                 // Test scale connection
                 if (ScaleComPortComboBox.SelectedItem != null)
                 {
@@ -234,18 +235,18 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 {
                     results.Add("⚠️ Scale: No port selected");
                 }
-                
+
                 var message = "CONNECTION TEST RESULTS\n" +
-                            "======================\n\n" +
-                            string.Join("\n", results);
-                
-                MessageBox.Show(message, "Connection Test (F3)", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                              "======================\n\n" +
+                              string.Join("\n", results);
+
+                MessageBox.Show(message, "Connection Test (F3)",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Connection test error: {ex.Message}", "Test Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Connection test error: {ex.Message}", "Test Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -281,21 +282,22 @@ namespace WeighbridgeSoftwareYashCotex.Views
                         ExportDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                     };
 
-                    var json = System.Text.Json.JsonSerializer.Serialize(settings, new System.Text.Json.JsonSerializerOptions 
-                    { 
-                        WriteIndented = true 
-                    });
-                    
+                    var json = System.Text.Json.JsonSerializer.Serialize(settings,
+                        new System.Text.Json.JsonSerializerOptions
+                        {
+                            WriteIndented = true
+                        });
+
                     File.WriteAllText(saveDialog.FileName, json);
-                    
-                    MessageBox.Show($"Settings exported successfully!\n\nLocation: {saveDialog.FileName}", 
-                                   "Export Complete (F4)", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    MessageBox.Show($"Settings exported successfully!\n\nLocation: {saveDialog.FileName}",
+                        "Export Complete (F4)", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Export failed: {ex.Message}", "Export Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Export failed: {ex.Message}", "Export Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -308,8 +310,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
                 var result = MessageBox.Show(
                     $"Reset all settings in '{currentTab.Header}' tab to defaults?\n\n" +
-                    "This action cannot be undone.", 
-                    "Reset Tab Confirmation (F10)", 
+                    "This action cannot be undone.",
+                    "Reset Tab Confirmation (F10)",
                     MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                 if (result == MessageBoxResult.Yes)
@@ -326,16 +328,16 @@ namespace WeighbridgeSoftwareYashCotex.Views
                             ResetCamerasTab();
                             break;
                         default:
-                            MessageBox.Show("Reset not implemented for this tab.", "Reset", 
-                                           MessageBoxButton.OK, MessageBoxImage.Information);
+                            MessageBox.Show("Reset not implemented for this tab.", "Reset",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
                             break;
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Reset error: {ex.Message}", "Reset Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Reset error: {ex.Message}", "Reset Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -371,35 +373,35 @@ namespace WeighbridgeSoftwareYashCotex.Views
         private void ShowSettingsHelp()
         {
             var helpText = "SETTINGS KEYBOARD SHORTCUTS\n" +
-                          "============================\n\n" +
-                          "F1  - Show this help\n" +
-                          "F2  - Save all settings\n" +
-                          "F3  - Test connections\n" +
-                          "F4  - Export settings\n" +
-                          "F5  - Backup database\n" +
-                          "F6  - Sync Google Sheets\n" +
-                          "F7  - System diagnostics\n" +
-                          "F8  - Next tab\n" +
-                          "F9  - Previous tab\n" +
-                          "F10 - Reset current tab\n" +
-                          "ESC - Cancel/Exit\n\n" +
-                          "NAVIGATION:\n" +
-                          "Enter - Activate button/next field\n" +
-                          "Tab   - Move to next field\n" +
-                          "Ctrl+Tab - Navigate between tabs\n\n" +
-                          "TAB ACCESS:\n" +
-                          "• Company Info (General settings)\n" +
-                          "• Hardware (Scale & printer setup)\n" +
-                          "• Cameras (IP camera configuration)\n" +
-                          "• Integrations (Google Sheets & backup)\n" +
-                          "• Data Management (Materials & addresses)\n" +
-                          "• Security (Recovery codes & timeouts)\n" +
-                          "• Weight Rules (Super Admin only)\n" +
-                          "• Users (User management)\n" +
-                          "• System (Diagnostics & maintenance)";
+                           "============================\n\n" +
+                           "F1  - Show this help\n" +
+                           "F2  - Save all settings\n" +
+                           "F3  - Test connections\n" +
+                           "F4  - Export settings\n" +
+                           "F5  - Backup database\n" +
+                           "F6  - Sync Google Sheets\n" +
+                           "F7  - System diagnostics\n" +
+                           "F8  - Next tab\n" +
+                           "F9  - Previous tab\n" +
+                           "F10 - Reset current tab\n" +
+                           "ESC - Cancel/Exit\n\n" +
+                           "NAVIGATION:\n" +
+                           "Enter - Activate button/next field\n" +
+                           "Tab   - Move to next field\n" +
+                           "Ctrl+Tab - Navigate between tabs\n\n" +
+                           "TAB ACCESS:\n" +
+                           "• Company Info (General settings)\n" +
+                           "• Hardware (Scale & printer setup)\n" +
+                           "• Cameras (IP camera configuration)\n" +
+                           "• Integrations (Google Sheets & backup)\n" +
+                           "• Data Management (Materials & addresses)\n" +
+                           "• Security (Recovery codes & timeouts)\n" +
+                           "• Weight Rules (Super Admin only)\n" +
+                           "• Users (User management)\n" +
+                           "• System (Diagnostics & maintenance)";
 
-            MessageBox.Show(helpText, "Settings Help (F1)", 
-                           MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(helpText, "Settings Help (F1)",
+                MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         #region Initialization and Data Loading
@@ -411,7 +413,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 // Load hardware settings
                 LoadAvailablePrinters();
                 LoadAvailableComPorts();
-                
+
                 // Set default values if not already set
                 if (string.IsNullOrEmpty(CompanyNameTextBox.Text))
                 {
@@ -420,8 +422,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading settings: {ex.Message}", "Settings Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Error loading settings: {ex.Message}", "Settings Error",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -432,13 +434,13 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 _availablePrinters.Clear();
                 var printServer = new PrintServer();
                 var printQueues = printServer.GetPrintQueues();
-                
+
                 foreach (var printer in printQueues)
                 {
                     _availablePrinters.Add(printer.Name);
                     DefaultPrinterComboBox.Items.Add(printer.Name);
                 }
-                
+
                 if (DefaultPrinterComboBox.Items.Count > 0)
                     DefaultPrinterComboBox.SelectedIndex = 0;
             }
@@ -461,6 +463,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 {
                     ScaleComPortComboBox.Items.Add(new ComboBoxItem { Content = port });
                 }
+
                 ScaleComPortComboBox.SelectedIndex = 0;
             }
         }
@@ -477,10 +480,10 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 // Use fallback values for system data
                 DatabaseVersionText.Text = "v1.5";
                 TotalRecordsText.Text = "247";
-                
+
                 var dbSize = GetDatabaseSize();
                 DiskUsageText.Text = $"{dbSize:F1} MB";
-                
+
                 LastBackupText.Text = GetLastBackupDate();
             }
             catch (Exception)
@@ -518,7 +521,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 MaterialsListBox.Items.Add("Cotton");
                 MaterialsListBox.Items.Add("Yarn");
                 MaterialsListBox.Items.Add("Fabric");
-                
+
                 AddressesListBox.Items.Add("Mumbai");
                 AddressesListBox.Items.Add("Delhi");
                 AddressesListBox.Items.Add("Mohali");
@@ -567,6 +570,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 _currentUserRole = _authService.CurrentRole.ToString();
             }
+
             SetupAccessControl();
         }
 
@@ -596,7 +600,10 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     return fileInfo.Length / (1024.0 * 1024.0); // Convert to MB
                 }
             }
-            catch { }
+            catch
+            {
+            }
+
             return 2.5; // Default fallback
         }
 
@@ -609,7 +616,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 {
                     var backupFiles = Directory.GetFiles(backupPath, "*.db")
                         .OrderByDescending(f => new FileInfo(f).CreationTime);
-                    
+
                     if (backupFiles.Any())
                     {
                         var lastBackup = new FileInfo(backupFiles.First()).CreationTime;
@@ -617,7 +624,10 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     }
                 }
             }
-            catch { }
+            catch
+            {
+            }
+
             return "Never";
         }
 
@@ -666,66 +676,66 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
                 if (_googleSheetsService == null)
                 {
-                    MessageBox.Show("Google Sheets service not initialized", "Error", 
-                                   MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Google Sheets service not initialized", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 // Validate inputs
                 if (string.IsNullOrEmpty(ServiceAccountKeyTextBox.Text))
                 {
-                    MessageBox.Show("Please select a service account key file", "Configuration Required", 
-                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Please select a service account key file", "Configuration Required",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (string.IsNullOrEmpty(SpreadsheetIdTextBox.Text))
                 {
-                    MessageBox.Show("Please enter a spreadsheet ID", "Configuration Required", 
-                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Please enter a spreadsheet ID", "Configuration Required",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 // Configure and test connection
                 var configured = await _googleSheetsService.ConfigureAsync(
-                    ServiceAccountKeyTextBox.Text, 
+                    ServiceAccountKeyTextBox.Text,
                     SpreadsheetIdTextBox.Text);
 
                 if (configured)
                 {
                     var connectionTest = await _googleSheetsService.TestConnectionAsync();
-                    
+
                     if (connectionTest)
                     {
                         TestGoogleSheetsButton.Content = "✅ Connected";
-                        
+
                         // Setup worksheets
                         await _googleSheetsService.SetupWorksheetsAsync();
-                        
+
                         MessageBox.Show(
                             "Google Sheets connection successful!\n\n" +
                             "✓ Connection verified\n" +
                             "✓ Worksheets configured\n" +
-                            "✓ Ready for sync operations", 
-                            "Connection Test", 
+                            "✓ Ready for sync operations",
+                            "Connection Test",
                             MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
-                        MessageBox.Show("Connection test failed. Please check your configuration.", 
-                                       "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Connection test failed. Please check your configuration.",
+                            "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Configuration failed. Please check your service account key and spreadsheet ID.", 
-                                   "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Configuration failed. Please check your service account key and spreadsheet ID.",
+                        "Configuration Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Connection test failed: {ex.Message}", "Connection Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Connection test failed: {ex.Message}", "Connection Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -740,26 +750,27 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (!GoogleSheetsEnabledCheckBox.IsChecked == true)
                 {
-                    MessageBox.Show("Google Sheets integration is not enabled.", "Sync Error", 
-                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Google Sheets integration is not enabled.", "Sync Error",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (_googleSheetsService == null || !_googleSheetsService.IsConfigured)
                 {
-                    MessageBox.Show("Google Sheets not configured. Please test connection first.", "Configuration Required", 
-                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Google Sheets not configured. Please test connection first.",
+                        "Configuration Required",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 SyncNowButton.IsEnabled = false;
                 SyncNowButton.Content = "📤 Syncing...";
-                
+
                 // Starting sync - no UI feedback needed as we'll show result in MessageBox
 
                 // Perform full sync
                 var result = await _googleSheetsService.SyncAllDataAsync();
-                
+
                 if (result.Success)
                 {
                     MessageBox.Show(
@@ -768,10 +779,10 @@ namespace WeighbridgeSoftwareYashCotex.Views
                         $"• Materials: {result.MaterialsSynced}\n" +
                         $"• Addresses: {result.AddressesSynced}\n" +
                         $"• Total: {result.TotalRecordsSynced} records\n\n" +
-                        $"Last sync: {DateTime.Now:dd/MM/yyyy HH:mm}", 
+                        $"Last sync: {DateTime.Now:dd/MM/yyyy HH:mm}",
                         "Sync Complete",
                         MessageBoxButton.OK, MessageBoxImage.Information);
-                    
+
                     // Sync completed successfully - status shown in MessageBox
                 }
                 else
@@ -785,17 +796,17 @@ namespace WeighbridgeSoftwareYashCotex.Views
                             errorMessage += $"\n... and {result.Errors.Count - 3} more errors";
                         }
                     }
-                    
-                    MessageBox.Show(errorMessage, "Sync Completed with Errors", 
-                                   MessageBoxButton.OK, MessageBoxImage.Warning);
-                    
+
+                    MessageBox.Show(errorMessage, "Sync Completed with Errors",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+
                     // Sync completed with errors - status shown in MessageBox
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Sync error: {ex.Message}", "Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Sync error: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 // Sync failed - error shown in MessageBox
             }
             finally
@@ -855,15 +866,16 @@ namespace WeighbridgeSoftwareYashCotex.Views
                             // In real implementation, copy the actual database file
                             File.WriteAllText(backupFullPath, $"Backup created at {DateTime.Now}");
 
-                            MessageBox.Show($"Backup created successfully!\n\nLocation: {backupFullPath}", "Backup Complete", 
-                                           MessageBoxButton.OK, MessageBoxImage.Information);
+                            MessageBox.Show($"Backup created successfully!\n\nLocation: {backupFullPath}",
+                                "Backup Complete",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
 
                             LastBackupText.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show($"Backup failed: {ex.Message}", "Backup Error", 
-                                           MessageBoxButton.OK, MessageBoxImage.Error);
+                            MessageBox.Show($"Backup failed: {ex.Message}", "Backup Error",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                         finally
                         {
@@ -875,8 +887,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Backup failed: {ex.Message}", "Backup Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Backup failed: {ex.Message}", "Backup Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 BackupNowButton.IsEnabled = true;
                 BackupNowButton.Content = "💾 Backup Now";
             }
@@ -896,21 +908,21 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 if (openDialog.ShowDialog() == true)
                 {
                     var result = MessageBox.Show($"This will restore the database from:\n{openDialog.FileName}\n\n" +
-                                               "Current data will be replaced. Are you sure?", "Confirm Restore", 
-                                               MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                                                 "Current data will be replaced. Are you sure?", "Confirm Restore",
+                        MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                     if (result == MessageBoxResult.Yes)
                     {
                         // Simulate restore process
-                        MessageBox.Show("Database restored successfully!\n\nApplication will restart to apply changes.", 
-                                       "Restore Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Database restored successfully!\n\nApplication will restart to apply changes.",
+                            "Restore Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Restore failed: {ex.Message}", "Restore Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Restore failed: {ex.Message}", "Restore Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -923,21 +935,21 @@ namespace WeighbridgeSoftwareYashCotex.Views
             var newMaterial = NewMaterialTextBox.Text.Trim();
             if (string.IsNullOrEmpty(newMaterial))
             {
-                MessageBox.Show("Please enter a material name.", "Validation Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please enter a material name.", "Validation Error",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (MaterialsListBox.Items.Contains(newMaterial))
             {
-                MessageBox.Show("This material already exists.", "Duplicate Material", 
-                               MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("This material already exists.", "Duplicate Material",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             MaterialsListBox.Items.Add(newMaterial);
             NewMaterialTextBox.Clear();
-            
+
             try
             {
                 // In real implementation, would save to database
@@ -945,8 +957,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving material: {ex.Message}", "Save Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error saving material: {ex.Message}", "Save Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -954,8 +966,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             if (MaterialsListBox.SelectedItem == null)
             {
-                MessageBox.Show("Please select a material to edit.", "Selection Required", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Please select a material to edit.", "Selection Required",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -967,7 +979,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 var index = MaterialsListBox.SelectedIndex;
                 MaterialsListBox.Items[index] = newMaterial;
-                
+
                 try
                 {
                     // In real implementation, would update in database
@@ -975,8 +987,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error updating material: {ex.Message}", "Update Error", 
-                                   MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error updating material: {ex.Message}", "Update Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -985,19 +997,19 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             if (MaterialsListBox.SelectedItem == null)
             {
-                MessageBox.Show("Please select a material to delete.", "Selection Required", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Please select a material to delete.", "Selection Required",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
             var material = MaterialsListBox.SelectedItem.ToString();
-            var result = MessageBox.Show($"Are you sure you want to delete '{material}'?", "Confirm Delete", 
-                                        MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show($"Are you sure you want to delete '{material}'?", "Confirm Delete",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 MaterialsListBox.Items.Remove(MaterialsListBox.SelectedItem);
-                
+
                 try
                 {
                     // In real implementation, would delete from database
@@ -1005,8 +1017,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error deleting material: {ex.Message}", "Delete Error", 
-                                   MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error deleting material: {ex.Message}", "Delete Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -1016,21 +1028,21 @@ namespace WeighbridgeSoftwareYashCotex.Views
             var newAddress = NewAddressTextBox.Text.Trim();
             if (string.IsNullOrEmpty(newAddress))
             {
-                MessageBox.Show("Please enter an address.", "Validation Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please enter an address.", "Validation Error",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (AddressesListBox.Items.Contains(newAddress))
             {
-                MessageBox.Show("This address already exists.", "Duplicate Address", 
-                               MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("This address already exists.", "Duplicate Address",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             AddressesListBox.Items.Add(newAddress);
             NewAddressTextBox.Clear();
-            
+
             try
             {
                 // In real implementation, would save to database
@@ -1038,8 +1050,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving address: {ex.Message}", "Save Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error saving address: {ex.Message}", "Save Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1047,8 +1059,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             if (AddressesListBox.SelectedItem == null)
             {
-                MessageBox.Show("Please select an address to edit.", "Selection Required", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Please select an address to edit.", "Selection Required",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -1060,7 +1072,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 var index = AddressesListBox.SelectedIndex;
                 AddressesListBox.Items[index] = newAddress;
-                
+
                 try
                 {
                     // In real implementation, would update in database
@@ -1068,8 +1080,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error updating address: {ex.Message}", "Update Error", 
-                                   MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error updating address: {ex.Message}", "Update Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -1078,19 +1090,19 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             if (AddressesListBox.SelectedItem == null)
             {
-                MessageBox.Show("Please select an address to delete.", "Selection Required", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Please select an address to delete.", "Selection Required",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
             var address = AddressesListBox.SelectedItem.ToString();
-            var result = MessageBox.Show($"Are you sure you want to delete '{address}'?", "Confirm Delete", 
-                                        MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show($"Are you sure you want to delete '{address}'?", "Confirm Delete",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 AddressesListBox.Items.Remove(AddressesListBox.SelectedItem);
-                
+
                 try
                 {
                     // In real implementation, would delete from database
@@ -1098,8 +1110,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error deleting address: {ex.Message}", "Delete Error", 
-                                   MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error deleting address: {ex.Message}", "Delete Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -1116,40 +1128,40 @@ namespace WeighbridgeSoftwareYashCotex.Views
         private void AddUserButton_Click(object sender, RoutedEventArgs e)
         {
             // Implementation would open a user creation dialog
-            MessageBox.Show("User creation dialog would open here.", "Feature", 
-                           MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("User creation dialog would open here.", "Feature",
+                MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void EditUserButton_Click(object sender, RoutedEventArgs e)
         {
             if (UsersDataGrid.SelectedItem == null)
             {
-                MessageBox.Show("Please select a user to edit.", "Selection Required", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Please select a user to edit.", "Selection Required",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            MessageBox.Show("User editing dialog would open here.", "Feature", 
-                           MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("User editing dialog would open here.", "Feature",
+                MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void DeleteUserButton_Click(object sender, RoutedEventArgs e)
         {
             if (UsersDataGrid.SelectedItem == null)
             {
-                MessageBox.Show("Please select a user to delete.", "Selection Required", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Please select a user to delete.", "Selection Required",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
-            var result = MessageBox.Show("Are you sure you want to delete this user?", "Confirm Delete", 
-                                        MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show("Are you sure you want to delete this user?", "Confirm Delete",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 // Implementation would delete the user
-                MessageBox.Show("User deleted successfully.", "User Deleted", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("User deleted successfully.", "User Deleted",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -1159,21 +1171,21 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (string.IsNullOrWhiteSpace(NewUsernameTextBox.Text))
                 {
-                    MessageBox.Show("Username is required.", "Validation Error", 
-                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Username is required.", "Validation Error",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(NewPasswordBox.Password))
                 {
-                    MessageBox.Show("Password is required.", "Validation Error", 
-                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Password is required.", "Validation Error",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 // Create user logic would go here
-                MessageBox.Show($"User '{NewUsernameTextBox.Text}' created successfully!", "User Created", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"User '{NewUsernameTextBox.Text}' created successfully!", "User Created",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
 
                 // Clear form
                 NewUsernameTextBox.Clear();
@@ -1186,8 +1198,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error creating user: {ex.Message}", "Creation Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error creating user: {ex.Message}", "Creation Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1197,14 +1209,14 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         private void RestartAppButton_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show("This will restart the application.\n\nAre you sure?", "Restart Application", 
-                                        MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show("This will restart the application.\n\nAre you sure?", "Restart Application",
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 // Implementation would restart the application
-                MessageBox.Show("Application will restart now.", "Restarting", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Application will restart now.", "Restarting",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -1213,22 +1225,22 @@ namespace WeighbridgeSoftwareYashCotex.Views
             try
             {
                 var diagnostics = "SYSTEM DIAGNOSTICS REPORT\n" +
-                                "========================\n\n" +
-                                $"Application Version: v2.1.0\n" +
-                                $"Database Status: Connected\n" +
-                                $"Scale Connection: {(ScaleComPortComboBox.SelectedItem != null ? "Configured" : "Not Configured")}\n" +
-                                $"Camera Status: {GetCameraStatus()}\n" +
-                                $"Memory Usage: {GC.GetTotalMemory(false) / 1024 / 1024:F1} MB\n" +
-                                $"System Uptime: {GetSystemUptime()}\n" +
-                                $"Last Error: None\n";
+                                  "========================\n\n" +
+                                  $"Application Version: v2.1.0\n" +
+                                  $"Database Status: Connected\n" +
+                                  $"Scale Connection: {(ScaleComPortComboBox.SelectedItem != null ? "Configured" : "Not Configured")}\n" +
+                                  $"Camera Status: {GetCameraStatus()}\n" +
+                                  $"Memory Usage: {GC.GetTotalMemory(false) / 1024 / 1024:F1} MB\n" +
+                                  $"System Uptime: {GetSystemUptime()}\n" +
+                                  $"Last Error: None\n";
 
-                MessageBox.Show(diagnostics, "System Diagnostics", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(diagnostics, "System Diagnostics",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error running diagnostics: {ex.Message}", "Diagnostics Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error running diagnostics: {ex.Message}", "Diagnostics Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1239,14 +1251,14 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 // Clear application cache
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
-                
-                MessageBox.Show("Cache cleared successfully!", "Cache Cleared", 
-                               MessageBoxButton.OK, MessageBoxImage.Information);
+
+                MessageBox.Show("Cache cleared successfully!", "Cache Cleared",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error clearing cache: {ex.Message}", "Cache Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error clearing cache: {ex.Message}", "Cache Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1263,25 +1275,26 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 if (saveDialog.ShowDialog() == true)
                 {
                     var logs = "WEIGHBRIDGE SOFTWARE LOGS\n" +
-                              "=========================\n\n" +
-                              $"Export Date: {DateTime.Now:dd/MM/yyyy HH:mm:ss}\n" +
-                              $"Application: Weighbridge Software v2.1.0\n" +
-                              $"User: {Environment.UserName}\n\n" +
-                              "Recent Activities:\n" +
-                              "- Settings accessed\n" +
-                              "- System diagnostics run\n" +
-                              "- Database operations performed\n";
+                               "=========================\n\n" +
+                               $"Export Date: {DateTime.Now:dd/MM/yyyy HH:mm:ss}\n" +
+                               $"Application: Weighbridge Software v2.1.0\n" +
+                               $"User: {Environment.UserName}\n\n" +
+                               "Recent Activities:\n" +
+                               "- Settings accessed\n" +
+                               "- System diagnostics run\n" +
+                               "- Database operations performed\n";
 
                     File.WriteAllText(saveDialog.FileName, logs);
-                    
-                    MessageBox.Show($"Logs exported successfully!\n\nLocation: {saveDialog.FileName}", "Export Complete", 
-                                   MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    MessageBox.Show($"Logs exported successfully!\n\nLocation: {saveDialog.FileName}",
+                        "Export Complete",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Export failed: {ex.Message}", "Export Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Export failed: {ex.Message}", "Export Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1292,7 +1305,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             if (Camera2EnabledCheckBox.IsChecked == true) enabledCameras++;
             if (Camera3EnabledCheckBox.IsChecked == true) enabledCameras++;
             if (Camera4EnabledCheckBox.IsChecked == true) enabledCameras++;
-            
+
             return $"{enabledCameras}/4 Enabled";
         }
 
@@ -1314,23 +1327,23 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     return;
 
                 SaveAllSettings();
-                
-                MessageBox.Show("Settings saved successfully!\n\nChanges have been applied immediately.", 
-                               "Settings Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                MessageBox.Show("Settings saved successfully!\n\nChanges have been applied immediately.",
+                    "Settings Saved", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 FormCompleted?.Invoke(this, "Settings saved and applied successfully");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving settings: {ex.Message}", "Save Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error saving settings: {ex.Message}", "Save Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void CancelSettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show("Are you sure you want to cancel? Any unsaved changes will be lost.", 
-                                        "Confirm Cancel", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show("Are you sure you want to cancel? Any unsaved changes will be lost.",
+                "Confirm Cancel", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
@@ -1343,8 +1356,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             // Company validation
             if (string.IsNullOrWhiteSpace(CompanyNameTextBox.Text))
             {
-                MessageBox.Show("Company name is required.", "Validation Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Company name is required.", "Validation Error",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 SettingsTabControl.SelectedIndex = 0; // Company tab
                 CompanyNameTextBox.Focus();
                 return false;
@@ -1353,8 +1366,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             // Hardware validation
             if (!int.TryParse(MaxCapacityTextBox.Text, out var maxCapacity) || maxCapacity <= 0)
             {
-                MessageBox.Show("Maximum capacity must be a valid positive number.", "Validation Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Maximum capacity must be a valid positive number.", "Validation Error",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 SettingsTabControl.SelectedIndex = 1; // Hardware tab
                 MaxCapacityTextBox.Focus();
                 return false;
@@ -1371,96 +1384,184 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 // Save Company Information
                 SaveCompanySettings();
-                
+
                 // Save Hardware Settings
                 SaveHardwareSettings();
-                
+
                 // Save Camera Settings
                 SaveCameraSettings();
-                
+
                 // Save Integration Settings
                 SaveIntegrationSettings();
-                
+
                 // Save Printer Settings
                 SavePrinterSettings();
-                
+
                 // Save System Settings
                 SaveSystemSettings();
-                
+
                 // Save Database Settings
                 SaveDatabaseSettings();
-                
+
                 // Trigger global settings save
                 _settingsService.SaveSettings();
+
+                // Reload all settings from service into UI after saving
+                LoadAllSettingsIntoUI();
             }
             catch (Exception ex)
             {
                 throw new Exception($"Failed to save settings: {ex.Message}", ex);
             }
         }
-        
+
+        /// <summary>
+        /// Reloads all settings from the settings service into the UI controls.
+        /// </summary>
+        private void LoadAllSettingsIntoUI()
+        {
+            // Reload company info
+            CompanyNameTextBox.Text = _settingsService.CompanyName;
+            CompanyEmailTextBox.Text = _settingsService.CompanyEmail;
+            CompanyPhoneTextBox.Text = _settingsService.CompanyPhone;
+            GstNumberTextBox.Text = _settingsService.CompanyGSTIN;
+            AddressLine1TextBox.Text = _settingsService.CompanyAddress; // For now, entire address in line1
+
+            // Hardware
+            ScaleComPortComboBox.SelectedItem = _settingsService.WeighbridgeComPort;
+            MaxCapacityTextBox.Text = _settingsService.MaxWeightCapacity.ToString();
+
+            // Printer
+            DefaultPrinterComboBox.SelectedItem = _settingsService.DefaultPrinter;
+
+            // Backup path
+            BackupLocationTextBox.Text = _settingsService.BackupPath;
+
+            // Google Sheets
+            GoogleSheetsEnabledCheckBox.IsChecked = _settingsService.GoogleSheetsEnabled;
+            ServiceAccountKeyTextBox.Text = _settingsService.ServiceAccountKeyPath;
+            SpreadsheetIdTextBox.Text = _settingsService.SpreadsheetId;
+
+            // Materials and addresses
+            MaterialsListBox.Items.Clear();
+            foreach (var material in _settingsService.Materials ?? new List<string>())
+                MaterialsListBox.Items.Add(material);
+
+            AddressesListBox.Items.Clear();
+            foreach (var address in _settingsService.Addresses ?? new List<string>())
+                AddressesListBox.Items.Add(address);
+
+            // Cameras
+            var cameras = _settingsService.Cameras?.Cast<WeighbridgeSoftwareYashCotex.Models.CameraConfiguration>().ToList()
+                            ?? new List<WeighbridgeSoftwareYashCotex.Models.CameraConfiguration>();
+            if (cameras.Count > 0)
+                Camera1NameTextBox.Text = cameras[0].Name;
+            if (cameras.Count > 1)
+                Camera2NameTextBox.Text = cameras[1].Name;
+            if (cameras.Count > 2)
+                Camera3NameTextBox.Text = cameras[2].Name;
+            if (cameras.Count > 3)
+                Camera4NameTextBox.Text = cameras[3].Name;
+        }
+
         private void SaveCompanySettings()
         {
             _settingsService.CompanyName = CompanyNameTextBox?.Text ?? "YASH COTEX";
-            _settingsService.CompanyAddress = $"{AddressLine1TextBox?.Text} {AddressLine2TextBox?.Text} {CityTextBox?.Text} {StateTextBox?.Text} {PinCodeTextBox?.Text}".Trim();
+            _settingsService.CompanyAddress =
+                $"{AddressLine1TextBox?.Text} {AddressLine2TextBox?.Text} {CityTextBox?.Text} {StateTextBox?.Text} {PinCodeTextBox?.Text}"
+                    .Trim();
             _settingsService.CompanyEmail = CompanyEmailTextBox?.Text ?? "";
             _settingsService.CompanyPhone = CompanyPhoneTextBox?.Text ?? "";
             _settingsService.CompanyGSTIN = GstNumberTextBox?.Text ?? "";
-            
+
             _settingsService.SaveCompanyInfo();
         }
-        
+
         private void SaveHardwareSettings()
         {
             _settingsService.WeighbridgeComPort = ScaleComPortComboBox?.SelectedItem?.ToString() ?? "COM1";
-            
+            _settingsService.MaxWeightCapacity =
+                int.TryParse(MaxCapacityTextBox.Text, out int capacity) ? capacity : 10000;
             _settingsService.SaveWeighbridgeSettings();
         }
-        
+
         private void SaveCameraSettings()
         {
             // Save camera settings from UI controls
             SaveIndividualCameraSettings();
             _settingsService.SaveCameraSettings();
         }
-        
+
         private void SaveIndividualCameraSettings()
         {
             try
             {
-                // Save Camera 1 settings
-                var camera1Config = new Models.CameraConfiguration
+                _settingsService.Cameras = new List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration>
                 {
-                    Name = Camera1NameTextBox?.Text ?? "Entry Camera",
-                    Protocol = GetSelectedProtocol(Camera1ProtocolComboBox),
-                    IpAddress = Camera1IpTextBox?.Text ?? "192.168.1.101",
-                    Port = int.TryParse(Camera1PortTextBox?.Text, out int port1) ? port1 : 80,
-                    StreamPath = Camera1StreamPathTextBox?.Text ?? "/mjpeg/1",
-                    Username = Camera1UsernameTextBox?.Text ?? "admin",
-                    Password = Camera1PasswordBox?.Password ?? "",
-                    IsEnabled = Camera1EnabledCheckBox?.IsChecked ?? true
+                    new WeighbridgeSoftwareYashCotex.Services.CameraConfiguration
+                    {
+                        Name = Camera1NameTextBox?.Text ?? "Entry Camera",
+                        Protocol = GetSelectedProtocol(Camera1ProtocolComboBox),
+                        IpAddress = Camera1IpTextBox?.Text ?? "192.168.1.101",
+                        Port = int.TryParse(Camera1PortTextBox?.Text, out int port1) ? port1 : 80,
+                        StreamPath = Camera1StreamPathTextBox?.Text ?? "/mjpeg/1",
+                        Username = Camera1UsernameTextBox?.Text ?? "admin",
+                        Password = Camera1PasswordBox?.Password ?? "",
+                        IsEnabled = Camera1EnabledCheckBox?.IsChecked ?? true
+                    },
+                    new WeighbridgeSoftwareYashCotex.Services.CameraConfiguration
+                    {
+                        Name = Camera2NameTextBox?.Text ?? "Exit Camera",
+                        Protocol = GetSelectedProtocol(Camera2ProtocolComboBox),
+                        IpAddress = Camera2IpTextBox?.Text ?? "192.168.1.102",
+                        Port = int.TryParse(Camera2PortTextBox?.Text, out int port2) ? port2 : 80,
+                        StreamPath = Camera2StreamPathTextBox?.Text ?? "/mjpeg/2",
+                        Username = Camera2UsernameTextBox?.Text ?? "admin",
+                        Password = Camera2PasswordBox?.Password ?? "",
+                        IsEnabled = Camera2EnabledCheckBox?.IsChecked ?? true
+                    },
+                    new WeighbridgeSoftwareYashCotex.Services.CameraConfiguration
+                    {
+                        Name = Camera3NameTextBox?.Text ?? "Side Camera",
+                        Protocol = GetSelectedProtocol(Camera3ProtocolComboBox),
+                        IpAddress = Camera3IpTextBox?.Text ?? "192.168.1.103",
+                        Port = int.TryParse(Camera3PortTextBox?.Text, out int port3) ? port3 : 80,
+                        StreamPath = Camera3StreamPathTextBox?.Text ?? "/mjpeg/3",
+                        Username = Camera3UsernameTextBox?.Text ?? "admin",
+                        Password = Camera3PasswordBox?.Password ?? "",
+                        IsEnabled = Camera3EnabledCheckBox?.IsChecked ?? true
+                    },
+                    new WeighbridgeSoftwareYashCotex.Services.CameraConfiguration
+                    {
+                        Name = Camera4NameTextBox?.Text ?? "Top Camera",
+                        Protocol = GetSelectedProtocol(Camera4ProtocolComboBox),
+                        IpAddress = Camera4IpTextBox?.Text ?? "192.168.1.104",
+                        Port = int.TryParse(Camera4PortTextBox?.Text, out int port4) ? port4 : 80,
+                        StreamPath = Camera4StreamPathTextBox?.Text ?? "/mjpeg/4",
+                        Username = Camera4UsernameTextBox?.Text ?? "admin",
+                        Password = Camera4PasswordBox?.Password ?? "",
+                        IsEnabled = Camera4EnabledCheckBox?.IsChecked ?? true
+                    }
                 };
-                
-                // Similar for cameras 2, 3, 4
-                // Store in settings service or configuration
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error saving camera settings: {ex.Message}");
             }
         }
-        
+
         private string GetSelectedProtocol(ComboBox protocolComboBox)
         {
             if (protocolComboBox?.SelectedItem is ComboBoxItem selectedItem)
             {
                 return selectedItem.Tag?.ToString() ?? "http";
             }
+
             return "http";
         }
-        
-        private void UpdateCameraUrl(ComboBox protocolCombo, TextBox ipTextBox, TextBox portTextBox, 
-                                   TextBox pathTextBox, TextBox fullUrlTextBox)
+
+        private void UpdateCameraUrl(ComboBox protocolCombo, TextBox ipTextBox, TextBox portTextBox,
+            TextBox pathTextBox, TextBox fullUrlTextBox)
         {
             try
             {
@@ -1468,7 +1569,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 var ip = ipTextBox?.Text ?? "192.168.1.101";
                 var port = portTextBox?.Text ?? "80";
                 var path = pathTextBox?.Text ?? "/mjpeg/1";
-                
+
                 string fullUrl = BuildCameraUrl(protocol, ip, port, path);
                 if (fullUrlTextBox != null)
                 {
@@ -1480,7 +1581,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 System.Diagnostics.Debug.WriteLine($"Error updating camera URL: {ex.Message}");
             }
         }
-        
+
         private string BuildCameraUrl(string protocol, string ip, string port, string path)
         {
             // Ensure path starts with /
@@ -1488,69 +1589,69 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 path = "/" + path;
             }
-            
+
             switch (protocol.ToLower())
             {
                 case "http":
                     return $"http://{ip}:{port}{path}";
-                    
+
                 case "https":
                     var httpsPort = port == "80" ? "443" : port;
                     return $"https://{ip}:{httpsPort}{path}";
-                    
+
                 case "rtsp":
                     var rtspPort = port == "80" ? "554" : port;
                     return $"rtsp://{ip}:{rtspPort}{path}";
-                    
+
                 case "tcp":
                     return $"tcp://{ip}:{port}";
-                    
+
                 default:
                     return $"http://{ip}:{port}{path}";
             }
         }
-        
+
         // Camera protocol change event handlers
         private void Camera1ProtocolComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsLoaded)
             {
-                UpdateCameraUrl(Camera1ProtocolComboBox, Camera1IpTextBox, Camera1PortTextBox, 
-                              Camera1StreamPathTextBox, Camera1FullUrlTextBox);
+                UpdateCameraUrl(Camera1ProtocolComboBox, Camera1IpTextBox, Camera1PortTextBox,
+                    Camera1StreamPathTextBox, Camera1FullUrlTextBox);
                 UpdateDefaultPortForProtocol(Camera1ProtocolComboBox, Camera1PortTextBox);
             }
         }
-        
+
         private void Camera2ProtocolComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsLoaded)
             {
-                UpdateCameraUrl(Camera2ProtocolComboBox, Camera2IpTextBox, Camera2PortTextBox, 
-                              Camera2StreamPathTextBox, Camera2FullUrlTextBox);
+                UpdateCameraUrl(Camera2ProtocolComboBox, Camera2IpTextBox, Camera2PortTextBox,
+                    Camera2StreamPathTextBox, Camera2FullUrlTextBox);
                 UpdateDefaultPortForProtocol(Camera2ProtocolComboBox, Camera2PortTextBox);
             }
         }
-        
+
         private void Camera3ProtocolComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsLoaded)
             {
-                UpdateCameraUrl(Camera3ProtocolComboBox, Camera3IpTextBox, Camera3PortTextBox, 
-                              Camera3StreamPathTextBox, Camera3FullUrlTextBox);
+                UpdateCameraUrl(Camera3ProtocolComboBox, Camera3IpTextBox, Camera3PortTextBox,
+                    Camera3StreamPathTextBox, Camera3FullUrlTextBox);
                 UpdateDefaultPortForProtocol(Camera3ProtocolComboBox, Camera3PortTextBox);
             }
         }
-        
+
         private void Camera4ProtocolComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (IsLoaded)
             {
-                UpdateCameraUrl(Camera4ProtocolComboBox, Camera4IpTextBox, Camera4PortTextBox, 
-                              Camera4StreamPathTextBox, Camera4FullUrlTextBox);
+                UpdateCameraUrl(Camera4ProtocolComboBox, Camera4IpTextBox, Camera4PortTextBox,
+                    Camera4StreamPathTextBox, Camera4FullUrlTextBox);
                 UpdateDefaultPortForProtocol(Camera4ProtocolComboBox, Camera4PortTextBox);
             }
         }
-        
+
         private void UpdateDefaultPortForProtocol(ComboBox protocolCombo, TextBox portTextBox)
         {
             var protocol = GetSelectedProtocol(protocolCombo);
@@ -1562,36 +1663,61 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 "tcp" => "8080",
                 _ => "80"
             };
-            
-            if (portTextBox != null && (string.IsNullOrEmpty(portTextBox.Text) || 
-                portTextBox.Text == "80" || portTextBox.Text == "443" || 
-                portTextBox.Text == "554" || portTextBox.Text == "8080"))
+
+            if (portTextBox != null && (string.IsNullOrEmpty(portTextBox.Text) ||
+                                        portTextBox.Text == "80" || portTextBox.Text == "443" ||
+                                        portTextBox.Text == "554" || portTextBox.Text == "8080"))
             {
                 portTextBox.Text = defaultPort;
             }
         }
-        
+
         private void SaveIntegrationSettings()
         {
-            // Save Google Sheets and other integration settings
+            // Assign values from UI controls before saving
+            _settingsService.GoogleSheetsEnabled = GoogleSheetsEnabledCheckBox.IsChecked == true;
+            _settingsService.ServiceAccountKeyPath = ServiceAccountKeyTextBox.Text;
+            _settingsService.SpreadsheetId = SpreadsheetIdTextBox.Text;
+
             _settingsService.SaveGoogleSheetsSettings();
         }
-        
+
         private void SavePrinterSettings()
         {
             // Save printer settings from UI controls
+            _settingsService.DefaultPrinter = DefaultPrinterComboBox?.SelectedItem?.ToString() ?? "Default Printer";
             _settingsService.SavePrinterSettings();
         }
-        
+
         private void SaveSystemSettings()
         {
             // Save system preferences and other settings
+            _settingsService.BackupPath = BackupLocationTextBox?.Text ?? "";
             _settingsService.SaveSystemSettings();
         }
-        
+
         private void SaveDatabaseSettings()
         {
-            // Save database connection and sync settings
+            // Extract materials from UI and store in settings
+            var materials = new List<string>();
+            foreach (var item in MaterialsListBox.Items)
+            {
+                if (item is string material && !string.IsNullOrWhiteSpace(material))
+                    materials.Add(material.Trim());
+            }
+
+            _settingsService.Materials = materials;
+
+            // Extract addresses from UI and store in settings
+            var addresses = new List<string>();
+            foreach (var item in AddressesListBox.Items)
+            {
+                if (item is string address && !string.IsNullOrWhiteSpace(address))
+                    addresses.Add(address.Trim());
+            }
+
+            _settingsService.Addresses = addresses;
+
             _settingsService.SaveDatabaseSettings();
         }
 
@@ -1617,7 +1743,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             try
             {
                 // Log the progress for debugging
-                System.Diagnostics.Debug.WriteLine($"Google Sheets Sync Progress: {e.Message} ({e.ProgressPercentage}%)");
+                System.Diagnostics.Debug.WriteLine(
+                    $"Google Sheets Sync Progress: {e.Message} ({e.ProgressPercentage}%)");
             }
             catch (Exception ex)
             {
@@ -1643,7 +1770,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     {
                         // UI element might not exist
                     }
-                    
+
                     System.Diagnostics.Debug.WriteLine($"Camera Status: {e.Message}");
                 });
             }
@@ -1659,7 +1786,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 // Log image update for debugging
                 System.Diagnostics.Debug.WriteLine($"Camera {e.CameraId} image updated");
-                
+
                 // In a real implementation, you might update UI elements showing camera feeds
                 // For now, we'll just log the event
             }
@@ -1681,7 +1808,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 CameraStatusText.Text = "Testing all cameras...";
 
                 var results = await _cameraService.TestAllCamerasAsync();
-                
+
                 // Update individual camera status
                 UpdateCameraStatus(1, results.FirstOrDefault(r => r.CameraId == 1));
                 UpdateCameraStatus(2, results.FirstOrDefault(r => r.CameraId == 2));
@@ -1690,20 +1817,22 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
                 var workingCameras = results.Count(r => r?.Success == true);
                 var totalCameras = results.Count;
-                
+
                 CameraStatusText.Text = $"Test completed: {workingCameras}/{totalCameras} cameras online";
-                
+
                 // Show summary
-                var summary = "CAMERA TEST RESULTS:\n" + string.Join("\n", 
-                    results.Select(r => $"• {r?.CameraName}: {(r?.Success == true ? "✅ " + r.Message : "❌ " + r?.Message)}"));
-                
-                MessageBox.Show(summary, "Camera Test Results", MessageBoxButton.OK, 
-                               workingCameras == totalCameras ? MessageBoxImage.Information : MessageBoxImage.Warning);
+                var summary = "CAMERA TEST RESULTS:\n" + string.Join("\n",
+                    results.Select(r =>
+                        $"• {r?.CameraName}: {(r?.Success == true ? "✅ " + r.Message : "❌ " + r?.Message)}"));
+
+                MessageBox.Show(summary, "Camera Test Results", MessageBoxButton.OK,
+                    workingCameras == totalCameras ? MessageBoxImage.Information : MessageBoxImage.Warning);
             }
             catch (Exception ex)
             {
                 CameraStatusText.Text = $"Test failed: {ex.Message}";
-                MessageBox.Show($"Camera test failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Camera test failed: {ex.Message}", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
             finally
             {
@@ -1720,7 +1849,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
                 StartMonitoringButton.IsEnabled = false;
                 var success = await _cameraService.StartMonitoringAsync();
-                
+
                 if (success)
                 {
                     StartMonitoringButton.IsEnabled = false;
@@ -1730,13 +1859,15 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 else
                 {
                     StartMonitoringButton.IsEnabled = true;
-                    MessageBox.Show("Failed to start camera monitoring", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Failed to start camera monitoring", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
                 StartMonitoringButton.IsEnabled = true;
-                MessageBox.Show($"Error starting monitoring: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error starting monitoring: {ex.Message}", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
 
@@ -1753,7 +1884,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error stopping monitoring: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error stopping monitoring: {ex.Message}", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
 
@@ -1768,25 +1900,27 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 CameraStatusText.Text = "Capturing all camera images...";
 
                 var snapshots = await _cameraService.SaveAllSnapshotsAsync("./CameraSnapshots");
-                
+
                 var successCount = snapshots.Values.Count(path => !string.IsNullOrEmpty(path));
                 var totalCount = snapshots.Count;
-                
+
                 CameraStatusText.Text = $"Captured {successCount}/{totalCount} camera images";
-                
+
                 var message = $"Camera capture completed:\n\n";
                 foreach (var kvp in snapshots)
                 {
-                    message += $"• {kvp.Key}: {(string.IsNullOrEmpty(kvp.Value) ? "❌ Failed" : "✅ " + Path.GetFileName(kvp.Value))}\n";
+                    message +=
+                        $"• {kvp.Key}: {(string.IsNullOrEmpty(kvp.Value) ? "❌ Failed" : "✅ " + Path.GetFileName(kvp.Value))}\n";
                 }
-                
-                MessageBox.Show(message, "Capture Results", MessageBoxButton.OK, 
-                               successCount == totalCount ? MessageBoxImage.Information : MessageBoxImage.Warning);
+
+                MessageBox.Show(message, "Capture Results", MessageBoxButton.OK,
+                    successCount == totalCount ? MessageBoxImage.Information : MessageBoxImage.Warning);
             }
             catch (Exception ex)
             {
                 CameraStatusText.Text = $"Capture failed: {ex.Message}";
-                MessageBox.Show($"Error capturing images: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error capturing images: {ex.Message}", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
             finally
             {
@@ -1868,7 +2002,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 statusText.Text = "Testing...";
 
                 // Camera configuration is updated through SaveCameraSettings method
-                
+
                 var camera = _cameraService.GetCamera(cameraId);
                 if (camera != null)
                 {
@@ -1902,20 +2036,20 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     var filePath = await _cameraService.SaveSnapshotAsync(camera, "./CameraSnapshots");
                     if (!string.IsNullOrEmpty(filePath))
                     {
-                        MessageBox.Show($"Image captured successfully:\n{Path.GetFileName(filePath)}", 
-                                       "Capture Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show($"Image captured successfully:\n{Path.GetFileName(filePath)}",
+                            "Capture Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
-                        MessageBox.Show("Failed to capture image", "Capture Failed", 
-                                       MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("Failed to capture image", "Capture Failed",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error capturing image: {ex.Message}", "Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error capturing image: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -1934,17 +2068,17 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 if (camera != null)
                 {
                     MessageBox.Show($"Camera Preview for {camera.Name}\n\n" +
-                                   $"IP: {camera.IpAddress}:{camera.Port}\n" +
-                                   $"Stream URL: {camera.StreamUrl}\n" +
-                                   $"Status: {(camera.IsEnabled ? "Enabled" : "Disabled")}\n\n" +
-                                   "Preview window would open here in full implementation.", 
-                                   "Camera Preview", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    $"IP: {camera.IpAddress}:{camera.Port}\n" +
+                                    $"Stream URL: {camera.StreamUrl}\n" +
+                                    $"Status: {(camera.IsEnabled ? "Enabled" : "Disabled")}\n\n" +
+                                    "Preview window would open here in full implementation.",
+                        "Camera Preview", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error showing preview: {ex.Message}", "Error", 
-                               MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error showing preview: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1965,9 +2099,9 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 if (statusText != null && result != null)
                 {
                     statusText.Text = result.Success ? $"✅ {result.Message}" : $"❌ {result.Message}";
-                    statusText.Foreground = result.Success ? 
-                        new SolidColorBrush(Color.FromRgb(40, 167, 69)) : 
-                        new SolidColorBrush(Color.FromRgb(220, 53, 69));
+                    statusText.Foreground = result.Success
+                        ? new SolidColorBrush(Color.FromRgb(40, 167, 69))
+                        : new SolidColorBrush(Color.FromRgb(220, 53, 69));
                 }
             }
             catch (Exception ex)
@@ -1983,7 +2117,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
         public void SetUserRole(string userRole, string username)
         {
             _currentUserRole = userRole;
-            
+
             // Show/Hide Admin Tools tab based on user role
             if (userRole == "SuperAdmin")
             {
@@ -2001,8 +2135,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (_currentUserRole != "SuperAdmin")
                 {
-                    MessageBox.Show("Access denied. Super Admin privileges required.", 
-                                   "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Access denied. Super Admin privileges required.",
+                        "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -2011,8 +2145,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening Weight Management: {ex.Message}", 
-                               "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error opening Weight Management: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2022,21 +2156,21 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (_currentUserRole != "SuperAdmin")
                 {
-                    MessageBox.Show("Access denied. Super Admin privileges required.", 
-                                   "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Access denied. Super Admin privileges required.",
+                        "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 var weightManagementWindow = new WeightManagementWindow("SuperAdmin");
                 weightManagementWindow.ShowDialog();
-                
+
                 // Focus on Audit History tab when opened
                 // This would require modifications to WeightManagementWindow to accept a tab parameter
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening Audit History: {ex.Message}", 
-                               "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error opening Audit History: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2046,8 +2180,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (_currentUserRole != "SuperAdmin")
                 {
-                    MessageBox.Show("Access denied. Super Admin privileges required.", 
-                                   "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Access denied. Super Admin privileges required.",
+                        "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -2067,8 +2201,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening Reversal Operations: {ex.Message}", 
-                               "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error opening Reversal Operations: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2078,8 +2212,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (_currentUserRole != "SuperAdmin")
                 {
-                    MessageBox.Show("Access denied. Super Admin privileges required.", 
-                                   "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Access denied. Super Admin privileges required.",
+                        "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -2092,15 +2226,15 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 if (result == MessageBoxResult.Yes)
                 {
                     // Simulate backup process
-                    MessageBox.Show("Database backup initiated successfully!\n\nBackup file: weighbridge_backup_" + 
-                                   DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".db",
-                                   "Backup Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Database backup initiated successfully!\n\nBackup file: weighbridge_backup_" +
+                                    DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".db",
+                        "Backup Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during backup: {ex.Message}", 
-                               "Backup Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error during backup: {ex.Message}",
+                    "Backup Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2110,21 +2244,21 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (_currentUserRole != "SuperAdmin")
                 {
-                    MessageBox.Show("Access denied. Super Admin privileges required.", 
-                                   "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Access denied. Super Admin privileges required.",
+                        "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 MessageBox.Show("Database integrity check completed successfully!\n\n" +
-                               "• All tables verified\n" +
-                               "• No corruption detected\n" +
-                               "• Indexes optimized",
-                               "Integrity Check Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                                "• All tables verified\n" +
+                                "• No corruption detected\n" +
+                                "• Indexes optimized",
+                    "Integrity Check Complete", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during integrity check: {ex.Message}", 
-                               "Integrity Check Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error during integrity check: {ex.Message}",
+                    "Integrity Check Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2134,8 +2268,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (_currentUserRole != "SuperAdmin")
                 {
-                    MessageBox.Show("Access denied. Super Admin privileges required.", 
-                                   "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Access denied. Super Admin privileges required.",
+                        "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -2157,17 +2291,17 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     if (result == MessageBoxResult.Yes)
                     {
                         MessageBox.Show($"Record cleanup completed!\n\n" +
-                                       $"• Records older than {days} days archived\n" +
-                                       "• Database optimized\n" +
-                                       "• Backup created before cleanup",
-                                       "Cleanup Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                                        $"• Records older than {days} days archived\n" +
+                                        "• Database optimized\n" +
+                                        "• Backup created before cleanup",
+                            "Cleanup Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during cleanup: {ex.Message}", 
-                               "Cleanup Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error during cleanup: {ex.Message}",
+                    "Cleanup Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2177,24 +2311,24 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (_currentUserRole != "SuperAdmin")
                 {
-                    MessageBox.Show("Access denied. Super Admin privileges required.", 
-                                   "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Access denied. Super Admin privileges required.",
+                        "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 MessageBox.Show("User Management System\n\n" +
-                               "This feature will open a dedicated user management interface for:\n" +
-                               "• Creating new user accounts\n" +
-                               "• Modifying user permissions\n" +
-                               "• Deactivating users\n" +
-                               "• Viewing user activity logs\n\n" +
-                               "Feature coming in next update!",
-                               "User Management", MessageBoxButton.OK, MessageBoxImage.Information);
+                                "This feature will open a dedicated user management interface for:\n" +
+                                "• Creating new user accounts\n" +
+                                "• Modifying user permissions\n" +
+                                "• Deactivating users\n" +
+                                "• Viewing user activity logs\n\n" +
+                                "Feature coming in next update!",
+                    "User Management", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening user management: {ex.Message}", 
-                               "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error opening user management: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2204,8 +2338,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (_currentUserRole != "SuperAdmin")
                 {
-                    MessageBox.Show("Access denied. Super Admin privileges required.", 
-                                   "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Access denied. Super Admin privileges required.",
+                        "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -2226,16 +2360,16 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     if (result == MessageBoxResult.Yes)
                     {
                         MessageBox.Show($"Password reset successfully for user: {username}\n\n" +
-                                       "Temporary password: weighbridge123\n" +
-                                       "User must change password on next login.",
-                                       "Password Reset Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                                        "Temporary password: weighbridge123\n" +
+                                        "User must change password on next login.",
+                            "Password Reset Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error resetting password: {ex.Message}", 
-                               "Reset Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error resetting password: {ex.Message}",
+                    "Reset Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2245,24 +2379,26 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (_currentUserRole != "SuperAdmin")
                 {
-                    MessageBox.Show("Access denied. Super Admin privileges required.", 
-                                   "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Access denied. Super Admin privileges required.",
+                        "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 MessageBox.Show("User Activity Log\n\n" +
-                               "Recent Activity:\n" +
-                               "• SuperAdmin - Login - " + DateTime.Now.AddMinutes(-5).ToString("HH:mm") + "\n" +
-                               "• SuperAdmin - Settings Access - " + DateTime.Now.ToString("HH:mm") + "\n" +
-                               "• User01 - Entry Created (RST 1001) - " + DateTime.Now.AddMinutes(-30).ToString("HH:mm") + "\n" +
-                               "• User01 - Exit Completed (RST 1001) - " + DateTime.Now.AddMinutes(-15).ToString("HH:mm") + "\n\n" +
-                               "Full activity report feature coming soon!",
-                               "User Activity", MessageBoxButton.OK, MessageBoxImage.Information);
+                                "Recent Activity:\n" +
+                                "• SuperAdmin - Login - " + DateTime.Now.AddMinutes(-5).ToString("HH:mm") + "\n" +
+                                "• SuperAdmin - Settings Access - " + DateTime.Now.ToString("HH:mm") + "\n" +
+                                "• User01 - Entry Created (RST 1001) - " +
+                                DateTime.Now.AddMinutes(-30).ToString("HH:mm") + "\n" +
+                                "• User01 - Exit Completed (RST 1001) - " +
+                                DateTime.Now.AddMinutes(-15).ToString("HH:mm") + "\n\n" +
+                                "Full activity report feature coming soon!",
+                    "User Activity", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error viewing activity: {ex.Message}", 
-                               "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error viewing activity: {ex.Message}",
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2272,8 +2408,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (_currentUserRole != "SuperAdmin")
                 {
-                    MessageBox.Show("Access denied. Super Admin privileges required.", 
-                                   "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Access denied. Super Admin privileges required.",
+                        "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -2308,21 +2444,21 @@ namespace WeighbridgeSoftwareYashCotex.Views
                         if (confirmText == "RESET")
                         {
                             MessageBox.Show("Emergency system reset completed!\n\n" +
-                                           "Please restart the application for changes to take effect.",
-                                           "Reset Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                                            "Please restart the application for changes to take effect.",
+                                "Reset Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         else
                         {
                             MessageBox.Show("Reset cancelled - confirmation text did not match.",
-                                           "Reset Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
+                                "Reset Cancelled", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during emergency reset: {ex.Message}", 
-                               "Reset Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error during emergency reset: {ex.Message}",
+                    "Reset Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2332,8 +2468,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 if (_currentUserRole != "SuperAdmin")
                 {
-                    MessageBox.Show("Access denied. Super Admin privileges required.", 
-                                   "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Access denied. Super Admin privileges required.",
+                        "Unauthorized Access", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -2352,19 +2488,19 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 if (result == MessageBoxResult.Yes)
                 {
                     MessageBox.Show("Maintenance mode enabled successfully!\n\n" +
-                                   "• System is now in maintenance mode\n" +
-                                   "• Users will see maintenance notice\n" +
-                                   "• Only Super Admin access allowed\n\n" +
-                                   "Use the same button to disable maintenance mode.",
-                                   "Maintenance Mode Enabled", MessageBoxButton.OK, MessageBoxImage.Information);
-                    
+                                    "• System is now in maintenance mode\n" +
+                                    "• Users will see maintenance notice\n" +
+                                    "• Only Super Admin access allowed\n\n" +
+                                    "Use the same button to disable maintenance mode.",
+                        "Maintenance Mode Enabled", MessageBoxButton.OK, MessageBoxImage.Information);
+
                     MaintenanceModeButton.Content = "🛡️ Disable Maintenance Mode";
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error enabling maintenance mode: {ex.Message}", 
-                               "Maintenance Mode Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error enabling maintenance mode: {ex.Message}",
+                    "Maintenance Mode Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -2385,4 +2521,4 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
         }
     }
-}
+}    

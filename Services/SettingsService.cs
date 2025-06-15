@@ -30,6 +30,15 @@ public class SettingsService
     
     public List<WeightRule>? WeightRules { get; set; }
     public List<string> Materials { get; set; } = new();
+
+    public int MaxWeightCapacity { get; set; } = 100000;
+    public string DefaultPrinter { get; set; } = string.Empty;
+    public string BackupPath { get; set; } = "Backups";
+    public bool GoogleSheetsEnabled { get; set; } = false;
+    public string ServiceAccountKeyPath { get; set; } = string.Empty;
+    public string SpreadsheetId { get; set; } = string.Empty;
+    public List<string> Addresses { get; set; } = new();
+    public List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration> Cameras { get; set; } = new();
     
     private SettingsService()
     {
@@ -57,6 +66,14 @@ public class SettingsService
                     WeighbridgeComPort = loaded.WeighbridgeComPort;
                     WeightRules = loaded.WeightRules;
                     Materials = loaded.Materials ?? new List<string>();
+                    MaxWeightCapacity = loaded.MaxWeightCapacity;
+                    DefaultPrinter = loaded.DefaultPrinter;
+                    BackupPath = loaded.BackupPath;
+                    GoogleSheetsEnabled = loaded.GoogleSheetsEnabled;
+                    ServiceAccountKeyPath = loaded.ServiceAccountKeyPath;
+                    SpreadsheetId = loaded.SpreadsheetId;
+                    Addresses = loaded.Addresses ?? new List<string>();
+                    Cameras = loaded.Cameras ?? new List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration>();
                 }
             }
             catch (Exception ex)

@@ -483,6 +483,8 @@ namespace WeighbridgeSoftwareYashCotex.Services
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
         public string StreamUrl { get; set; } = "";
+        public string Protocol { get; set; } = "http";
+        public string StreamPath { get; set; } = "/mjpeg/1";
         public bool IsEnabled { get; set; } = true;
         public CameraPosition Position { get; set; }
         public int RefreshRate { get; set; } = 1000; // milliseconds
