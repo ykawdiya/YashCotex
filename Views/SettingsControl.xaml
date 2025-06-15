@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="WeighbridgeSoftwareYashCotex.Views.SettingsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+   
     <UserControl.Resources>
         <!-- Settings Styles -->
         <Style x:Key="HeaderStyle" TargetType="TextBlock">
@@ -268,10 +268,10 @@
                                 <StackPanel>
                                     <TextBlock Text="🎮 CAMERA CONTROLS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
                                     <StackPanel Orientation="Horizontal">
-                                        <Button Content="🔄 Test All Cameras" Padding="10,5" Margin="0,0,10,0" x:Name="TestAllCamerasButton"/>
-                                        <Button Content="📹 Start Monitoring" Padding="10,5" Margin="0,0,10,0" x:Name="StartMonitoringButton"/>
-                                        <Button Content="⏹️ Stop Monitoring" Padding="10,5" Margin="0,0,10,0" x:Name="StopMonitoringButton"/>
-                                        <Button Content="📸 Capture All" Padding="10,5" x:Name="CaptureAllButton"/>
+                                        <Button Content="🔄 Test All Cameras" Padding="10,5" Margin="0,0,10,0" x:Name="TestAllCamerasButton" Click="TestAllCamerasButton_Click"/>
+                                        <Button Content="📹 Start Monitoring" Padding="10,5" Margin="0,0,10,0" x:Name="StartMonitoringButton" Click="StartMonitoringButton_Click"/>
+                                        <Button Content="⏹️ Stop Monitoring" Padding="10,5" Margin="0,0,10,0" x:Name="StopMonitoringButton" Click="StopMonitoringButton_Click"/>
+                                        <Button Content="📸 Capture All" Padding="10,5" x:Name="CaptureAllButton" Click="CaptureAllButton_Click"/>
                                     </StackPanel>
                                     <TextBlock x:Name="CameraStatusText" Text="Ready to configure cameras" Margin="0,10,0,0" FontWeight="SemiBold"/>
                                 </StackPanel>
@@ -333,9 +333,9 @@
                                             <TextBox x:Name="Camera1FullUrlTextBox" Style="{StaticResource FieldTextBoxStyle}" IsReadOnly="True" 
                                                      Text="http://192.168.1.101:80/mjpeg/1" FontSize="10" Background="#F5F5F5"/>
                                             
-                                            <Button Content="🔄 Test" x:Name="TestCamera1Button" Margin="0,10,0,5" Padding="8,4"/>
-                                            <Button Content="📸 Capture" x:Name="CaptureCamera1Button" Margin="0,0,0,5" Padding="8,4"/>
-                                            <Button Content="👁️ Preview" x:Name="PreviewCamera1Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <Button Content="🔄 Test" x:Name="TestCamera1Button" Margin="0,10,0,5" Padding="8,4" Click="TestCamera1Button_Click"/>
+                                            <Button Content="📸 Capture" x:Name="CaptureCamera1Button" Margin="0,0,0,5" Padding="8,4" Click="CaptureCamera1Button_Click"/>
+                                            <Button Content="👁️ Preview" x:Name="PreviewCamera1Button" Margin="0,0,0,5" Padding="8,4" Click="PreviewCamera1Button_Click"/>
                                             <TextBlock x:Name="Camera1StatusText" Text="Not tested" FontSize="10" Margin="0,5,0,0"/>
                                         </StackPanel>
                                     </Grid>
@@ -398,9 +398,9 @@
                                             <TextBox x:Name="Camera2FullUrlTextBox" Style="{StaticResource FieldTextBoxStyle}" IsReadOnly="True" 
                                                      Text="http://192.168.1.102:80/mjpeg/1" FontSize="10" Background="#F5F5F5"/>
                                             
-                                            <Button Content="🔄 Test" x:Name="TestCamera2Button" Margin="0,10,0,5" Padding="8,4"/>
-                                            <Button Content="📸 Capture" x:Name="CaptureCamera2Button" Margin="0,0,0,5" Padding="8,4"/>
-                                            <Button Content="👁️ Preview" x:Name="PreviewCamera2Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <Button Content="🔄 Test" x:Name="TestCamera2Button" Margin="0,10,0,5" Padding="8,4" Click="TestCamera2Button_Click"/>
+                                            <Button Content="📸 Capture" x:Name="CaptureCamera2Button" Margin="0,0,0,5" Padding="8,4" Click="CaptureCamera2Button_Click"/>
+                                            <Button Content="👁️ Preview" x:Name="PreviewCamera2Button" Margin="0,0,0,5" Padding="8,4" Click="PreviewCamera2Button_Click"/>
                                             <TextBlock x:Name="Camera2StatusText" Text="Not tested" FontSize="10" Margin="0,5,0,0"/>
                                         </StackPanel>
                                     </Grid>
@@ -463,9 +463,9 @@
                                             <TextBox x:Name="Camera3FullUrlTextBox" Style="{StaticResource FieldTextBoxStyle}" IsReadOnly="True" 
                                                      Text="http://192.168.1.103:80/mjpeg/1" FontSize="10" Background="#F5F5F5"/>
                                             
-                                            <Button Content="🔄 Test" x:Name="TestCamera3Button" Margin="0,10,0,5" Padding="8,4"/>
-                                            <Button Content="📸 Capture" x:Name="CaptureCamera3Button" Margin="0,0,0,5" Padding="8,4"/>
-                                            <Button Content="👁️ Preview" x:Name="PreviewCamera3Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <Button Content="🔄 Test" x:Name="TestCamera3Button" Margin="0,10,0,5" Padding="8,4" Click="TestCamera3Button_Click"/>
+                                            <Button Content="📸 Capture" x:Name="CaptureCamera3Button" Margin="0,0,0,5" Padding="8,4" Click="CaptureCamera3Button_Click"/>
+                                            <Button Content="👁️ Preview" x:Name="PreviewCamera3Button" Margin="0,0,0,5" Padding="8,4" Click="PreviewCamera3Button_Click"/>
                                             <TextBlock x:Name="Camera3StatusText" Text="Not tested" FontSize="10" Margin="0,5,0,0"/>
                                         </StackPanel>
                                     </Grid>
@@ -528,9 +528,9 @@
                                             <TextBox x:Name="Camera4FullUrlTextBox" Style="{StaticResource FieldTextBoxStyle}" IsReadOnly="True" 
                                                      Text="http://192.168.1.104:80/mjpeg/1" FontSize="10" Background="#F5F5F5"/>
                                             
-                                            <Button Content="🔄 Test" x:Name="TestCamera4Button" Margin="0,10,0,5" Padding="8,4"/>
-                                            <Button Content="📸 Capture" x:Name="CaptureCamera4Button" Margin="0,0,0,5" Padding="8,4"/>
-                                            <Button Content="👁️ Preview" x:Name="PreviewCamera4Button" Margin="0,0,0,5" Padding="8,4"/>
+                                            <Button Content="🔄 Test" x:Name="TestCamera4Button" Margin="0,10,0,5" Padding="8,4" Click="TestCamera4Button_Click"/>
+                                            <Button Content="📸 Capture" x:Name="CaptureCamera4Button" Margin="0,0,0,5" Padding="8,4" Click="CaptureCamera4Button_Click"/>
+                                            <Button Content="👁️ Preview" x:Name="PreviewCamera4Button" Margin="0,0,0,5" Padding="8,4" Click="PreviewCamera4Button_Click"/>
                                             <TextBlock x:Name="Camera4StatusText" Text="Not tested" FontSize="10" Margin="0,5,0,0"/>
                                         </StackPanel>
                                     </Grid>
@@ -560,7 +560,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBox x:Name="ServiceAccountKeyTextBox" Style="{StaticResource FieldTextBoxStyle}" Grid.Column="0" IsReadOnly="True"/>
-                                        <Button Content="Browse..." Grid.Column="1" Margin="5,0,0,12" Padding="10,5" x:Name="BrowseKeyFileButton"/>
+                                        <Button Content="Browse..." Grid.Column="1" Margin="5,0,0,12" Padding="10,5" x:Name="BrowseKeyFileButton" Click="BrowseKeyFileButton_Click"/>
                                     </Grid>
                                     
                                     <TextBlock Text="Spreadsheet ID" Style="{StaticResource FieldLabelStyle}"/>
@@ -570,8 +570,8 @@
                                     <TextBox x:Name="WorksheetNameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="WeighmentData"/>
                                     
                                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                        <Button Content="🔄 Test Connection" Padding="10,5" Margin="0,0,10,0" x:Name="TestGoogleSheetsButton"/>
-                                        <Button Content="📤 Sync Now" Padding="10,5" x:Name="SyncNowButton"/>
+                                        <Button Content="🔄 Test Connection" Padding="10,5" Margin="0,0,10,0" x:Name="TestGoogleSheetsButton" Click="TestGoogleSheetsButton_Click"/>
+                                        <Button Content="📤 Sync Now" Padding="10,5" x:Name="SyncNowButton" Click="SyncNowButton_Click"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
@@ -590,7 +590,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBox x:Name="BackupLocationTextBox" Style="{StaticResource FieldTextBoxStyle}" Grid.Column="0" Text="./Backups"/>
-                                        <Button Content="Browse..." Grid.Column="1" Margin="5,0,0,12" Padding="10,5" x:Name="BrowseBackupLocationButton"/>
+                                        <Button Content="Browse..." Grid.Column="1" Margin="5,0,0,12" Padding="10,5" x:Name="BrowseBackupLocationButton" Click="BrowseBackupLocationButton_Click"/>
                                     </Grid>
                                     
                                     <TextBlock Text="Backup Frequency" Style="{StaticResource FieldLabelStyle}"/>
@@ -601,8 +601,8 @@
                                     </ComboBox>
                                     
                                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                        <Button Content="💾 Backup Now" Padding="10,5" Margin="0,0,10,0" x:Name="BackupNowButton"/>
-                                        <Button Content="📂 Restore Backup" Padding="10,5" x:Name="RestoreBackupButton"/>
+                                        <Button Content="💾 Backup Now" Padding="10,5" Margin="0,0,10,0" x:Name="BackupNowButton" Click="BackupNowButton_Click"/>
+                                        <Button Content="📂 Restore Backup" Padding="10,5" x:Name="RestoreBackupButton" Click="RestoreBackupButton_Click"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>

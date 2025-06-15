@@ -799,14 +799,15 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         private void BrowseBackupLocationButton_Click(object sender, RoutedEventArgs e)
         {
-            var folderDialog = new OpenFolderDialog
+            using (var folderDialog = new System.Windows.Forms.FolderBrowserDialog())
             {
-                Title = "Select Backup Location"
-            };
-
-            if (folderDialog.ShowDialog() == true)
-            {
-                BackupLocationTextBox.Text = folderDialog.FolderName;
+                folderDialog.Description = "Select Backup Location";
+                folderDialog.ShowNewFolderButton = true;
+                
+                if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    BackupLocationTextBox.Text = folderDialog.SelectedPath;
+                }
             }
         }
 
