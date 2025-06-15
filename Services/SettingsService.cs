@@ -12,14 +12,14 @@ public class SettingsService
     public static SettingsService Instance => _instance ??= new SettingsService();
     
     // Events for real-time settings updates
-    public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
-    public event EventHandler<string>? CompanyInfoChanged;
-    public event EventHandler<string>? WeighbridgeSettingsChanged;
-    public event EventHandler? DatabaseSettingsChanged;
-    public event EventHandler? GoogleSheetsSettingsChanged;
-    public event EventHandler? CameraSettingsChanged;
-    public event EventHandler? PrinterSettingsChanged;
-    public event EventHandler? SystemSettingsChanged;
+    [field: NonSerialized] public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
+    [field: NonSerialized] public event EventHandler<string>? CompanyInfoChanged;
+    [field: NonSerialized] public event EventHandler<string>? WeighbridgeSettingsChanged;
+    [field: NonSerialized] public event EventHandler? DatabaseSettingsChanged;
+    [field: NonSerialized] public event EventHandler? GoogleSheetsSettingsChanged;
+    [field: NonSerialized] public event EventHandler? CameraSettingsChanged;
+    [field: NonSerialized] public event EventHandler? PrinterSettingsChanged;
+    [field: NonSerialized] public event EventHandler? SystemSettingsChanged;
     
     public string? WeighbridgeComPort { get; set; } = "COM1";
     public string CompanyName { get; set; } = "YASH COTEX";
