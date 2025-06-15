@@ -110,45 +110,72 @@ public static class ValidationHelper
     // Apply validation styling to controls
     public static void ApplyValidationStyle(Control control, ValidationResult result)
     {
-        if (result.IsValid)
+        try
         {
-            control.Tag = "Valid";
-            control.ToolTip = result.Message;
+            if (control == null) return;
+            
+            if (result.IsValid)
+            {
+                control.Tag = "Valid";
+                control.ToolTip = result.Message;
+            }
+            else
+            {
+                control.Tag = "Invalid";
+                control.ToolTip = result.Message;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            control.Tag = "Invalid";
-            control.ToolTip = result.Message;
+            System.Diagnostics.Debug.WriteLine($"Error applying validation style: {ex.Message}");
         }
     }
 
     public static void ShowValidationMessage(TextBlock messageBlock, ValidationResult result)
     {
-        if (messageBlock == null) return;
+        try
+        {
+            if (messageBlock == null || result == null) return;
 
-        messageBlock.Text = result.Message;
-        
-        if (result.IsValid)
-        {
-            messageBlock.Foreground = new SolidColorBrush(Colors.Green);
-            messageBlock.Visibility = Visibility.Visible;
-            
-            // Auto-hide success messages after 3 seconds
-            var timer = new System.Windows.Threading.DispatcherTimer
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                Interval = TimeSpan.FromSeconds(3)
-            };
-            timer.Tick += (s, e) =>
-            {
-                messageBlock.Visibility = Visibility.Collapsed;
-                timer.Stop();
-            };
-            timer.Start();
+                messageBlock.Text = result.Message;
+                
+                if (result.IsValid)
+                {
+                    messageBlock.Foreground = new SolidColorBrush(Colors.Green);
+                    messageBlock.Visibility = Visibility.Visible;
+                    
+                    // Auto-hide success messages after 3 seconds
+                    var timer = new System.Windows.Threading.DispatcherTimer
+                    {
+                        Interval = TimeSpan.FromSeconds(3)
+                    };
+                    timer.Tick += (s, e) =>
+                    {
+                        try
+                        {
+                            messageBlock.Visibility = Visibility.Collapsed;
+                            timer.Stop();
+                        }
+                        catch (Exception timerEx)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Timer error: {timerEx.Message}");
+                            timer.Stop();
+                        }
+                    };
+                    timer.Start();
+                }
+                else
+                {
+                    messageBlock.Foreground = new SolidColorBrush(Colors.Red);
+                    messageBlock.Visibility = Visibility.Visible;
+                }
+            });
         }
-        else
+        catch (Exception ex)
         {
-            messageBlock.Foreground = new SolidColorBrush(Colors.Red);
-            messageBlock.Visibility = Visibility.Visible;
+            System.Diagnostics.Debug.WriteLine($"Error showing validation message: {ex.Message}");
         }
     }
 

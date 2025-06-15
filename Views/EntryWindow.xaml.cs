@@ -121,34 +121,62 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         private void ValidateVehicleNumber()
         {
-            var result = ValidationHelper.ValidateVehicleNumber(VehicleNumberTextBox.Text);
-            ValidationHelper.ApplyValidationStyle(VehicleNumberTextBox, result);
-            ValidationHelper.ShowValidationMessage(VehicleNumberValidation, result);
-            UpdateFormProgress();
+            try
+            {
+                var result = ValidationHelper.ValidateVehicleNumber(VehicleNumberTextBox?.Text ?? "");
+                ValidationHelper.ApplyValidationStyle(VehicleNumberTextBox, result);
+                ValidationHelper.ShowValidationMessage(VehicleNumberValidation, result);
+                UpdateFormProgress();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error validating vehicle number: {ex.Message}");
+            }
         }
 
         private void ValidatePhoneNumber()
         {
-            var result = ValidationHelper.ValidatePhoneNumber(PhoneNumberTextBox.Text);
-            ValidationHelper.ApplyValidationStyle(PhoneNumberTextBox, result);
-            ValidationHelper.ShowValidationMessage(PhoneNumberValidation, result);
-            UpdateFormProgress();
+            try
+            {
+                var result = ValidationHelper.ValidatePhoneNumber(PhoneNumberTextBox?.Text ?? "");
+                ValidationHelper.ApplyValidationStyle(PhoneNumberTextBox, result);
+                ValidationHelper.ShowValidationMessage(PhoneNumberValidation, result);
+                UpdateFormProgress();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error validating phone number: {ex.Message}");
+            }
         }
 
         private void ValidateName()
         {
-            var result = ValidationHelper.ValidateName(NameComboBox.Text);
-            ValidationHelper.ApplyValidationStyle(NameComboBox, result);
-            ValidationHelper.ShowValidationMessage(NameValidation, result);
-            UpdateFormProgress();
+            try
+            {
+                var result = ValidationHelper.ValidateName(NameComboBox?.Text ?? "");
+                ValidationHelper.ApplyValidationStyle(NameComboBox, result);
+                ValidationHelper.ShowValidationMessage(NameValidation, result);
+                UpdateFormProgress();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error validating name: {ex.Message}");
+            }
         }
 
         private void ValidateAddress()
         {
-            var result = ValidationHelper.ValidateAddress(AddressComboBox.Text);
-            ValidationHelper.ApplyValidationStyle(AddressComboBox, result);
-            ValidationHelper.ShowValidationMessage(AddressValidation, result);
-            UpdateFormProgress();
+            try
+            {
+                var result = ValidationHelper.ValidateAddress(AddressComboBox?.Text ?? "");
+                ValidationHelper.ApplyValidationStyle(AddressComboBox, result);
+                ValidationHelper.ShowValidationMessage(AddressValidation, result);
+                UpdateFormProgress();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error validating address: {ex.Message}");
+            }
         }
 
         private void ValidateMaterial()
@@ -161,42 +189,63 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         private void ValidateWeight()
         {
-            var result = ValidationHelper.ValidateWeight(WeightTextBox.Text);
-            ValidationHelper.ApplyValidationStyle(WeightTextBox, result);
-            ValidationHelper.ShowValidationMessage(WeightValidation, result);
-            UpdateFormProgress();
+            try
+            {
+                var result = ValidationHelper.ValidateWeight(WeightTextBox?.Text ?? "");
+                ValidationHelper.ApplyValidationStyle(WeightTextBox, result);
+                ValidationHelper.ShowValidationMessage(WeightValidation, result);
+                UpdateFormProgress();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error validating weight: {ex.Message}");
+            }
         }
 
         private void UpdateFormProgress()
         {
-            _validFieldsCount = 0;
-            
-            // Check each required field
-            if (ValidationHelper.ValidateVehicleNumber(VehicleNumberTextBox.Text).IsValid)
-                _validFieldsCount++;
-            if (ValidationHelper.ValidatePhoneNumber(PhoneNumberTextBox.Text).IsValid)
-                _validFieldsCount++;
-            if (ValidationHelper.ValidateName(NameComboBox.Text).IsValid)
-                _validFieldsCount++;
-            if (ValidationHelper.ValidateAddress(AddressComboBox.Text).IsValid)
-                _validFieldsCount++;
-            if (ValidationHelper.ValidateWeight(WeightTextBox.Text).IsValid)
-                _validFieldsCount++;
-
-            FormProgressBar.Value = _validFieldsCount;
-            _isFormValid = _validFieldsCount == 5;
-            SaveButton.IsEnabled = _isFormValid;
-
-            // Update status text
-            if (_isFormValid)
+            try
             {
-                FormStatusText.Text = "✅ All fields are valid. Ready to save!";
-                FormStatusText.Foreground = System.Windows.Media.Brushes.Green;
+                _validFieldsCount = 0;
+                
+                // Check each required field with null safety
+                if (ValidationHelper.ValidateVehicleNumber(VehicleNumberTextBox?.Text ?? "").IsValid)
+                    _validFieldsCount++;
+                if (ValidationHelper.ValidatePhoneNumber(PhoneNumberTextBox?.Text ?? "").IsValid)
+                    _validFieldsCount++;
+                if (ValidationHelper.ValidateName(NameComboBox?.Text ?? "").IsValid)
+                    _validFieldsCount++;
+                if (ValidationHelper.ValidateAddress(AddressComboBox?.Text ?? "").IsValid)
+                    _validFieldsCount++;
+                if (ValidationHelper.ValidateWeight(WeightTextBox?.Text ?? "").IsValid)
+                    _validFieldsCount++;
+
+                if (FormProgressBar != null)
+                    FormProgressBar.Value = _validFieldsCount;
+                    
+                _isFormValid = _validFieldsCount == 5;
+                
+                if (SaveButton != null)
+                    SaveButton.IsEnabled = _isFormValid;
+
+                // Update status text
+                if (FormStatusText != null)
+                {
+                    if (_isFormValid)
+                    {
+                        FormStatusText.Text = "✅ All fields are valid. Ready to save!";
+                        FormStatusText.Foreground = System.Windows.Media.Brushes.Green;
+                    }
+                    else
+                    {
+                        FormStatusText.Text = $"Please complete {5 - _validFieldsCount} more required field(s)";
+                        FormStatusText.Foreground = System.Windows.Media.Brushes.Gray;
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                FormStatusText.Text = $"Please complete {5 - _validFieldsCount} more required field(s)";
-                FormStatusText.Foreground = System.Windows.Media.Brushes.Gray;
+                System.Diagnostics.Debug.WriteLine($"Error updating form progress: {ex.Message}");
             }
         }
 
