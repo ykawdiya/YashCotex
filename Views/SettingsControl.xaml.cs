@@ -36,6 +36,15 @@ namespace WeighbridgeSoftwareYashCotex.Views
             
             // Subscribe to Google Sheets events
             _googleSheetsService.SyncStatusChanged += OnSyncStatusChanged;
+            _googleSheetsService.SyncStatusChanged += (s, msg) =>
+            {
+                if (msg.Contains("error", StringComparison.OrdinalIgnoreCase) ||
+                    msg.Contains("❌") ||
+                    msg.Contains("Unknown"))
+                {
+                    MessageBox.Show(msg, "Google Sheets Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            };
             _googleSheetsService.SyncProgressChanged += OnSyncProgressChanged;
             
             // Subscribe to Camera events
