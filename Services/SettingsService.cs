@@ -46,7 +46,8 @@ public class SettingsService
         LoadSettings();
     }
     
-    private const string SettingsFilePath = "settings.json";
+    private static readonly string SettingsFilePath =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YashCotex", "settings.json");
 
     private void LoadSettings()
     {
@@ -89,6 +90,7 @@ public class SettingsService
     {
         try
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(SettingsFilePath)!);
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(this, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText(SettingsFilePath, json);
         }
