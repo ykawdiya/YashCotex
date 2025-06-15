@@ -799,14 +799,23 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         private void BrowseBackupLocationButton_Click(object sender, RoutedEventArgs e)
         {
-            using (var folderDialog = new System.Windows.Forms.FolderBrowserDialog())
+            // Using SaveFileDialog as a workaround for folder selection in WPF
+            var dialog = new SaveFileDialog
             {
-                folderDialog.Description = "Select Backup Location";
-                folderDialog.ShowNewFolderButton = true;
-                
-                if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                Title = "Select Backup Location",
+                Filter = "Folder Selection|*.none",
+                FileName = "Select Folder",
+                CheckFileExists = false,
+                CheckPathExists = true
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                // Get the directory path from the selected file path
+                var folderPath = System.IO.Path.GetDirectoryName(dialog.FileName);
+                if (!string.IsNullOrEmpty(folderPath))
                 {
-                    BackupLocationTextBox.Text = folderDialog.SelectedPath;
+                    BackupLocationTextBox.Text = folderPath;
                 }
             }
         }

@@ -631,9 +631,9 @@
                                         
                                         <StackPanel Grid.Column="1" Margin="10,0,0,0">
                                             <TextBox x:Name="NewMaterialTextBox" Width="150" Margin="0,0,0,5" Padding="5"/>
-                                            <Button Content="➕ Add" Padding="10,5" Margin="0,0,0,5" x:Name="AddMaterialButton"/>
-                                            <Button Content="✏️ Edit" Padding="10,5" Margin="0,0,0,5" x:Name="EditMaterialButton"/>
-                                            <Button Content="🗑️ Delete" Padding="10,5" x:Name="DeleteMaterialButton"/>
+                                            <Button Content="➕ Add" Padding="10,5" Margin="0,0,0,5" x:Name="AddMaterialButton" Click="AddMaterialButton_Click"/>
+                                            <Button Content="✏️ Edit" Padding="10,5" Margin="0,0,0,5" x:Name="EditMaterialButton" Click="EditMaterialButton_Click"/>
+                                            <Button Content="🗑️ Delete" Padding="10,5" x:Name="DeleteMaterialButton" Click="DeleteMaterialButton_Click"/>
                                         </StackPanel>
                                     </Grid>
                                 </StackPanel>
@@ -654,9 +654,9 @@
                                         
                                         <StackPanel Grid.Column="1" Margin="10,0,0,0">
                                             <TextBox x:Name="NewAddressTextBox" Width="150" Margin="0,0,0,5" Padding="5"/>
-                                            <Button Content="➕ Add" Padding="10,5" Margin="0,0,0,5" x:Name="AddAddressButton"/>
-                                            <Button Content="✏️ Edit" Padding="10,5" Margin="0,0,0,5" x:Name="EditAddressButton"/>
-                                            <Button Content="🗑️ Delete" Padding="10,5" x:Name="DeleteAddressButton"/>
+                                            <Button Content="➕ Add" Padding="10,5" Margin="0,0,0,5" x:Name="AddAddressButton" Click="AddAddressButton_Click"/>
+                                            <Button Content="✏️ Edit" Padding="10,5" Margin="0,0,0,5" x:Name="EditAddressButton" Click="EditAddressButton_Click"/>
+                                            <Button Content="🗑️ Delete" Padding="10,5" x:Name="DeleteAddressButton" Click="DeleteAddressButton_Click"/>
                                         </StackPanel>
                                     </Grid>
                                 </StackPanel>
@@ -771,9 +771,9 @@
                                     </DataGrid>
                                     
                                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                                        <Button Content="➕ Add User" Padding="10,5" Margin="0,0,10,0" x:Name="AddUserButton"/>
-                                        <Button Content="✏️ Edit User" Padding="10,5" Margin="0,0,10,0" x:Name="EditUserButton"/>
-                                        <Button Content="🗑️ Delete User" Padding="10,5" x:Name="DeleteUserButton"/>
+                                        <Button Content="➕ Add User" Padding="10,5" Margin="0,0,10,0" x:Name="AddUserButton" Click="AddUserButton_Click"/>
+                                        <Button Content="✏️ Edit User" Padding="10,5" Margin="0,0,10,0" x:Name="EditUserButton" Click="EditUserButton_Click"/>
+                                        <Button Content="🗑️ Delete User" Padding="10,5" x:Name="DeleteUserButton" Click="DeleteUserButton_Click"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
@@ -811,7 +811,7 @@
                                         </StackPanel>
                                     </Grid>
                                     
-                                    <Button Content="👤 Create User" Padding="15,8" Margin="0,10,0,0" x:Name="CreateUserButton" HorizontalAlignment="Left"/>
+                                    <Button Content="👤 Create User" Padding="15,8" Margin="0,10,0,0" x:Name="CreateUserButton" HorizontalAlignment="Left" Click="CreateUserButton_Click"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -866,13 +866,13 @@
                                     <TextBlock Text="🔧 SYSTEM ACTIONS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
                                     
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                        <Button Content="🔄 Restart Application" Padding="10,5" Margin="0,0,10,0" x:Name="RestartAppButton"/>
-                                        <Button Content="📊 System Diagnostics" Padding="10,5" x:Name="SystemDiagnosticsButton"/>
+                                        <Button Content="🔄 Restart Application" Padding="10,5" Margin="0,0,10,0" x:Name="RestartAppButton" Click="RestartAppButton_Click"/>
+                                        <Button Content="📊 System Diagnostics" Padding="10,5" x:Name="SystemDiagnosticsButton" Click="SystemDiagnosticsButton_Click"/>
                                     </StackPanel>
                                     
                                     <StackPanel Orientation="Horizontal">
-                                        <Button Content="🗑️ Clear Cache" Padding="10,5" Margin="0,0,10,0" x:Name="ClearCacheButton"/>
-                                        <Button Content="📋 Export Logs" Padding="10,5" x:Name="ExportLogsButton"/>
+                                        <Button Content="🗑️ Clear Cache" Padding="10,5" Margin="0,0,10,0" x:Name="ClearCacheButton" Click="ClearCacheButton_Click"/>
+                                        <Button Content="📋 Export Logs" Padding="10,5" x:Name="ExportLogsButton" Click="ExportLogsButton_Click"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
