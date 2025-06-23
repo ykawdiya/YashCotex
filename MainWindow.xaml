@@ -90,8 +90,10 @@
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <TextBlock x:Name="CompanyNameHeader" Text="YASH COTEX PRIVATE LIMITED" 
                                FontSize="16" FontWeight="Bold" Style="{StaticResource HeaderTextStyle}" HorizontalAlignment="Center"/>
-                    <TextBlock x:Name="CompanyAddressHeader" Text="Industrial Area, Phase 1, Sector 58, Mohali, Punjab - 160059" 
+                    <TextBlock x:Name="CompanyAddressLine1Header" Text="Address Line 1" 
                                FontSize="11" Foreground="#BDC3C7" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    <TextBlock x:Name="CompanyAddressLine2Header" Text="Address Line 2" 
+                               FontSize="11" Foreground="#BDC3C7" HorizontalAlignment="Center" Margin="0,0,0,0"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2,0,0">
                         <TextBlock x:Name="CompanyEmailHeader" Text="info@yashcotex.com" FontSize="11" Foreground="#BDC3C7"/>
                         <TextBlock Text=" | " FontSize="11" Foreground="#BDC3C7"/>

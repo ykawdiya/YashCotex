@@ -700,10 +700,17 @@ namespace WeighbridgeSoftwareYashCotex
                     CompanyNameHeader.Text = settings.CompanyName ?? "YASH COTEX";
                 }
                 
-                if (CompanyAddressHeader != null)
+                // Display address lines separately
+                if (CompanyAddressLine1Header != null)
                 {
-                    CompanyAddressHeader.Text = "";
-                    CompanyAddressHeader.Text = settings.CompanyAddress ?? "";
+                    CompanyAddressLine1Header.Text = "";
+                    CompanyAddressLine1Header.Text = settings.CompanyAddressLine1 ?? "";
+                }
+                
+                if (CompanyAddressLine2Header != null)
+                {
+                    CompanyAddressLine2Header.Text = "";
+                    CompanyAddressLine2Header.Text = settings.CompanyAddressLine2 ?? "";
                 }
                 
                 if (CompanyEmailHeader != null)

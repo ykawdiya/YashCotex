@@ -1453,27 +1453,32 @@ namespace WeighbridgeSoftwareYashCotex.Views
             CompanyPhoneTextBox.Text = _settingsService.CompanyPhone;
             GstNumberTextBox.Text = _settingsService.CompanyGSTIN;
             
-            // Split address between AddressLine1 and AddressLine2, clear unused fields
-            var addressText = _settingsService.CompanyAddress ?? "";
-            var addressWords = addressText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            
-            if (addressWords.Length <= 6)
+            // Load address lines separately if available, otherwise split combined address
+            if (!string.IsNullOrEmpty(_settingsService.CompanyAddressLine1) || !string.IsNullOrEmpty(_settingsService.CompanyAddressLine2))
             {
-                // Short address - put all in Line1
-                AddressLine1TextBox.Text = addressText;
-                AddressLine2TextBox.Text = "";
+                AddressLine1TextBox.Text = _settingsService.CompanyAddressLine1;
+                AddressLine2TextBox.Text = _settingsService.CompanyAddressLine2;
             }
             else
             {
-                // Long address - split roughly in half
-                var midPoint = addressWords.Length / 2;
-                AddressLine1TextBox.Text = string.Join(" ", addressWords.Take(midPoint));
-                AddressLine2TextBox.Text = string.Join(" ", addressWords.Skip(midPoint));
+                // Fallback: split combined address for legacy data
+                var addressText = _settingsService.CompanyAddress ?? "";
+                var addressWords = addressText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                
+                if (addressWords.Length <= 6)
+                {
+                    AddressLine1TextBox.Text = addressText;
+                    AddressLine2TextBox.Text = "";
+                }
+                else
+                {
+                    var midPoint = addressWords.Length / 2;
+                    AddressLine1TextBox.Text = string.Join(" ", addressWords.Take(midPoint));
+                    AddressLine2TextBox.Text = string.Join(" ", addressWords.Skip(midPoint));
+                }
             }
             
-            // Clear unused address fields  
-            CityTextBox.Text = "";
-            StateTextBox.Text = "";
+            // No unused address fields to clear
 
             // Hardware
             ScaleComPortComboBox.SelectedItem = _settingsService.WeighbridgeComPort;
@@ -1529,14 +1534,16 @@ namespace WeighbridgeSoftwareYashCotex.Views
             
             _settingsService.CompanyName = companyName;
             
-            // Build address from AddressLine1 and AddressLine2 only
+            // Store address lines separately and also build combined address
+            _settingsService.CompanyAddressLine1 = AddressLine1TextBox?.Text?.Trim() ?? "";
+            _settingsService.CompanyAddressLine2 = AddressLine2TextBox?.Text?.Trim() ?? "";
+            
             var addressParts = new[] {
-                AddressLine1TextBox?.Text?.Trim(),
-                AddressLine2TextBox?.Text?.Trim()
+                _settingsService.CompanyAddressLine1,
+                _settingsService.CompanyAddressLine2
             }.Where(part => !string.IsNullOrWhiteSpace(part));
             
-            var fullAddress = string.Join(" ", addressParts);
-            _settingsService.CompanyAddress = fullAddress;
+            _settingsService.CompanyAddress = string.Join(" ", addressParts);
             _settingsService.CompanyEmail = companyEmail;
             _settingsService.CompanyPhone = companyPhone;
             _settingsService.CompanyGSTIN = companyGSTIN;

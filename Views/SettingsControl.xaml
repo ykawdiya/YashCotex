@@ -119,34 +119,22 @@
                                     <TextBox x:Name="CompanyNameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="YASH COTEX PRIVATE LIMITED"/>
                                     
                                     <TextBlock Text="Address Line 1 *" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="AddressLine1TextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Industrial Area, Phase 1"/>
+                                    <TextBox x:Name="AddressLine1TextBox" Style="{StaticResource FieldTextBoxStyle}" Text=""/>
                                     
                                     <TextBlock Text="Address Line 2" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="AddressLine2TextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Sector 58, Mohali"/>
-                                    
-                                    <TextBlock Text="City *" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="CityTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Mohali"/>
-                                    
-                                    <TextBlock Text="State *" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="StateTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="Punjab"/>
+                                    <TextBox x:Name="AddressLine2TextBox" Style="{StaticResource FieldTextBoxStyle}" Text=""/>
                                 </StackPanel>
                                 
                                 <!-- Right Column -->
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock Text="PIN Code *" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="PinCodeTextBox" Style="{StaticResource FieldTextBoxStyle}" MaxLength="6" Text="160059"/>
-                                    
                                     <TextBlock Text="Phone Number *" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="CompanyPhoneTextBox" Style="{StaticResource FieldTextBoxStyle}" MaxLength="10" Text="9876543210"/>
+                                    <TextBox x:Name="CompanyPhoneTextBox" Style="{StaticResource FieldTextBoxStyle}" MaxLength="15" Text=""/>
                                     
                                     <TextBlock Text="Email Address" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="CompanyEmailTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="info@yashcotex.com"/>
+                                    <TextBox x:Name="CompanyEmailTextBox" Style="{StaticResource FieldTextBoxStyle}" Text=""/>
                                     
                                     <TextBlock Text="GST Number" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="GstNumberTextBox" Style="{StaticResource FieldTextBoxStyle}" MaxLength="15" Text="22AAAAA0000A1Z5"/>
-                                    
-                                    <TextBlock Text="License Number" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="LicenseNumberTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="WB/2024/001"/>
+                                    <TextBox x:Name="GstNumberTextBox" Style="{StaticResource FieldTextBoxStyle}" MaxLength="15" Text=""/>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>

@@ -37,6 +37,8 @@ public class SettingsService
     public string? WeighbridgeComPort { get; set; } = "COM1";
     public string CompanyName { get; set; } = "YASH COTEX";
     public string CompanyAddress { get; set; } = "Company Address Here";
+    public string CompanyAddressLine1 { get; set; } = "";
+    public string CompanyAddressLine2 { get; set; } = "";
     public string CompanyEmail { get; set; } = "email@company.com";
     public string CompanyPhone { get; set; } = "Phone: +91-9876543210";
     public string CompanyGSTIN { get; set; } = "GSTIN: 22AAAAA0000A1Z5";
@@ -122,6 +124,16 @@ public class SettingsService
                         CompanyAddress = loadedAddress;
                     }
                     Console.WriteLine($"Loaded CompanyAddress: '{CompanyAddress}'");
+                }
+                if (root.TryGetProperty("CompanyAddressLine1", out var companyAddressLine1))
+                {
+                    CompanyAddressLine1 = companyAddressLine1.GetString() ?? CompanyAddressLine1;
+                    Console.WriteLine($"Loaded CompanyAddressLine1: '{CompanyAddressLine1}'");
+                }
+                if (root.TryGetProperty("CompanyAddressLine2", out var companyAddressLine2))
+                {
+                    CompanyAddressLine2 = companyAddressLine2.GetString() ?? CompanyAddressLine2;
+                    Console.WriteLine($"Loaded CompanyAddressLine2: '{CompanyAddressLine2}'");
                 }
                 if (root.TryGetProperty("CompanyEmail", out var companyEmail))
                 {
@@ -217,6 +229,8 @@ public class SettingsService
             {
                 CompanyName,
                 CompanyAddress,
+                CompanyAddressLine1,
+                CompanyAddressLine2,
                 CompanyEmail,
                 CompanyPhone,
                 CompanyGSTIN,
