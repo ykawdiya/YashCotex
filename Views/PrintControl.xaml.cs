@@ -29,15 +29,34 @@ namespace WeighbridgeSoftwareYashCotex.Views
             try
             {
                 Console.WriteLine("Starting PrintControl initialization...");
-                InitializeComponent();
-                Console.WriteLine("InitializeComponent completed");
                 
-                Console.WriteLine("Initializing PrintControl...");
+                // Check if we can initialize components first
+                try
+                {
+                    InitializeComponent();
+                    Console.WriteLine("InitializeComponent completed");
+                }
+                catch (Exception initEx)
+                {
+                    Console.WriteLine($"InitializeComponent failed: {initEx.Message}");
+                    throw;
+                }
                 
-                // Initialize database service
+                Console.WriteLine("Initializing PrintControl services...");
+                
+                // Initialize database service with detailed error checking
                 Console.WriteLine("Creating DatabaseService...");
-                _databaseService = new DatabaseService();
-                Console.WriteLine("DatabaseService initialized successfully");
+                try
+                {
+                    _databaseService = new DatabaseService();
+                    Console.WriteLine("DatabaseService initialized successfully");
+                }
+                catch (Exception dbEx)
+                {
+                    Console.WriteLine($"DatabaseService creation failed: {dbEx.Message}");
+                    Console.WriteLine($"DatabaseService stack trace: {dbEx.StackTrace}");
+                    throw;
+                }
                 
                 // Try to get camera service from the application
                 try
@@ -60,8 +79,17 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 
                 // Initialize PDF service
                 Console.WriteLine("Creating PdfGenerationService...");
-                _pdfService = new PdfGenerationService(_cameraService, _databaseService);
-                Console.WriteLine("PdfGenerationService initialized successfully");
+                try
+                {
+                    _pdfService = new PdfGenerationService(_cameraService, _databaseService);
+                    Console.WriteLine("PdfGenerationService initialized successfully");
+                }
+                catch (Exception pdfEx)
+                {
+                    Console.WriteLine($"PdfGenerationService creation failed: {pdfEx.Message}");
+                    Console.WriteLine($"PdfGenerationService stack trace: {pdfEx.StackTrace}");
+                    throw;
+                }
             }
             catch (Exception ex)
             {

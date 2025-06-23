@@ -15,12 +15,24 @@ public class DatabaseService : IDisposable
             Console.WriteLine("Creating WeighbridgeDbContext...");
             _context = new WeighbridgeDbContext();
             Console.WriteLine("WeighbridgeDbContext created, ensuring database...");
+            
+            // Test if we can access the database
+            Console.WriteLine("Testing database connection...");
+            var canConnect = _context.Database.CanConnect();
+            Console.WriteLine($"Database can connect: {canConnect}");
+            
             _context.Database.EnsureCreated();
             Console.WriteLine("Database ensured successfully");
+            
+            // Test a simple query to make sure everything works
+            Console.WriteLine("Testing database query...");
+            var entryCount = _context.WeighmentEntries.Count();
+            Console.WriteLine($"Database test successful - found {entryCount} entries");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"DatabaseService constructor failed: {ex.Message}");
+            Console.WriteLine($"Inner exception: {ex.InnerException?.Message}");
             Console.WriteLine($"Stack trace: {ex.StackTrace}");
             throw;
         }
