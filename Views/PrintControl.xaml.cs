@@ -144,17 +144,39 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         private void ReportTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ReportTypeComboBox.SelectedItem == null) return;
+            try
+            {
+                // During XAML loading, some elements might not be initialized yet
+                if (ReportTypeComboBox?.SelectedItem == null) return;
 
-            var selectedType = ((ComboBoxItem)ReportTypeComboBox.SelectedItem).Content.ToString();
-            
-            // Show/hide filter panels based on report type
-            CustomerFilterPanel.Visibility = selectedType.Contains("Customer") ? Visibility.Visible : Visibility.Collapsed;
-            MaterialFilterPanel.Visibility = selectedType.Contains("Material") ? Visibility.Visible : Visibility.Collapsed;
-            RstNumberPanel.Visibility = selectedType.Contains("Individual") ? Visibility.Visible : Visibility.Collapsed;
-            
-            // Clear preview when report type changes
-            ClearPreview();
+                var selectedType = ((ComboBoxItem)ReportTypeComboBox.SelectedItem).Content?.ToString();
+                if (string.IsNullOrEmpty(selectedType)) return;
+                
+                // Show/hide filter panels based on report type - but only if they exist
+                if (CustomerFilterPanel != null)
+                    CustomerFilterPanel.Visibility = selectedType.Contains("Customer") ? Visibility.Visible : Visibility.Collapsed;
+                
+                if (MaterialFilterPanel != null)
+                    MaterialFilterPanel.Visibility = selectedType.Contains("Material") ? Visibility.Visible : Visibility.Collapsed;
+                
+                if (RstNumberPanel != null)
+                    RstNumberPanel.Visibility = selectedType.Contains("Individual") ? Visibility.Visible : Visibility.Collapsed;
+                
+                // Clear preview when report type changes - but only if method can be called safely
+                try
+                {
+                    ClearPreview();
+                }
+                catch
+                {
+                    // ClearPreview might fail during initialization, that's okay
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log but don't crash during initialization
+                Console.WriteLine($"ReportTypeComboBox_SelectionChanged error: {ex.Message}");
+            }
         }
 
         private void PreviewButton_Click(object sender, RoutedEventArgs e)
@@ -603,19 +625,36 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         private void ClearPreview()
         {
-            PreviewPanel.Children.Clear();
-            var instructionText = new TextBlock
+            try
             {
-                Text = "📄 Select report options and click 'Generate Preview'",
-                FontSize = 14,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Foreground = new SolidColorBrush(Color.FromRgb(108, 117, 125)),
-                Margin = new Thickness(0, 50, 0, 0)
-            };
-            PreviewPanel.Children.Add(instructionText);
-            SummaryPanel.Visibility = Visibility.Collapsed;
-            PrintButton.IsEnabled = false;
-            SavePdfButton.IsEnabled = false;
+                // Only clear if PreviewPanel exists
+                if (PreviewPanel?.Children != null)
+                {
+                    PreviewPanel.Children.Clear();
+                    var instructionText = new TextBlock
+                    {
+                        Text = "📄 Select report options and click 'Generate Preview'",
+                        FontSize = 14,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        Foreground = new SolidColorBrush(Color.FromRgb(108, 117, 125)),
+                        Margin = new Thickness(0, 50, 0, 0)
+                    };
+                    PreviewPanel.Children.Add(instructionText);
+                }
+                
+                if (SummaryPanel != null)
+                    SummaryPanel.Visibility = Visibility.Collapsed;
+                
+                if (PrintButton != null)
+                    PrintButton.IsEnabled = false;
+                
+                if (SavePdfButton != null)
+                    SavePdfButton.IsEnabled = false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ClearPreview error: {ex.Message}");
+            }
         }
 
         private void PrintButton_Click(object sender, RoutedEventArgs e)
