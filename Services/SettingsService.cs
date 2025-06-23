@@ -110,7 +110,17 @@ public class SettingsService
                 }
                 if (root.TryGetProperty("CompanyAddress", out var companyAddress))
                 {
-                    CompanyAddress = companyAddress.GetString() ?? CompanyAddress;
+                    var loadedAddress = companyAddress.GetString() ?? CompanyAddress;
+                    // Clean up corrupted address data - if it contains too many repetitions, reset it
+                    if (loadedAddress.Length > 200 || loadedAddress.Split(' ').Length > 30)
+                    {
+                        Console.WriteLine("Detected corrupted address data, resetting to default");
+                        CompanyAddress = "Company Address Here";
+                    }
+                    else
+                    {
+                        CompanyAddress = loadedAddress;
+                    }
                     Console.WriteLine($"Loaded CompanyAddress: '{CompanyAddress}'");
                 }
                 if (root.TryGetProperty("CompanyEmail", out var companyEmail))
