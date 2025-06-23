@@ -443,6 +443,8 @@ namespace WeighbridgeSoftwareYashCotex
         {
             try
             {
+                Console.WriteLine("=== SETTINGS BUTTON CLICKED ===");
+                
                 // Check permissions
                 if (_authService == null || !_authService.HasPermission(UserRole.Admin))
                 {
@@ -450,6 +452,8 @@ namespace WeighbridgeSoftwareYashCotex
                                    MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
+
+                Console.WriteLine("Permission check passed");
 
                 // Dispose current form if any
                 if (_currentFormControl is EntryControl oldEntry)
@@ -459,7 +463,9 @@ namespace WeighbridgeSoftwareYashCotex
                 else if (_currentFormControl is PrintControl oldPrint)
                     oldPrint.Dispose();
                 
+                Console.WriteLine("Disposed old controls, creating SettingsControl...");
                 var settingsControl = new SettingsControl();
+                Console.WriteLine("SettingsControl created successfully");
                 
                 // Pass authentication service to settings control for role-based access
                 if (settingsControl is SettingsControl settings)
@@ -481,7 +487,16 @@ namespace WeighbridgeSoftwareYashCotex
             }
             catch (Exception ex)
             {
-                LatestOperation.Text = $"Error opening settings: {ex.Message}";
+                var errorMessage = $"Error opening settings: {ex.Message}";
+                Console.WriteLine($"SETTINGS ERROR: {errorMessage}");
+                Console.WriteLine($"Exception type: {ex.GetType().Name}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                
+                LatestOperation.Text = errorMessage;
+                
+                // Show error dialog for user visibility
+                MessageBox.Show($"Failed to open settings:\n\n{ex.Message}", 
+                    "Settings Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
