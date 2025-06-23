@@ -8,8 +8,8 @@
         <!-- Header Styles -->
         <Style x:Key="HeaderStyle" TargetType="Border">
             <Setter Property="Background" Value="#2C3E50"/>
-            <Setter Property="Padding" Value="20,15"/>
-            <Setter Property="MinHeight" Value="80"/>
+            <Setter Property="Padding" Value="20,20"/>
+            <Setter Property="MinHeight" Value="100"/>
         </Style>
         
         <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
