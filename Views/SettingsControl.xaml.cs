@@ -67,6 +67,9 @@ namespace WeighbridgeSoftwareYashCotex.Views
             LoadUsersData();
             UpdateSystemInformation();
             SetupAccessControl();
+            
+            // Load all settings from SettingsService into UI controls
+            LoadAllSettingsIntoUI();
         }
 
         private void SettingsControl_KeyDown(object sender, KeyEventArgs e)
