@@ -13,6 +13,7 @@ using iText.Layout.Element;
 using iText.Layout.Properties;
 using iText.Layout.Borders;
 using WeighbridgeSoftwareYashCotex.Models;
+using WeighbridgeSoftwareYashCotex.Services;
 using System.Linq;
 using IOPath = System.IO.Path;
 
@@ -321,7 +322,16 @@ namespace WeighbridgeSoftwareYashCotex.Services
                 imageTable.AddCell(imageCell);
 
                 // Add row break after every 2 images
-                if (Array.IndexOf(imagePositions, (position, title)) % 2 == 1)
+                var index = -1;
+                for (int i = 0; i < imagePositions.Length; i++)
+                {
+                    if (imagePositions[i].Item1 == position && imagePositions[i].Item2 == title)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+                if (index % 2 == 1)
                 {
                     // Complete the row if we have odd number of images
                 }
@@ -332,19 +342,13 @@ namespace WeighbridgeSoftwareYashCotex.Services
 
         private Paragraph CreateImagePlaceholder(string title, string message)
         {
-            return new Paragraph()
-                .Add(new Paragraph(title)
-                    .SetFont(PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD))
-                    .SetFontSize(10)
-                    .SetTextAlignment(TextAlignment.CENTER))
-                .Add(new Paragraph("\n📷\n")
-                    .SetFontSize(24)
-                    .SetTextAlignment(TextAlignment.CENTER))
-                .Add(new Paragraph(message)
-                    .SetFontSize(8)
-                    .SetTextAlignment(TextAlignment.CENTER))
-                .SetHeight(150)
-                .SetTextAlignment(TextAlignment.CENTER);
+            var paragraph = new Paragraph();
+            paragraph.Add(new Text(title).SetFont(PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD)).SetFontSize(10));
+            paragraph.Add(new Text("\n📷\n").SetFontSize(24));
+            paragraph.Add(new Text(message).SetFontSize(8));
+            paragraph.SetTextAlignment(TextAlignment.CENTER);
+            paragraph.SetHeight(150);
+            return paragraph;
         }
 
         private void AddTermsAndFooter(Document document)

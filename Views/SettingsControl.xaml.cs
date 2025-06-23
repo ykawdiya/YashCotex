@@ -11,12 +11,13 @@ using Microsoft.Win32;
 using WeighbridgeSoftwareYashCotex.Services;
 using WeighbridgeSoftwareYashCotex.Models;
 using Models = WeighbridgeSoftwareYashCotex.Models;
+using ServicesCameraConfig = WeighbridgeSoftwareYashCotex.Services.CameraConfiguration;
 using Newtonsoft.Json;
 using System.Windows.Threading;
 
 namespace WeighbridgeSoftwareYashCotex.Views
 {
-    public partial class SettingsControl : UserControl
+    public partial class SettingsControl : UserControl, IDisposable
     {
         private readonly DatabaseService _databaseService;
         private readonly List<string> _availablePrinters;
@@ -861,14 +862,14 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 // Simulate backup process
                 System.Threading.Tasks.Task.Delay(2000).ContinueWith(_ =>
                 {
-                    Dispatcher.Invoke(() =>
+                    Dispatcher.Invoke((Action)(() =>
                     {
                         try
                         {
                             // In real implementation, copy the actual database file
-                            File.WriteAllText(backupFullPath, $"Backup created at {DateTime.Now}");
+                            File.WriteAllText(backupFullPath, "Backup created at " + DateTime.Now.ToString());
 
-                            MessageBox.Show($"Backup created successfully!\n\nLocation: {backupFullPath}",
+                            MessageBox.Show("Backup created successfully!\n\nLocation: " + backupFullPath,
                                 "Backup Complete",
                                 MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -876,7 +877,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show($"Backup failed: {ex.Message}", "Backup Error",
+                            MessageBox.Show("Backup failed: " + ex.Message, "Backup Error",
                                 MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                         finally
@@ -884,12 +885,12 @@ namespace WeighbridgeSoftwareYashCotex.Views
                             BackupNowButton.Content = "💾 Backup Now";
                             BackupNowButton.IsEnabled = true;
                         }
-                    });
+                    }));
                 });
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Backup failed: {ex.Message}", "Backup Error",
+                MessageBox.Show("Backup failed: " + ex.Message, "Backup Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 BackupNowButton.IsEnabled = true;
                 BackupNowButton.Content = "💾 Backup Now";
@@ -1455,7 +1456,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
             // Cameras
             var cameras = _settingsService.Cameras ??
-                          new List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration>();
+                          new List<ServicesCameraConfig>();
             if (cameras.Count > 0)
                 Camera1NameTextBox.Text = cameras[0].Name;
             if (cameras.Count > 1)
@@ -1498,10 +1499,11 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             try
             {
-                _settingsService.Cameras = new List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration>
+                _settingsService.Cameras = new List<ServicesCameraConfig>
                 {
-                    new WeighbridgeSoftwareYashCotex.Services.CameraConfiguration
+                    new ServicesCameraConfig
                     {
+                        Id = 1,
                         Name = Camera1NameTextBox?.Text ?? "Entry Camera",
                         Protocol = GetSelectedProtocol(Camera1ProtocolComboBox),
                         IpAddress = Camera1IpTextBox?.Text ?? "192.168.1.101",
@@ -1509,10 +1511,12 @@ namespace WeighbridgeSoftwareYashCotex.Views
                         StreamPath = Camera1StreamPathTextBox?.Text ?? "/mjpeg/1",
                         Username = Camera1UsernameTextBox?.Text ?? "admin",
                         Password = Camera1PasswordBox?.Password ?? "",
-                        IsEnabled = Camera1EnabledCheckBox?.IsChecked ?? true
+                        IsEnabled = Camera1EnabledCheckBox?.IsChecked ?? true,
+                        Position = CameraPosition.Entry
                     },
-                    new WeighbridgeSoftwareYashCotex.Services.CameraConfiguration
+                    new ServicesCameraConfig
                     {
+                        Id = 2,
                         Name = Camera2NameTextBox?.Text ?? "Exit Camera",
                         Protocol = GetSelectedProtocol(Camera2ProtocolComboBox),
                         IpAddress = Camera2IpTextBox?.Text ?? "192.168.1.102",
@@ -1520,10 +1524,12 @@ namespace WeighbridgeSoftwareYashCotex.Views
                         StreamPath = Camera2StreamPathTextBox?.Text ?? "/mjpeg/2",
                         Username = Camera2UsernameTextBox?.Text ?? "admin",
                         Password = Camera2PasswordBox?.Password ?? "",
-                        IsEnabled = Camera2EnabledCheckBox?.IsChecked ?? true
+                        IsEnabled = Camera2EnabledCheckBox?.IsChecked ?? true,
+                        Position = CameraPosition.Exit
                     },
-                    new WeighbridgeSoftwareYashCotex.Services.CameraConfiguration
+                    new ServicesCameraConfig
                     {
+                        Id = 3,
                         Name = Camera3NameTextBox?.Text ?? "Side Camera",
                         Protocol = GetSelectedProtocol(Camera3ProtocolComboBox),
                         IpAddress = Camera3IpTextBox?.Text ?? "192.168.1.103",
@@ -1531,10 +1537,12 @@ namespace WeighbridgeSoftwareYashCotex.Views
                         StreamPath = Camera3StreamPathTextBox?.Text ?? "/mjpeg/3",
                         Username = Camera3UsernameTextBox?.Text ?? "admin",
                         Password = Camera3PasswordBox?.Password ?? "",
-                        IsEnabled = Camera3EnabledCheckBox?.IsChecked ?? true
+                        IsEnabled = Camera3EnabledCheckBox?.IsChecked ?? true,
+                        Position = CameraPosition.LeftSide
                     },
-                    new WeighbridgeSoftwareYashCotex.Services.CameraConfiguration
+                    new ServicesCameraConfig
                     {
+                        Id = 4,
                         Name = Camera4NameTextBox?.Text ?? "Top Camera",
                         Protocol = GetSelectedProtocol(Camera4ProtocolComboBox),
                         IpAddress = Camera4IpTextBox?.Text ?? "192.168.1.104",
@@ -1542,7 +1550,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
                         StreamPath = Camera4StreamPathTextBox?.Text ?? "/mjpeg/4",
                         Username = Camera4UsernameTextBox?.Text ?? "admin",
                         Password = Camera4PasswordBox?.Password ?? "",
-                        IsEnabled = Camera4EnabledCheckBox?.IsChecked ?? true
+                        IsEnabled = Camera4EnabledCheckBox?.IsChecked ?? true,
+                        Position = CameraPosition.RightSide
                     }
                 };
             }
@@ -1762,7 +1771,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             try
             {
-                Dispatcher.Invoke(() =>
+                Dispatcher.Invoke((Action)(() =>
                 {
                     try
                     {
@@ -1773,12 +1782,12 @@ namespace WeighbridgeSoftwareYashCotex.Views
                         // UI element might not exist
                     }
 
-                    System.Diagnostics.Debug.WriteLine($"Camera Status: {e.Message}");
-                });
+                    System.Diagnostics.Debug.WriteLine("Camera Status: " + e.Message);
+                }));
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error handling camera status: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine("Error handling camera status: " + ex.Message);
             }
         }
 
@@ -1787,14 +1796,14 @@ namespace WeighbridgeSoftwareYashCotex.Views
             try
             {
                 // Log image update for debugging
-                System.Diagnostics.Debug.WriteLine($"Camera {e.CameraId} image updated");
+                System.Diagnostics.Debug.WriteLine("Camera " + e.CameraId + " image updated");
 
                 // In a real implementation, you might update UI elements showing camera feeds
                 // For now, we'll just log the event
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error handling camera image update: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine("Error handling camera image update: " + ex.Message);
             }
         }
 
@@ -2519,7 +2528,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error during cleanup: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine("Error during cleanup: " + ex.Message);
             }
         }
 
