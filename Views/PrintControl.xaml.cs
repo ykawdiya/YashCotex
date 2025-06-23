@@ -26,27 +26,45 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         public PrintControl()
         {
-            InitializeComponent();
-            _databaseService = new DatabaseService();
-            
-            // Try to get camera service from the application
             try
             {
-                // Check if MainWindow has camera service available
-                if (Application.Current.MainWindow is MainWindow mainWindow)
+                InitializeComponent();
+                
+                Console.WriteLine("Initializing PrintControl...");
+                
+                // Initialize database service
+                _databaseService = new DatabaseService();
+                Console.WriteLine("DatabaseService initialized successfully");
+                
+                // Try to get camera service from the application
+                try
                 {
-                    var cameraServiceField = mainWindow.GetType().GetField("_cameraService", 
-                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    _cameraService = cameraServiceField?.GetValue(mainWindow) as CameraService;
+                    // Check if MainWindow has camera service available
+                    if (Application.Current.MainWindow is MainWindow mainWindow)
+                    {
+                        var cameraServiceField = mainWindow.GetType().GetField("_cameraService", 
+                            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                        _cameraService = cameraServiceField?.GetValue(mainWindow) as CameraService;
+                        Console.WriteLine($"CameraService: {(_cameraService != null ? "Found" : "Not found")}");
+                    }
                 }
+                catch (Exception cameraEx)
+                {
+                    // Camera service not available, continue without it
+                    _cameraService = null;
+                    Console.WriteLine($"Camera service initialization failed: {cameraEx.Message}");
+                }
+                
+                // Initialize PDF service
+                _pdfService = new PdfGenerationService(_cameraService, _databaseService);
+                Console.WriteLine("PdfGenerationService initialized successfully");
             }
-            catch
+            catch (Exception ex)
             {
-                // Camera service not available, continue without it
-                _cameraService = null;
+                Console.WriteLine($"PrintControl initialization failed: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw; // Re-throw to let the caller handle it
             }
-            
-            _pdfService = new PdfGenerationService(_cameraService, _databaseService);
             
             // Load data after control is fully loaded
             this.Loaded += PrintControl_Loaded;

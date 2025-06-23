@@ -394,6 +394,8 @@ namespace WeighbridgeSoftwareYashCotex
         {
             try
             {
+                Console.WriteLine("=== PRINT BUTTON CLICKED ===");
+                
                 // Dispose current form if any
                 if (_currentFormControl is EntryControl oldEntry)
                     oldEntry.Dispose();
@@ -401,8 +403,13 @@ namespace WeighbridgeSoftwareYashCotex
                     oldExit.Dispose();
                 else if (_currentFormControl is SettingsControl oldSettings)
                     oldSettings.Dispose();
+                else if (_currentFormControl is PrintControl oldPrint)
+                    oldPrint.Dispose();
                 
+                Console.WriteLine("Creating new PrintControl...");
                 var printControl = new PrintControl();
+                Console.WriteLine("PrintControl created successfully");
+                
                 printControl.FormCompleted += (s, message) => {
                     LatestOperation.Text = message;
                     ShowHome();
@@ -414,10 +421,20 @@ namespace WeighbridgeSoftwareYashCotex
                 LiveWeightPanel.Visibility = Visibility.Collapsed;
                 
                 LatestOperation.Text = "Print center opened";
+                Console.WriteLine("Print center opened successfully");
             }
             catch (Exception ex)
             {
-                LatestOperation.Text = $"Error opening print center: {ex.Message}";
+                var errorMessage = $"Error opening print center: {ex.Message}";
+                Console.WriteLine($"PRINT ERROR: {errorMessage}");
+                Console.WriteLine($"Exception type: {ex.GetType().Name}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                
+                LatestOperation.Text = errorMessage;
+                
+                // Show error dialog for user visibility
+                MessageBox.Show($"Failed to open print center:\n\n{ex.Message}", 
+                    "Print Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
