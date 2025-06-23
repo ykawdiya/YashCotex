@@ -1441,12 +1441,27 @@ namespace WeighbridgeSoftwareYashCotex.Views
             CompanyPhoneTextBox.Text = _settingsService.CompanyPhone;
             GstNumberTextBox.Text = _settingsService.CompanyGSTIN;
             
-            // For now, put entire address in AddressLine1 and clear other fields
-            AddressLine1TextBox.Text = _settingsService.CompanyAddress;
-            AddressLine2TextBox.Text = "";
+            // Split address between AddressLine1 and AddressLine2, clear unused fields
+            var addressText = _settingsService.CompanyAddress ?? "";
+            var addressWords = addressText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            
+            if (addressWords.Length <= 6)
+            {
+                // Short address - put all in Line1
+                AddressLine1TextBox.Text = addressText;
+                AddressLine2TextBox.Text = "";
+            }
+            else
+            {
+                // Long address - split roughly in half
+                var midPoint = addressWords.Length / 2;
+                AddressLine1TextBox.Text = string.Join(" ", addressWords.Take(midPoint));
+                AddressLine2TextBox.Text = string.Join(" ", addressWords.Skip(midPoint));
+            }
+            
+            // Clear unused address fields  
             CityTextBox.Text = "";
             StateTextBox.Text = "";
-            PinCodeTextBox.Text = "";
 
             // Hardware
             ScaleComPortComboBox.SelectedItem = _settingsService.WeighbridgeComPort;
@@ -1499,19 +1514,13 @@ namespace WeighbridgeSoftwareYashCotex.Views
             Console.WriteLine($"GstNumberTextBox.Text: '{GstNumberTextBox?.Text}'");
             Console.WriteLine($"AddressLine1TextBox.Text: '{AddressLine1TextBox?.Text}'");
             Console.WriteLine($"AddressLine2TextBox.Text: '{AddressLine2TextBox?.Text}'");
-            Console.WriteLine($"CityTextBox.Text: '{CityTextBox?.Text}'");
-            Console.WriteLine($"StateTextBox.Text: '{StateTextBox?.Text}'");
-            Console.WriteLine($"PinCodeTextBox.Text: '{PinCodeTextBox?.Text}'");
             
             _settingsService.CompanyName = companyName;
             
-            // Build address from components, filtering out empty parts
+            // Build address from AddressLine1 and AddressLine2 only
             var addressParts = new[] {
                 AddressLine1TextBox?.Text?.Trim(),
-                AddressLine2TextBox?.Text?.Trim(),
-                CityTextBox?.Text?.Trim(),
-                StateTextBox?.Text?.Trim(),
-                PinCodeTextBox?.Text?.Trim()
+                AddressLine2TextBox?.Text?.Trim()
             }.Where(part => !string.IsNullOrWhiteSpace(part));
             
             var fullAddress = string.Join(" ", addressParts);
@@ -1529,6 +1538,19 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
             Console.WriteLine("Calling _settingsService.SaveCompanyInfo()");
             _settingsService.SaveCompanyInfo();
+            
+            // Force immediate header update in MainWindow
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            if (mainWindow != null)
+            {
+                mainWindow.Dispatcher.Invoke(() =>
+                {
+                    // Use reflection to call the private UpdateCompanyInfoDisplay method
+                    var method = mainWindow.GetType().GetMethod("UpdateCompanyInfoDisplay", 
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    method?.Invoke(mainWindow, null);
+                });
+            }
         }
 
         private void SaveHardwareSettings()

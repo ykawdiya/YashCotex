@@ -680,33 +680,60 @@ namespace WeighbridgeSoftwareYashCotex
             {
                 var settings = SettingsService.Instance;
                 
-                // Update header company information
+                Console.WriteLine("=== UPDATING HEADER DISPLAY ===");
+                Console.WriteLine($"CompanyName: '{settings.CompanyName}'");
+                Console.WriteLine($"CompanyAddress: '{settings.CompanyAddress}'");
+                Console.WriteLine($"CompanyEmail: '{settings.CompanyEmail}'");
+                Console.WriteLine($"CompanyPhone: '{settings.CompanyPhone}'");
+                Console.WriteLine($"CompanyGSTIN: '{settings.CompanyGSTIN}'");
+                
+                // Clear and update header company information to avoid old data
                 if (CompanyLogoText != null)
-                    CompanyLogoText.Text = settings.CompanyName;
+                {
+                    CompanyLogoText.Text = "";
+                    CompanyLogoText.Text = settings.CompanyName ?? "YASH COTEX";
+                }
                 
                 if (CompanyNameHeader != null)
-                    CompanyNameHeader.Text = settings.CompanyName;
+                {
+                    CompanyNameHeader.Text = "";
+                    CompanyNameHeader.Text = settings.CompanyName ?? "YASH COTEX";
+                }
                 
                 if (CompanyAddressHeader != null)
-                    CompanyAddressHeader.Text = settings.CompanyAddress;
+                {
+                    CompanyAddressHeader.Text = "";
+                    CompanyAddressHeader.Text = settings.CompanyAddress ?? "";
+                }
                 
                 if (CompanyEmailHeader != null)
-                    CompanyEmailHeader.Text = settings.CompanyEmail;
+                {
+                    CompanyEmailHeader.Text = "";
+                    CompanyEmailHeader.Text = settings.CompanyEmail ?? "";
+                }
                 
                 if (CompanyPhoneHeader != null)
-                    CompanyPhoneHeader.Text = settings.CompanyPhone;
+                {
+                    CompanyPhoneHeader.Text = "";
+                    CompanyPhoneHeader.Text = settings.CompanyPhone ?? "";
+                }
                 
                 if (CompanyGSTHeader != null)
-                    CompanyGSTHeader.Text = settings.CompanyGSTIN;
+                {
+                    CompanyGSTHeader.Text = "";
+                    CompanyGSTHeader.Text = settings.CompanyGSTIN ?? "";
+                }
                 
                 // Update window title
-                this.Title = $"Weighbridge Software - {settings.CompanyName}";
+                var windowTitle = $"Weighbridge Software - {settings.CompanyName ?? "YASH COTEX"}";
+                this.Title = windowTitle;
                 
-                Console.WriteLine($"Updated header with: {settings.CompanyName}, {settings.CompanyEmail}");
+                Console.WriteLine($"Header updated successfully. Window title: {windowTitle}");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error updating company info display: {ex.Message}");
+                Console.WriteLine($"Error updating company info display: {ex.Message}");
             }
         }
         
