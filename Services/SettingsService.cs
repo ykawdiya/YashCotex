@@ -122,6 +122,25 @@ public class SettingsService
                     }
                     Addresses = addresses;
                 }
+                
+                // Handle WeightRules and Cameras using Newtonsoft.Json for complex objects
+                if (root.TryGetProperty("WeightRules", out var weightRulesJson))
+                {
+                    try
+                    {
+                        WeightRules = Newtonsoft.Json.JsonConvert.DeserializeObject<List<WeightRule>>(weightRulesJson.GetRawText());
+                    }
+                    catch { WeightRules = new List<WeightRule>(); }
+                }
+                
+                if (root.TryGetProperty("Cameras", out var camerasJson))
+                {
+                    try
+                    {
+                        Cameras = Newtonsoft.Json.JsonConvert.DeserializeObject<List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration>>(camerasJson.GetRawText()) ?? new List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration>();
+                    }
+                    catch { Cameras = new List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration>(); }
+                }
             }
             catch (Exception ex)
             {
@@ -135,7 +154,35 @@ public class SettingsService
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsFilePath)!);
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(this, Newtonsoft.Json.Formatting.Indented);
+            
+            // Create a settings object to serialize (avoiding circular references)
+            var settingsData = new
+            {
+                CompanyName,
+                CompanyAddress,
+                CompanyEmail,
+                CompanyPhone,
+                CompanyGSTIN,
+                CompanyLogo,
+                WeighbridgeComPort,
+                MaxWeightCapacity,
+                DefaultPrinter,
+                BackupPath,
+                GoogleSheetsEnabled,
+                ServiceAccountKeyPath,
+                SpreadsheetId,
+                Materials,
+                Addresses,
+                WeightRules,
+                Cameras
+            };
+            
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            
+            var json = System.Text.Json.JsonSerializer.Serialize(settingsData, options);
             File.WriteAllText(SettingsFilePath, json);
         }
         catch (Exception ex)
