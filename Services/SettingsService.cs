@@ -9,7 +9,20 @@ namespace WeighbridgeSoftwareYashCotex.Services;
 public class SettingsService
 {
     private static SettingsService? _instance;
-    public static SettingsService Instance => _instance ??= new SettingsService();
+    private static bool _isInitializing = false;
+    public static SettingsService Instance 
+    {
+        get
+        {
+            if (_instance == null && !_isInitializing)
+            {
+                _isInitializing = true;
+                _instance = new SettingsService();
+                _isInitializing = false;
+            }
+            return _instance ?? new SettingsService();
+        }
+    }
     
     // Events for real-time settings updates
     [field: NonSerialized] public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;

@@ -39,8 +39,15 @@ public class WeightService : IDisposable
     
     private string GetWeighbridgePort()
     {
-        var settings = SettingsService.Instance;
-        return settings.WeighbridgeComPort ?? "COM1";
+        try
+        {
+            var settings = SettingsService.Instance;
+            return settings.WeighbridgeComPort ?? "COM1";
+        }
+        catch
+        {
+            return "COM1"; // Default fallback
+        }
     }
     
     private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
