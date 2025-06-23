@@ -44,7 +44,7 @@
         <!-- Button Styles -->
         <Style x:Key="ActionButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="100"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="28"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Margin" Value="2"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -79,11 +79,12 @@
                 <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">
                     <Image x:Name="CompanyLogoImage" 
                            Source="Assets/logo.png"
-                           MaxHeight="120" 
+                           MaxHeight="100" 
+                           MaxWidth="200"
                            Stretch="Uniform"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
-                           Margin="0,0,20,0"/>
+                           Margin="10,0,20,0"/>
                 </StackPanel>
 
                 <!-- Section B: Company Info (Centered) -->
