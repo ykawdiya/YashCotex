@@ -158,11 +158,11 @@
                                             
                                             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                                 <Button x:Name="BrowseLogoButton" Content="📁 Browse Logo" 
-                                                        Style="{StaticResource ActionButtonStyle}" 
+                                                        Style="{StaticResource SaveButtonStyle}" 
                                                         Width="120" Margin="0,0,10,0"
                                                         Click="BrowseLogoButton_Click"/>
                                                 <Button x:Name="RemoveLogoButton" Content="🗑️ Remove" 
-                                                        Style="{StaticResource ActionButtonStyle}" 
+                                                        Style="{StaticResource CancelButtonStyle}" 
                                                         Width="100"
                                                         Click="RemoveLogoButton_Click"/>
                                             </StackPanel>
