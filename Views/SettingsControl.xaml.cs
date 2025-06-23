@@ -1326,9 +1326,17 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             try
             {
+                Console.WriteLine("=== SAVE BUTTON CLICKED ===");
+                Console.WriteLine($"CompanyNameTextBox.Text: '{CompanyNameTextBox?.Text}'");
+                Console.WriteLine($"CompanyEmailTextBox.Text: '{CompanyEmailTextBox?.Text}'");
+                
                 if (!ValidateAllSettings())
+                {
+                    Console.WriteLine("Validation failed, returning");
                     return;
+                }
 
+                Console.WriteLine("Validation passed, calling SaveAllSettings()");
                 SaveAllSettings();
 
                 MessageBox.Show("Settings saved successfully!\n\nChanges have been applied immediately.",
@@ -1338,6 +1346,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Exception in SaveSettingsButton_Click: {ex.Message}");
                 MessageBox.Show($"Error saving settings: {ex.Message}", "Save Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -1469,14 +1478,21 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         private void SaveCompanySettings()
         {
-            _settingsService.CompanyName = CompanyNameTextBox?.Text ?? "YASH COTEX";
+            Console.WriteLine("=== SAVING COMPANY SETTINGS ===");
+            var companyName = CompanyNameTextBox?.Text ?? "YASH COTEX";
+            var companyEmail = CompanyEmailTextBox?.Text ?? "";
+            Console.WriteLine($"Setting CompanyName to: '{companyName}'");
+            Console.WriteLine($"Setting CompanyEmail to: '{companyEmail}'");
+            
+            _settingsService.CompanyName = companyName;
             _settingsService.CompanyAddress =
                 $"{AddressLine1TextBox?.Text} {AddressLine2TextBox?.Text} {CityTextBox?.Text} {StateTextBox?.Text} {PinCodeTextBox?.Text}"
                     .Trim();
-            _settingsService.CompanyEmail = CompanyEmailTextBox?.Text ?? "";
+            _settingsService.CompanyEmail = companyEmail;
             _settingsService.CompanyPhone = CompanyPhoneTextBox?.Text ?? "";
             _settingsService.CompanyGSTIN = GstNumberTextBox?.Text ?? "";
 
+            Console.WriteLine("Calling _settingsService.SaveCompanyInfo()");
             _settingsService.SaveCompanyInfo();
         }
 
