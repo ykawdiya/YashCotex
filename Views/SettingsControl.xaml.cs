@@ -70,6 +70,18 @@ namespace WeighbridgeSoftwareYashCotex.Views
             
             // Load all settings from SettingsService into UI controls
             LoadAllSettingsIntoUI();
+            
+            // Force header update immediately
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            if (mainWindow != null)
+            {
+                mainWindow.Dispatcher.Invoke(() =>
+                {
+                    var method = mainWindow.GetType().GetMethod("UpdateCompanyInfoDisplay", 
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    method?.Invoke(mainWindow, null);
+                });
+            }
         }
 
         private void SettingsControl_KeyDown(object sender, KeyEventArgs e)

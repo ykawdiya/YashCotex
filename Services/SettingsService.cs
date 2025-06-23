@@ -119,9 +119,15 @@ public class SettingsService
                     Console.WriteLine($"Loaded CompanyEmail: '{CompanyEmail}'");
                 }
                 if (root.TryGetProperty("CompanyPhone", out var companyPhone))
+                {
                     CompanyPhone = companyPhone.GetString() ?? CompanyPhone;
+                    Console.WriteLine($"Loaded CompanyPhone: '{CompanyPhone}'");
+                }
                 if (root.TryGetProperty("CompanyGSTIN", out var companyGSTIN))
+                {
                     CompanyGSTIN = companyGSTIN.GetString() ?? CompanyGSTIN;
+                    Console.WriteLine($"Loaded CompanyGSTIN: '{CompanyGSTIN}'");
+                }
                 if (root.TryGetProperty("CompanyLogo", out var companyLogo))
                     CompanyLogo = companyLogo.GetString() ?? CompanyLogo;
                 if (root.TryGetProperty("WeighbridgeComPort", out var weighbridgeComPort))
