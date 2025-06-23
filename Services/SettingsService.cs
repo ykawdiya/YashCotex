@@ -153,7 +153,9 @@ public class SettingsService
     {
         try
         {
+            Console.WriteLine($"Attempting to save settings to: {SettingsFilePath}");
             Directory.CreateDirectory(Path.GetDirectoryName(SettingsFilePath)!);
+            Console.WriteLine($"Directory created/verified: {Path.GetDirectoryName(SettingsFilePath)}");
             
             // Create a settings object to serialize (avoiding circular references)
             var settingsData = new
@@ -184,10 +186,13 @@ public class SettingsService
             
             var json = System.Text.Json.JsonSerializer.Serialize(settingsData, options);
             File.WriteAllText(SettingsFilePath, json);
+            Console.WriteLine($"Settings saved successfully to: {SettingsFilePath}");
+            Console.WriteLine($"File size: {new FileInfo(SettingsFilePath).Length} bytes");
         }
         catch (Exception ex)
         {
             Console.WriteLine("Failed to save settings: " + ex.Message);
+            Console.WriteLine("Stack trace: " + ex.StackTrace);
         }
 
         RefreshAll();
