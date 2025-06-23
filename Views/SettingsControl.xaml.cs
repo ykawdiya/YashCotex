@@ -1440,7 +1440,13 @@ namespace WeighbridgeSoftwareYashCotex.Views
             CompanyEmailTextBox.Text = _settingsService.CompanyEmail;
             CompanyPhoneTextBox.Text = _settingsService.CompanyPhone;
             GstNumberTextBox.Text = _settingsService.CompanyGSTIN;
-            AddressLine1TextBox.Text = _settingsService.CompanyAddress; // For now, entire address in line1
+            
+            // For now, put entire address in AddressLine1 and clear other fields
+            AddressLine1TextBox.Text = _settingsService.CompanyAddress;
+            AddressLine2TextBox.Text = "";
+            CityTextBox.Text = "";
+            StateTextBox.Text = "";
+            PinCodeTextBox.Text = "";
 
             // Hardware
             ScaleComPortComboBox.SelectedItem = _settingsService.WeighbridgeComPort;
@@ -1484,16 +1490,42 @@ namespace WeighbridgeSoftwareYashCotex.Views
             Console.WriteLine("=== SAVING COMPANY SETTINGS ===");
             var companyName = CompanyNameTextBox?.Text ?? "YASH COTEX";
             var companyEmail = CompanyEmailTextBox?.Text ?? "";
-            Console.WriteLine($"Setting CompanyName to: '{companyName}'");
-            Console.WriteLine($"Setting CompanyEmail to: '{companyEmail}'");
+            var companyPhone = CompanyPhoneTextBox?.Text ?? "";
+            var companyGSTIN = GstNumberTextBox?.Text ?? "";
+            
+            Console.WriteLine($"CompanyNameTextBox.Text: '{CompanyNameTextBox?.Text}'");
+            Console.WriteLine($"CompanyEmailTextBox.Text: '{CompanyEmailTextBox?.Text}'");
+            Console.WriteLine($"CompanyPhoneTextBox.Text: '{CompanyPhoneTextBox?.Text}'");
+            Console.WriteLine($"GstNumberTextBox.Text: '{GstNumberTextBox?.Text}'");
+            Console.WriteLine($"AddressLine1TextBox.Text: '{AddressLine1TextBox?.Text}'");
+            Console.WriteLine($"AddressLine2TextBox.Text: '{AddressLine2TextBox?.Text}'");
+            Console.WriteLine($"CityTextBox.Text: '{CityTextBox?.Text}'");
+            Console.WriteLine($"StateTextBox.Text: '{StateTextBox?.Text}'");
+            Console.WriteLine($"PinCodeTextBox.Text: '{PinCodeTextBox?.Text}'");
             
             _settingsService.CompanyName = companyName;
-            _settingsService.CompanyAddress =
-                $"{AddressLine1TextBox?.Text} {AddressLine2TextBox?.Text} {CityTextBox?.Text} {StateTextBox?.Text} {PinCodeTextBox?.Text}"
-                    .Trim();
+            
+            // Build address from components, filtering out empty parts
+            var addressParts = new[] {
+                AddressLine1TextBox?.Text?.Trim(),
+                AddressLine2TextBox?.Text?.Trim(),
+                CityTextBox?.Text?.Trim(),
+                StateTextBox?.Text?.Trim(),
+                PinCodeTextBox?.Text?.Trim()
+            }.Where(part => !string.IsNullOrWhiteSpace(part));
+            
+            var fullAddress = string.Join(" ", addressParts);
+            _settingsService.CompanyAddress = fullAddress;
             _settingsService.CompanyEmail = companyEmail;
-            _settingsService.CompanyPhone = CompanyPhoneTextBox?.Text ?? "";
-            _settingsService.CompanyGSTIN = GstNumberTextBox?.Text ?? "";
+            _settingsService.CompanyPhone = companyPhone;
+            _settingsService.CompanyGSTIN = companyGSTIN;
+
+            Console.WriteLine($"Final values being saved:");
+            Console.WriteLine($"  CompanyName: '{_settingsService.CompanyName}'");
+            Console.WriteLine($"  CompanyAddress: '{_settingsService.CompanyAddress}'");
+            Console.WriteLine($"  CompanyEmail: '{_settingsService.CompanyEmail}'");
+            Console.WriteLine($"  CompanyPhone: '{_settingsService.CompanyPhone}'");
+            Console.WriteLine($"  CompanyGSTIN: '{_settingsService.CompanyGSTIN}'");
 
             Console.WriteLine("Calling _settingsService.SaveCompanyInfo()");
             _settingsService.SaveCompanyInfo();
