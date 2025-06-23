@@ -733,7 +733,10 @@ namespace WeighbridgeSoftwareYashCotex
                             bitmap.UriSource = new Uri(settings.CompanyLogo);
                             bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
                             bitmap.EndInit();
-                            CompanyLogoImage.Source = bitmap;
+                            
+                            // Auto-crop the image to remove transparent/void areas
+                            var croppedBitmap = AutoCropImage(bitmap);
+                            CompanyLogoImage.Source = croppedBitmap;
                         }
                         else
                         {
@@ -887,6 +890,91 @@ namespace WeighbridgeSoftwareYashCotex
             {
                 LatestOperation.Text = $"Error applying system settings: {ex.Message}";
                 System.Diagnostics.Debug.WriteLine($"Error applying system settings: {ex.Message}");
+            }
+        }
+        
+        #endregion
+        
+        #region Logo Auto-Cropping
+        
+        private System.Windows.Media.Imaging.BitmapSource AutoCropImage(System.Windows.Media.Imaging.BitmapSource source)
+        {
+            try
+            {
+                // Convert to format we can work with
+                var formatConvertedBitmap = new System.Windows.Media.Imaging.FormatConvertedBitmap();
+                formatConvertedBitmap.BeginInit();
+                formatConvertedBitmap.Source = source;
+                formatConvertedBitmap.DestinationFormat = System.Windows.Media.PixelFormats.Bgra32;
+                formatConvertedBitmap.EndInit();
+
+                int width = formatConvertedBitmap.PixelWidth;
+                int height = formatConvertedBitmap.PixelHeight;
+                int stride = width * 4; // 4 bytes per pixel (BGRA)
+                
+                byte[] pixels = new byte[height * stride];
+                formatConvertedBitmap.CopyPixels(pixels, stride, 0);
+
+                // Find content bounds by scanning for non-transparent pixels
+                int left = width, right = 0, top = height, bottom = 0;
+                bool hasContent = false;
+
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        int index = y * stride + x * 4;
+                        byte alpha = pixels[index + 3]; // Alpha channel
+                        
+                        // Consider pixel as content if alpha > threshold and not pure white background
+                        if (alpha > 30)
+                        {
+                            byte blue = pixels[index];
+                            byte green = pixels[index + 1];
+                            byte red = pixels[index + 2];
+                            
+                            // Skip near-white pixels (common background)
+                            if (!(red > 240 && green > 240 && blue > 240))
+                            {
+                                hasContent = true;
+                                left = Math.Min(left, x);
+                                right = Math.Max(right, x);
+                                top = Math.Min(top, y);
+                                bottom = Math.Max(bottom, y);
+                            }
+                        }
+                    }
+                }
+
+                // If no content found or content area is too small, return original
+                if (!hasContent || right <= left || bottom <= top || 
+                    (right - left) < 10 || (bottom - top) < 10)
+                {
+                    return source;
+                }
+
+                // Add small padding around content
+                int padding = Math.Min(10, Math.Min(left, top));
+                left = Math.Max(0, left - padding);
+                top = Math.Max(0, top - padding);
+                right = Math.Min(width - 1, right + padding);
+                bottom = Math.Min(height - 1, bottom + padding);
+
+                // Create cropped bitmap
+                int cropWidth = right - left + 1;
+                int cropHeight = bottom - top + 1;
+                
+                var cropRect = new System.Windows.Int32Rect(left, top, cropWidth, cropHeight);
+                var croppedBitmap = new System.Windows.Media.Imaging.CroppedBitmap(source, cropRect);
+                
+                Console.WriteLine($"Auto-cropped logo: {width}x{height} -> {cropWidth}x{cropHeight} (removed {left},{top},{width-right},{height-bottom} padding)");
+                
+                return croppedBitmap;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error auto-cropping image: {ex.Message}");
+                return source; // Return original on error
             }
         }
         

@@ -81,7 +81,7 @@
                            Source="Assets/logo.png"
                            MaxHeight="100" 
                            MaxWidth="200"
-                           Stretch="UniformToFill"
+                           Stretch="Uniform"
                            HorizontalAlignment="Left"
                            VerticalAlignment="Center"
                            Margin="10,0,20,0"/>
