@@ -29,6 +29,9 @@ namespace WeighbridgeSoftwareYashCotex
             InitializeWeightDisplay();
             InitializeSettingsEventHandlers();
             
+            // Update company info display with loaded settings
+            UpdateCompanyInfoDisplay();
+            
             // Set up keyboard shortcuts
             this.KeyDown += MainWindow_KeyDown;
             
@@ -675,8 +678,31 @@ namespace WeighbridgeSoftwareYashCotex
         {
             try
             {
-                // Update any company information displays in the main window
-                // This could include header text, footer information, etc.
+                var settings = SettingsService.Instance;
+                
+                // Update header company information
+                if (CompanyLogoText != null)
+                    CompanyLogoText.Text = settings.CompanyName;
+                
+                if (CompanyNameHeader != null)
+                    CompanyNameHeader.Text = settings.CompanyName;
+                
+                if (CompanyAddressHeader != null)
+                    CompanyAddressHeader.Text = settings.CompanyAddress;
+                
+                if (CompanyEmailHeader != null)
+                    CompanyEmailHeader.Text = settings.CompanyEmail;
+                
+                if (CompanyPhoneHeader != null)
+                    CompanyPhoneHeader.Text = settings.CompanyPhone;
+                
+                if (CompanyGSTHeader != null)
+                    CompanyGSTHeader.Text = settings.CompanyGSTIN;
+                
+                // Update window title
+                this.Title = $"Weighbridge Software - {settings.CompanyName}";
+                
+                Console.WriteLine($"Updated header with: {settings.CompanyName}, {settings.CompanyEmail}");
             }
             catch (Exception ex)
             {
