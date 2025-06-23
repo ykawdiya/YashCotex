@@ -69,27 +69,58 @@ public class SettingsService
             try
             {
                 var json = File.ReadAllText(SettingsFilePath);
-                var loaded = Newtonsoft.Json.JsonConvert.DeserializeObject<SettingsService>(json);
-                if (loaded != null)
+                // Use JsonDocument instead of deserializing to SettingsService to avoid recursion
+                using var document = System.Text.Json.JsonDocument.Parse(json);
+                var root = document.RootElement;
+                
+                if (root.TryGetProperty("CompanyName", out var companyName))
+                    CompanyName = companyName.GetString() ?? CompanyName;
+                if (root.TryGetProperty("CompanyAddress", out var companyAddress))
+                    CompanyAddress = companyAddress.GetString() ?? CompanyAddress;
+                if (root.TryGetProperty("CompanyEmail", out var companyEmail))
+                    CompanyEmail = companyEmail.GetString() ?? CompanyEmail;
+                if (root.TryGetProperty("CompanyPhone", out var companyPhone))
+                    CompanyPhone = companyPhone.GetString() ?? CompanyPhone;
+                if (root.TryGetProperty("CompanyGSTIN", out var companyGSTIN))
+                    CompanyGSTIN = companyGSTIN.GetString() ?? CompanyGSTIN;
+                if (root.TryGetProperty("CompanyLogo", out var companyLogo))
+                    CompanyLogo = companyLogo.GetString() ?? CompanyLogo;
+                if (root.TryGetProperty("WeighbridgeComPort", out var weighbridgeComPort))
+                    WeighbridgeComPort = weighbridgeComPort.GetString() ?? WeighbridgeComPort;
+                if (root.TryGetProperty("MaxWeightCapacity", out var maxWeightCapacity))
+                    MaxWeightCapacity = maxWeightCapacity.GetInt32();
+                if (root.TryGetProperty("DefaultPrinter", out var defaultPrinter))
+                    DefaultPrinter = defaultPrinter.GetString() ?? DefaultPrinter;
+                if (root.TryGetProperty("BackupPath", out var backupPath))
+                    BackupPath = backupPath.GetString() ?? BackupPath;
+                if (root.TryGetProperty("GoogleSheetsEnabled", out var googleSheetsEnabled))
+                    GoogleSheetsEnabled = googleSheetsEnabled.GetBoolean();
+                if (root.TryGetProperty("ServiceAccountKeyPath", out var serviceAccountKeyPath))
+                    ServiceAccountKeyPath = serviceAccountKeyPath.GetString() ?? ServiceAccountKeyPath;
+                if (root.TryGetProperty("SpreadsheetId", out var spreadsheetId))
+                    SpreadsheetId = spreadsheetId.GetString() ?? SpreadsheetId;
+                    
+                // Handle arrays
+                if (root.TryGetProperty("Materials", out var materialsJson))
                 {
-                    // Copy values one by one (to avoid replacing singleton _instance)
-                    CompanyName = loaded.CompanyName;
-                    CompanyAddress = loaded.CompanyAddress;
-                    CompanyEmail = loaded.CompanyEmail;
-                    CompanyPhone = loaded.CompanyPhone;
-                    CompanyGSTIN = loaded.CompanyGSTIN;
-                    CompanyLogo = loaded.CompanyLogo;
-                    WeighbridgeComPort = loaded.WeighbridgeComPort;
-                    WeightRules = loaded.WeightRules;
-                    Materials = loaded.Materials ?? new List<string>();
-                    MaxWeightCapacity = loaded.MaxWeightCapacity;
-                    DefaultPrinter = loaded.DefaultPrinter;
-                    BackupPath = loaded.BackupPath;
-                    GoogleSheetsEnabled = loaded.GoogleSheetsEnabled;
-                    ServiceAccountKeyPath = loaded.ServiceAccountKeyPath;
-                    SpreadsheetId = loaded.SpreadsheetId;
-                    Addresses = loaded.Addresses ?? new List<string>();
-                    Cameras = loaded.Cameras ?? new List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration>();
+                    var materials = new List<string>();
+                    foreach (var item in materialsJson.EnumerateArray())
+                    {
+                        var value = item.GetString();
+                        if (value != null) materials.Add(value);
+                    }
+                    Materials = materials;
+                }
+                
+                if (root.TryGetProperty("Addresses", out var addressesJson))
+                {
+                    var addresses = new List<string>();
+                    foreach (var item in addressesJson.EnumerateArray())
+                    {
+                        var value = item.GetString();
+                        if (value != null) addresses.Add(value);
+                    }
+                    Addresses = addresses;
                 }
             }
             catch (Exception ex)
