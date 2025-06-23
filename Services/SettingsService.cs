@@ -59,26 +59,65 @@ public class SettingsService
         LoadSettings();
     }
     
-    private static readonly string SettingsFilePath =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YashCotex", "settings.json");
+    private static readonly string SettingsFilePath = GetSettingsFilePath();
+    
+    private static string GetSettingsFilePath()
+    {
+        // Use a platform-independent approach
+        string settingsDir;
+        
+        if (OperatingSystem.IsWindows())
+        {
+            settingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YashCotex");
+        }
+        else if (OperatingSystem.IsMacOS())
+        {
+            settingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library", "Application Support", "YashCotex");
+        }
+        else // Linux and other Unix-like systems
+        {
+            settingsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "YashCotex");
+        }
+        
+        var settingsPath = Path.Combine(settingsDir, "settings.json");
+        Console.WriteLine($"Platform: {Environment.OSVersion.Platform}");
+        Console.WriteLine($"Settings directory: {settingsDir}");
+        Console.WriteLine($"Settings file path: {settingsPath}");
+        return settingsPath;
+    }
 
     private void LoadSettings()
     {
+        Console.WriteLine($"=== LOADING SETTINGS ===");
+        Console.WriteLine($"Settings file path: {SettingsFilePath}");
+        Console.WriteLine($"File exists: {File.Exists(SettingsFilePath)}");
+        
         if (File.Exists(SettingsFilePath))
         {
             try
             {
+                Console.WriteLine("Reading settings file...");
                 var json = File.ReadAllText(SettingsFilePath);
+                Console.WriteLine($"File content length: {json.Length} characters");
                 // Use JsonDocument instead of deserializing to SettingsService to avoid recursion
                 using var document = System.Text.Json.JsonDocument.Parse(json);
                 var root = document.RootElement;
                 
                 if (root.TryGetProperty("CompanyName", out var companyName))
+                {
                     CompanyName = companyName.GetString() ?? CompanyName;
+                    Console.WriteLine($"Loaded CompanyName: '{CompanyName}'");
+                }
                 if (root.TryGetProperty("CompanyAddress", out var companyAddress))
+                {
                     CompanyAddress = companyAddress.GetString() ?? CompanyAddress;
+                    Console.WriteLine($"Loaded CompanyAddress: '{CompanyAddress}'");
+                }
                 if (root.TryGetProperty("CompanyEmail", out var companyEmail))
+                {
                     CompanyEmail = companyEmail.GetString() ?? CompanyEmail;
+                    Console.WriteLine($"Loaded CompanyEmail: '{CompanyEmail}'");
+                }
                 if (root.TryGetProperty("CompanyPhone", out var companyPhone))
                     CompanyPhone = companyPhone.GetString() ?? CompanyPhone;
                 if (root.TryGetProperty("CompanyGSTIN", out var companyGSTIN))
