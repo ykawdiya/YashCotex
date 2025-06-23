@@ -28,11 +28,14 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             try
             {
+                Console.WriteLine("Starting PrintControl initialization...");
                 InitializeComponent();
+                Console.WriteLine("InitializeComponent completed");
                 
                 Console.WriteLine("Initializing PrintControl...");
                 
                 // Initialize database service
+                Console.WriteLine("Creating DatabaseService...");
                 _databaseService = new DatabaseService();
                 Console.WriteLine("DatabaseService initialized successfully");
                 
@@ -56,6 +59,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 }
                 
                 // Initialize PDF service
+                Console.WriteLine("Creating PdfGenerationService...");
                 _pdfService = new PdfGenerationService(_cameraService, _databaseService);
                 Console.WriteLine("PdfGenerationService initialized successfully");
             }
@@ -79,16 +83,33 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             try
             {
+                Console.WriteLine("Loading initial data...");
+                
+                if (_databaseService == null)
+                {
+                    Console.WriteLine("ERROR: DatabaseService is null in LoadInitialData");
+                    return;
+                }
+                
                 // Load materials for filter
+                Console.WriteLine("Getting materials from database...");
                 var materials = _databaseService.GetMaterials();
+                Console.WriteLine($"Retrieved {materials?.Count ?? 0} materials");
+                
                 if (MaterialFilterComboBox != null)
                 {
                     MaterialFilterComboBox.ItemsSource = materials;
+                    Console.WriteLine("Materials loaded into ComboBox");
+                }
+                else
+                {
+                    Console.WriteLine("WARNING: MaterialFilterComboBox is null");
                 }
             }
             catch (Exception ex)
             {
-                // Log error but don't show MessageBox during initialization
+                Console.WriteLine($"Error loading initial data: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 System.Diagnostics.Debug.WriteLine($"Error loading initial data: {ex.Message}");
             }
         }

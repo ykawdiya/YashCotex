@@ -1478,7 +1478,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 }
             }
             
-            // No unused address fields to clear
+            // Load logo settings
+            LoadLogoSettings();
 
             // Hardware
             ScaleComPortComboBox.SelectedItem = _settingsService.WeighbridgeComPort;
@@ -1547,6 +1548,13 @@ namespace WeighbridgeSoftwareYashCotex.Views
             _settingsService.CompanyEmail = companyEmail;
             _settingsService.CompanyPhone = companyPhone;
             _settingsService.CompanyGSTIN = companyGSTIN;
+            
+            // Save logo path if it exists
+            if (!string.IsNullOrEmpty(CompanyLogoPathTextBox?.Text) && 
+                CompanyLogoPathTextBox.Text != "No logo selected")
+            {
+                _settingsService.CompanyLogo = CompanyLogoPathTextBox.Text;
+            }
 
             Console.WriteLine($"Final values being saved:");
             Console.WriteLine($"  CompanyName: '{_settingsService.CompanyName}'");
@@ -2609,6 +2617,134 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         #endregion
 
+        #region Logo Management
+
+        private void LoadLogoSettings()
+        {
+            try
+            {
+                var logoPath = _settingsService.CompanyLogo;
+                if (!string.IsNullOrEmpty(logoPath) && File.Exists(logoPath))
+                {
+                    CompanyLogoPathTextBox.Text = logoPath;
+                    LoadLogoPreview(logoPath);
+                }
+                else
+                {
+                    CompanyLogoPathTextBox.Text = "No logo selected";
+                    LogoPreviewImage.Source = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading logo settings: {ex.Message}");
+                CompanyLogoPathTextBox.Text = "No logo selected";
+                LogoPreviewImage.Source = null;
+            }
+        }
+
+        private void BrowseLogoButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openFileDialog = new OpenFileDialog
+                {
+                    Title = "Select Company Logo",
+                    Filter = "Image Files|*.png;*.jpg;*.jpeg|PNG Files|*.png|JPEG Files|*.jpg;*.jpeg|All Files|*.*",
+                    FilterIndex = 1
+                };
+
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    var selectedFile = openFileDialog.FileName;
+                    
+                    // Copy logo to application data folder
+                    var logoFileName = $"company_logo{Path.GetExtension(selectedFile)}";
+                    var appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "YashCotex");
+                    Directory.CreateDirectory(appDataPath);
+                    var destinationPath = Path.Combine(appDataPath, logoFileName);
+
+                    // Copy the file
+                    File.Copy(selectedFile, destinationPath, true);
+                    
+                    // Update UI
+                    CompanyLogoPathTextBox.Text = destinationPath;
+                    LoadLogoPreview(destinationPath);
+                    
+                    // Update main window logo immediately
+                    var mainWindow = Application.Current.MainWindow as MainWindow;
+                    if (mainWindow != null)
+                    {
+                        mainWindow.Dispatcher.Invoke(() =>
+                        {
+                            var method = mainWindow.GetType().GetMethod("UpdateCompanyInfoDisplay", 
+                                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                            method?.Invoke(mainWindow, null);
+                        });
+                    }
+                    
+                    Console.WriteLine($"Logo saved to: {destinationPath}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error selecting logo: {ex.Message}", "Logo Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void RemoveLogoButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                CompanyLogoPathTextBox.Text = "No logo selected";
+                LogoPreviewImage.Source = null;
+                _settingsService.CompanyLogo = "";
+                
+                // Update main window logo immediately
+                var mainWindow = Application.Current.MainWindow as MainWindow;
+                if (mainWindow != null)
+                {
+                    mainWindow.Dispatcher.Invoke(() =>
+                    {
+                        var method = mainWindow.GetType().GetMethod("UpdateCompanyInfoDisplay", 
+                            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                        method?.Invoke(mainWindow, null);
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error removing logo: {ex.Message}");
+            }
+        }
+
+        private void LoadLogoPreview(string logoPath)
+        {
+            try
+            {
+                if (File.Exists(logoPath))
+                {
+                    var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(logoPath);
+                    bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    LogoPreviewImage.Source = bitmap;
+                }
+                else
+                {
+                    LogoPreviewImage.Source = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading logo preview: {ex.Message}");
+                LogoPreviewImage.Source = null;
+            }
+        }
+
+        #endregion
 
         public void Dispose()
         {

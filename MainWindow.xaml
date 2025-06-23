@@ -18,7 +18,7 @@
         </Style>
         
         <Style x:Key="DateTimeStyle" TargetType="TextBlock" BasedOn="{StaticResource HeaderTextStyle}">
-            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontSize" Value="22"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#E74C3C"/>
         </Style>
@@ -76,30 +76,30 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Section A: Logo (Left Aligned) -->
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <Border Width="60" Height="60" CornerRadius="30" Background="#34495E" Margin="0,0,15,0">
-                        <TextBlock Text="⚖️" FontSize="32" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock x:Name="CompanyLogoText" Text="YASH COTEX" FontSize="18" FontWeight="Bold" Style="{StaticResource HeaderTextStyle}"/>
-                        <TextBlock Text="Weighbridge System" FontSize="11" Foreground="#BDC3C7"/>
-                    </StackPanel>
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Image x:Name="CompanyLogoImage" 
+                           Source="Assets/logo.png"
+                           MaxHeight="120" 
+                           Stretch="Uniform"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Margin="0,0,20,0"/>
                 </StackPanel>
 
                 <!-- Section B: Company Info (Centered) -->
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <TextBlock x:Name="CompanyNameHeader" Text="YASH COTEX PRIVATE LIMITED" 
-                               FontSize="16" FontWeight="Bold" Style="{StaticResource HeaderTextStyle}" HorizontalAlignment="Center"/>
+                               FontSize="20" FontWeight="Bold" Style="{StaticResource HeaderTextStyle}" HorizontalAlignment="Center"/>
                     <TextBlock x:Name="CompanyAddressLine1Header" Text="Address Line 1" 
-                               FontSize="11" Foreground="#BDC3C7" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                               FontSize="14" Foreground="#BDC3C7" HorizontalAlignment="Center" Margin="0,6,0,2"/>
                     <TextBlock x:Name="CompanyAddressLine2Header" Text="Address Line 2" 
-                               FontSize="11" Foreground="#BDC3C7" HorizontalAlignment="Center" Margin="0,0,0,0"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2,0,0">
-                        <TextBlock x:Name="CompanyEmailHeader" Text="info@yashcotex.com" FontSize="11" Foreground="#BDC3C7"/>
-                        <TextBlock Text=" | " FontSize="11" Foreground="#BDC3C7"/>
-                        <TextBlock x:Name="CompanyPhoneHeader" Text="+91-9876543210" FontSize="11" Foreground="#BDC3C7"/>
-                        <TextBlock Text=" | " FontSize="11" Foreground="#BDC3C7"/>
-                        <TextBlock x:Name="CompanyGSTHeader" Text="GSTIN: 22AAAAA0000A1Z5" FontSize="11" Foreground="#BDC3C7"/>
+                               FontSize="14" Foreground="#BDC3C7" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
+                        <TextBlock x:Name="CompanyEmailHeader" Text="info@yashcotex.com" FontSize="13" Foreground="#BDC3C7"/>
+                        <TextBlock Text=" | " FontSize="13" Foreground="#BDC3C7"/>
+                        <TextBlock x:Name="CompanyPhoneHeader" Text="+91-9876543210" FontSize="13" Foreground="#BDC3C7"/>
+                        <TextBlock Text=" | " FontSize="13" Foreground="#BDC3C7"/>
+                        <TextBlock x:Name="CompanyGSTHeader" Text="GSTIN: 22AAAAA0000A1Z5" FontSize="13" Foreground="#BDC3C7"/>
                     </StackPanel>
                 </StackPanel>
 

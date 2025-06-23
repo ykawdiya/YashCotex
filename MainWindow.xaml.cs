@@ -703,12 +703,33 @@ namespace WeighbridgeSoftwareYashCotex
                 Console.WriteLine($"CompanyEmail: '{settings.CompanyEmail}'");
                 Console.WriteLine($"CompanyPhone: '{settings.CompanyPhone}'");
                 Console.WriteLine($"CompanyGSTIN: '{settings.CompanyGSTIN}'");
+                Console.WriteLine($"CompanyLogo: '{settings.CompanyLogo}'");
                 
-                // Clear and update header company information to avoid old data
-                if (CompanyLogoText != null)
+                // Update company logo
+                if (CompanyLogoImage != null)
                 {
-                    CompanyLogoText.Text = "";
-                    CompanyLogoText.Text = settings.CompanyName ?? "YASH COTEX";
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(settings.CompanyLogo) && File.Exists(settings.CompanyLogo))
+                        {
+                            var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.UriSource = new Uri(settings.CompanyLogo);
+                            bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                            CompanyLogoImage.Source = bitmap;
+                        }
+                        else
+                        {
+                            // No logo or file doesn't exist - clear the image
+                            CompanyLogoImage.Source = null;
+                        }
+                    }
+                    catch (Exception logoEx)
+                    {
+                        Console.WriteLine($"Error loading logo: {logoEx.Message}");
+                        CompanyLogoImage.Source = null;
+                    }
                 }
                 
                 if (CompanyNameHeader != null)

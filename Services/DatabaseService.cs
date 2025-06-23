@@ -10,8 +10,20 @@ public class DatabaseService : IDisposable
     
     public DatabaseService()
     {
-        _context = new WeighbridgeDbContext();
-        _context.Database.EnsureCreated();
+        try
+        {
+            Console.WriteLine("Creating WeighbridgeDbContext...");
+            _context = new WeighbridgeDbContext();
+            Console.WriteLine("WeighbridgeDbContext created, ensuring database...");
+            _context.Database.EnsureCreated();
+            Console.WriteLine("Database ensured successfully");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"DatabaseService constructor failed: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            throw;
+        }
     }
     
     public int GetNextRstNumber()

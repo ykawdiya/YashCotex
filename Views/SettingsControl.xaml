@@ -137,6 +137,52 @@
                                     <TextBox x:Name="GstNumberTextBox" Style="{StaticResource FieldTextBoxStyle}" MaxLength="15" Text=""/>
                                 </StackPanel>
                             </Grid>
+                            
+                            <!-- Company Logo Section -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,20,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="🖼️ COMPANY LOGO" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="200"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- Logo Upload Controls -->
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Current Logo Path" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="CompanyLogoPathTextBox" Style="{StaticResource FieldTextBoxStyle}" 
+                                                     IsReadOnly="True" Text="No logo selected"/>
+                                            
+                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                <Button x:Name="BrowseLogoButton" Content="📁 Browse Logo" 
+                                                        Style="{StaticResource ActionButtonStyle}" 
+                                                        Width="120" Margin="0,0,10,0"
+                                                        Click="BrowseLogoButton_Click"/>
+                                                <Button x:Name="RemoveLogoButton" Content="🗑️ Remove" 
+                                                        Style="{StaticResource ActionButtonStyle}" 
+                                                        Width="100"
+                                                        Click="RemoveLogoButton_Click"/>
+                                            </StackPanel>
+                                            
+                                            <TextBlock Text="Supported formats: PNG, JPG, JPEG (PNG recommended for transparency)" 
+                                                       FontSize="11" Foreground="#6C757D" Margin="0,5,0,0"/>
+                                        </StackPanel>
+                                        
+                                        <!-- Logo Preview -->
+                                        <Border Grid.Column="2" BorderBrush="#DEE2E6" BorderThickness="2" 
+                                                CornerRadius="8" Background="White" Height="120">
+                                            <Image x:Name="LogoPreviewImage" 
+                                                   Stretch="Uniform" 
+                                                   Margin="10"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>

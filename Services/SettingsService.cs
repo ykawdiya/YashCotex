@@ -151,7 +151,10 @@ public class SettingsService
                     Console.WriteLine($"Loaded CompanyGSTIN: '{CompanyGSTIN}'");
                 }
                 if (root.TryGetProperty("CompanyLogo", out var companyLogo))
+                {
                     CompanyLogo = companyLogo.GetString() ?? CompanyLogo;
+                    Console.WriteLine($"Loaded CompanyLogo: '{CompanyLogo}'");
+                }
                 if (root.TryGetProperty("WeighbridgeComPort", out var weighbridgeComPort))
                     WeighbridgeComPort = weighbridgeComPort.GetString() ?? WeighbridgeComPort;
                 if (root.TryGetProperty("MaxWeightCapacity", out var maxWeightCapacity))
