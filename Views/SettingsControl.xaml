@@ -250,10 +250,10 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- Printer Settings -->
+                            <!-- Dot Matrix Printer Settings -->
                             <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15">
                                 <StackPanel>
-                                    <TextBlock Text="🖨️ PRINTER SETTINGS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    <TextBlock Text="🖨️ DOT MATRIX PRINTER SETTINGS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
                                     
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -263,28 +263,75 @@
                                         </Grid.ColumnDefinitions>
                                         
                                         <StackPanel Grid.Column="0">
-                                            <TextBlock Text="Default Printer" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBlock Text="Printer Name/Model" Style="{StaticResource FieldLabelStyle}"/>
                                             <ComboBox x:Name="DefaultPrinterComboBox" Style="{StaticResource FieldComboBoxStyle}"/>
                                             
                                             <TextBlock Text="Paper Size" Style="{StaticResource FieldLabelStyle}"/>
                                             <ComboBox x:Name="PaperSizeComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                                <ComboBoxItem Content="A4" IsSelected="True"/>
-                                                <ComboBoxItem Content="A5"/>
-                                                <ComboBoxItem Content="80mm (Thermal)"/>
+                                                <ComboBoxItem Content="Continuous Form (9.5&quot; x 11&quot;)" IsSelected="True"/>
+                                                <ComboBoxItem Content="Continuous Form (8.5&quot; x 11&quot;)"/>
+                                                <ComboBoxItem Content="Single Sheet A4"/>
+                                                <ComboBoxItem Content="Custom Size"/>
+                                            </ComboBox>
+                                            
+                                            <TextBlock Text="Characters Per Line" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="CharactersPerLineComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="80 characters" IsSelected="True"/>
+                                                <ComboBoxItem Content="132 characters"/>
+                                                <ComboBoxItem Content="96 characters"/>
+                                            </ComboBox>
+                                            
+                                            <TextBlock Text="Print Speed" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="PrintSpeedComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="Draft (Fast)" IsSelected="True"/>
+                                                <ComboBoxItem Content="Near Letter Quality (Medium)"/>
+                                                <ComboBoxItem Content="Letter Quality (Slow)"/>
                                             </ComboBox>
                                         </StackPanel>
                                         
                                         <StackPanel Grid.Column="2">
-                                            <TextBlock Text="Print Quality" Style="{StaticResource FieldLabelStyle}"/>
-                                            <ComboBox x:Name="PrintQualityComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                                <ComboBoxItem Content="Draft"/>
-                                                <ComboBoxItem Content="Normal" IsSelected="True"/>
-                                                <ComboBoxItem Content="High"/>
+                                            <TextBlock Text="Font Type" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="FontTypeComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="Draft (9-pin)" IsSelected="True"/>
+                                                <ComboBoxItem Content="Near Letter Quality (24-pin)"/>
+                                                <ComboBoxItem Content="Condensed"/>
+                                                <ComboBoxItem Content="Elite"/>
+                                                <ComboBoxItem Content="Pica"/>
                                             </ComboBox>
                                             
-                                            <CheckBox x:Name="AutoPrintCheckBox" Content="Auto-print after exit" Margin="0,15,0,0" IsChecked="True"/>
+                                            <TextBlock Text="Line Spacing" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="LineSpacingComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="6 LPI (Lines Per Inch)" IsSelected="True"/>
+                                                <ComboBoxItem Content="8 LPI"/>
+                                                <ComboBoxItem Content="Single Spacing"/>
+                                                <ComboBoxItem Content="Double Spacing"/>
+                                            </ComboBox>
+                                            
+                                            <TextBlock Text="Paper Feed" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="PaperFeedComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="Tractor Feed (Continuous)" IsSelected="True"/>
+                                                <ComboBoxItem Content="Friction Feed (Single Sheet)"/>
+                                                <ComboBoxItem Content="Auto Feed"/>
+                                            </ComboBox>
+                                            
+                                            <CheckBox x:Name="AutoPrintCheckBox" Content="Auto-print after weighment" Margin="0,15,0,0" IsChecked="True"/>
+                                            <CheckBox x:Name="FormFeedAfterPrintCheckBox" Content="Form feed after print" Margin="0,5,0,0" IsChecked="True"/>
                                         </StackPanel>
                                     </Grid>
+                                    
+                                    <Border Background="#FFF3CD" BorderBrush="#FFEAA7" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,15,0,0">
+                                        <StackPanel>
+                                            <TextBlock Text="📝 Dot Matrix Printer Tips" FontWeight="Bold" FontSize="12" Foreground="#856404"/>
+                                            <TextBlock Text="• Use tractor feed for continuous forms and multiple copies" 
+                                                       FontSize="11" Foreground="#856404" Margin="0,5,0,0"/>
+                                            <TextBlock Text="• Draft mode is fastest for daily weighment slips" 
+                                                       FontSize="11" Foreground="#856404"/>
+                                            <TextBlock Text="• Ensure ribbon is properly installed for clear printing" 
+                                                       FontSize="11" Foreground="#856404"/>
+                                            <TextBlock Text="• Check paper alignment before starting operations" 
+                                                       FontSize="11" Foreground="#856404"/>
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
                             </Border>
 

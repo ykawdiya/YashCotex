@@ -1488,8 +1488,83 @@ namespace WeighbridgeSoftwareYashCotex.Views
             ScaleComPortComboBox.SelectedItem = _settingsService.WeighbridgeComPort;
             MaxCapacityTextBox.Text = _settingsService.MaxWeightCapacity.ToString();
 
-            // Printer
-            DefaultPrinterComboBox.SelectedItem = _settingsService.DefaultPrinter;
+            // Dot Matrix Printer Settings
+            try
+            {
+                // Set printer name
+                if (!string.IsNullOrEmpty(_settingsService.DefaultPrinter))
+                {
+                    DefaultPrinterComboBox.SelectedItem = _settingsService.DefaultPrinter;
+                }
+
+                // Set paper size
+                foreach (ComboBoxItem item in PaperSizeComboBox.Items)
+                {
+                    if (item.Content.ToString() == _settingsService.PrinterPaperSize)
+                    {
+                        PaperSizeComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+
+                // Set characters per line
+                foreach (ComboBoxItem item in CharactersPerLineComboBox.Items)
+                {
+                    if (item.Content.ToString() == _settingsService.CharactersPerLine)
+                    {
+                        CharactersPerLineComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+
+                // Set print speed
+                foreach (ComboBoxItem item in PrintSpeedComboBox.Items)
+                {
+                    if (item.Content.ToString() == _settingsService.PrintSpeed)
+                    {
+                        PrintSpeedComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+
+                // Set font type
+                foreach (ComboBoxItem item in FontTypeComboBox.Items)
+                {
+                    if (item.Content.ToString() == _settingsService.FontType)
+                    {
+                        FontTypeComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+
+                // Set line spacing
+                foreach (ComboBoxItem item in LineSpacingComboBox.Items)
+                {
+                    if (item.Content.ToString() == _settingsService.LineSpacing)
+                    {
+                        LineSpacingComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+
+                // Set paper feed
+                foreach (ComboBoxItem item in PaperFeedComboBox.Items)
+                {
+                    if (item.Content.ToString() == _settingsService.PaperFeed)
+                    {
+                        PaperFeedComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+
+                // Set checkboxes
+                AutoPrintCheckBox.IsChecked = _settingsService.AutoPrintAfterWeighment;
+                FormFeedAfterPrintCheckBox.IsChecked = _settingsService.FormFeedAfterPrint;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading dot matrix printer settings: {ex.Message}");
+            }
 
             // LED Display
             LoadLedDisplaySettings();
@@ -1801,9 +1876,16 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
         private void SavePrinterSettings()
         {
-            // Save printer settings from UI controls
-            _settingsService.DefaultPrinter = DefaultPrinterComboBox?.SelectedItem?.ToString() ?? "Default Printer";
-            _settingsService.SavePrinterSettings();
+            // Save dot matrix printer settings from UI controls
+            _settingsService.DefaultPrinter = DefaultPrinterComboBox?.SelectedItem?.ToString() ?? "";
+            _settingsService.PrinterPaperSize = ((ComboBoxItem)PaperSizeComboBox?.SelectedItem)?.Content?.ToString() ?? "Continuous Form (9.5\" x 11\")";
+            _settingsService.CharactersPerLine = ((ComboBoxItem)CharactersPerLineComboBox?.SelectedItem)?.Content?.ToString() ?? "80 characters";
+            _settingsService.PrintSpeed = ((ComboBoxItem)PrintSpeedComboBox?.SelectedItem)?.Content?.ToString() ?? "Draft (Fast)";
+            _settingsService.FontType = ((ComboBoxItem)FontTypeComboBox?.SelectedItem)?.Content?.ToString() ?? "Draft (9-pin)";
+            _settingsService.LineSpacing = ((ComboBoxItem)LineSpacingComboBox?.SelectedItem)?.Content?.ToString() ?? "6 LPI (Lines Per Inch)";
+            _settingsService.PaperFeed = ((ComboBoxItem)PaperFeedComboBox?.SelectedItem)?.Content?.ToString() ?? "Tractor Feed (Continuous)";
+            _settingsService.AutoPrintAfterWeighment = AutoPrintCheckBox?.IsChecked == true;
+            _settingsService.FormFeedAfterPrint = FormFeedAfterPrintCheckBox?.IsChecked == true;
         }
 
         private void SaveSystemSettings()
@@ -2751,6 +2833,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
         }
 
         #endregion
+
 
         #region LED Display Management
 

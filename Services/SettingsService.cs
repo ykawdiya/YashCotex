@@ -48,7 +48,18 @@ public class SettingsService
     public List<string> Materials { get; set; } = new();
 
     public int MaxWeightCapacity { get; set; } = 100000;
+    
+    // Dot Matrix Printer Settings
     public string DefaultPrinter { get; set; } = string.Empty;
+    public string PrinterPaperSize { get; set; } = "Continuous Form (9.5\" x 11\")";
+    public string CharactersPerLine { get; set; } = "80 characters";
+    public string PrintSpeed { get; set; } = "Draft (Fast)";
+    public string FontType { get; set; } = "Draft (9-pin)";
+    public string LineSpacing { get; set; } = "6 LPI (Lines Per Inch)";
+    public string PaperFeed { get; set; } = "Tractor Feed (Continuous)";
+    public bool AutoPrintAfterWeighment { get; set; } = true;
+    public bool FormFeedAfterPrint { get; set; } = true;
+    
     public string BackupPath { get; set; } = "Backups";
     public bool GoogleSheetsEnabled { get; set; } = false;
     public string ServiceAccountKeyPath { get; set; } = string.Empty;
