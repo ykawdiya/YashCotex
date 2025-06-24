@@ -21,7 +21,7 @@ namespace WeighbridgeSoftwareYashCotex.Services
                 testPort.Open();
                 
                 // Send test weight data in standard ASCII format
-                var weightString = FormatWeight(weight, "####.## KG");
+                var weightString = weight.ToString("F2");
                 testPort.WriteLine(weightString);
                 
                 testPort.Close();

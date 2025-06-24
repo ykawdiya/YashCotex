@@ -2927,8 +2927,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             var testButton = new Button
             {
                 Content = "🔧 Test",
-                Padding = new Thickness(8, 4),
-                Margin = new Thickness(0, 0, 5, 0),
+                Padding = new Thickness(8.0, 4.0, 8.0, 4.0),
+                Margin = new Thickness(0.0, 0.0, 5.0, 0.0),
                 Tag = display.Id
             };
             testButton.Click += TestSingleLedDisplay_Click;
@@ -2936,10 +2936,10 @@ namespace WeighbridgeSoftwareYashCotex.Views
             var removeButton = new Button
             {
                 Content = "🗑️ Remove",
-                Padding = new Thickness(8, 4),
+                Padding = new Thickness(8.0, 4.0, 8.0, 4.0),
                 Background = new SolidColorBrush(Color.FromRgb(220, 53, 69)),
                 Foreground = Brushes.White,
-                BorderThickness = new Thickness(0),
+                BorderThickness = new Thickness(0.0),
                 Tag = display.Id
             };
             removeButton.Click += RemoveLedDisplay_Click;

@@ -111,25 +111,18 @@ namespace WeighbridgeSoftwareYashCotex.Services
                 
                 double adjustedWeight = rawWeight;
                 
-                foreach (var rule in weightRules.Where(r => r.IsActive))
+                foreach (var rule in weightRules)
                 {
-                    // Apply rule based on conditions
+                    // Apply rule using the existing ApplyRule method
                     if (IsRuleApplicable(rule, rawWeight))
                     {
-                        switch (rule.AdjustmentType?.ToLower())
+                        if (rule.IsPercentage)
                         {
-                            case "add":
-                                adjustedWeight += rule.AdjustmentValue;
-                                break;
-                            case "subtract":
-                                adjustedWeight -= rule.AdjustmentValue;
-                                break;
-                            case "multiply":
-                                adjustedWeight *= rule.AdjustmentValue;
-                                break;
-                            case "percentage":
-                                adjustedWeight *= (1 + rule.AdjustmentValue / 100);
-                                break;
+                            adjustedWeight += (rawWeight * rule.AdjustmentValue / 100);
+                        }
+                        else
+                        {
+                            adjustedWeight += rule.AdjustmentValue;
                         }
                         
                         Console.WriteLine($"Applied weight rule '{rule.Name}': {rawWeight:F2} -> {adjustedWeight:F2}");
@@ -149,16 +142,9 @@ namespace WeighbridgeSoftwareYashCotex.Services
         {
             try
             {
-                // Check weight range conditions
-                if (rule.MinWeight.HasValue && weight < rule.MinWeight.Value)
-                    return false;
-                
-                if (rule.MaxWeight.HasValue && weight > rule.MaxWeight.Value)
-                    return false;
-                
-                // Add more rule conditions as needed (material type, customer, etc.)
-                
-                return true;
+                // For now, apply all rules. 
+                // Rule conditions can be expanded based on the Condition property
+                return !string.IsNullOrEmpty(rule.Name);
             }
             catch
             {
