@@ -5,7 +5,7 @@
     <UserControl.Resources>
         <!-- Settings Styles -->
         <Style x:Key="HeaderStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontSize" Value="32"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#6C5CE7"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -20,7 +20,7 @@
         </Style>
         
         <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontSize" Value="20"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#2C3E50"/>
             <Setter Property="Margin" Value="0,0,0,15"/>
@@ -30,49 +30,49 @@
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Margin" Value="0,0,0,5"/>
             <Setter Property="Foreground" Value="#333"/>
-            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontSize" Value="15"/>
         </Style>
         
         <Style x:Key="FieldTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Padding" Value="12"/>
             <Setter Property="BorderBrush" Value="#CCC"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Height" Value="35"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Height" Value="42"/>
         </Style>
         
         <Style x:Key="FieldComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Padding" Value="12"/>
             <Setter Property="BorderBrush" Value="#CCC"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Height" Value="35"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Height" Value="42"/>
         </Style>
         
         <Style x:Key="SaveButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#00B894"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="20,10"/>
-            <Setter Property="Margin" Value="8,0"/>
+            <Setter Property="Padding" Value="25,12"/>
+            <Setter Property="Margin" Value="10,0"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="Height" Value="48"/>
         </Style>
         
         <Style x:Key="CancelButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#636E72"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Padding" Value="20,10"/>
-            <Setter Property="Margin" Value="8,0"/>
+            <Setter Property="Padding" Value="25,12"/>
+            <Setter Property="Margin" Value="10,0"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="Height" Value="48"/>
         </Style>
         
         <Style x:Key="AdminOnlyStyle" TargetType="Control">
@@ -83,7 +83,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="White" CornerRadius="0" Padding="20" Margin="0">
+    <Border Background="White" CornerRadius="0" Padding="40" Margin="0">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>  <!-- Header -->
@@ -102,8 +102,8 @@
                 
                 <!-- Tab 1: Company Information -->
                 <TabItem Header="🏢 Company Info">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-                        <StackPanel MaxWidth="600">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+                        <StackPanel>
                             <TextBlock Text="COMPANY INFORMATION" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <Grid>
@@ -189,8 +189,8 @@
 
                 <!-- Tab 2: Hardware Configuration -->
                 <TabItem Header="🔧 Hardware">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-                        <StackPanel MaxWidth="600">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+                        <StackPanel>
                             <TextBlock Text="HARDWARE CONFIGURATION" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Weighbridge Settings -->
@@ -500,7 +500,7 @@
                                                            HorizontalAlignment="Center" Margin="0,0,0,10"/>
                                                 
                                                 <TextBlock x:Name="LiveWeightDisplayText" Text="0000.00" 
-                                                           FontFamily="Consolas" FontSize="48" FontWeight="Bold" 
+                                                           FontFamily="Consolas" FontSize="72" FontWeight="Bold" 
                                                            Foreground="#00FF00" HorizontalAlignment="Center" 
                                                            Margin="0,0,0,10"/>
                                                 
@@ -554,8 +554,8 @@
 
                 <!-- Tab 3: Camera Settings -->
                 <TabItem Header="📹 Cameras">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-                        <StackPanel MaxWidth="800">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+                        <StackPanel>
                             <TextBlock Text="IP CAMERA CONFIGURATION" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Camera Control Buttons -->
@@ -600,7 +600,7 @@
                                         
                                         <!-- Camera 1 Preview (Entry) -->
                                         <Border Grid.Row="0" Grid.Column="0" Background="#1E1E1E" CornerRadius="8" 
-                                                BorderBrush="#4CAF50" BorderThickness="2" Height="200">
+                                                BorderBrush="#4CAF50" BorderThickness="2" Height="300">
                                             <Grid>
                                                 <Image x:Name="Camera1PreviewImage" Stretch="Uniform"/>
                                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" 
@@ -623,7 +623,7 @@
                                         
                                         <!-- Camera 2 Preview (Exit) -->
                                         <Border Grid.Row="0" Grid.Column="2" Background="#1E1E1E" CornerRadius="8" 
-                                                BorderBrush="#2196F3" BorderThickness="2" Height="200">
+                                                BorderBrush="#2196F3" BorderThickness="2" Height="300">
                                             <Grid>
                                                 <Image x:Name="Camera2PreviewImage" Stretch="Uniform"/>
                                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" 
@@ -646,7 +646,7 @@
                                         
                                         <!-- Camera 3 Preview (Left Side) -->
                                         <Border Grid.Row="2" Grid.Column="0" Background="#1E1E1E" CornerRadius="8" 
-                                                BorderBrush="#FF9800" BorderThickness="2" Height="200">
+                                                BorderBrush="#FF9800" BorderThickness="2" Height="300">
                                             <Grid>
                                                 <Image x:Name="Camera3PreviewImage" Stretch="Uniform"/>
                                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" 
@@ -669,7 +669,7 @@
                                         
                                         <!-- Camera 4 Preview (Right Side) -->
                                         <Border Grid.Row="2" Grid.Column="2" Background="#1E1E1E" CornerRadius="8" 
-                                                BorderBrush="#9C27B0" BorderThickness="2" Height="200">
+                                                BorderBrush="#9C27B0" BorderThickness="2" Height="300">
                                             <Grid>
                                                 <Image x:Name="Camera4PreviewImage" Stretch="Uniform"/>
                                                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" 
@@ -972,8 +972,8 @@
 
                 <!-- Tab 4: Integrations -->
                 <TabItem Header="🔗 Integrations">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-                        <StackPanel MaxWidth="600">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+                        <StackPanel>
                             <TextBlock Text="EXTERNAL INTEGRATIONS" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Google Sheets Integration -->
@@ -1042,8 +1042,8 @@
 
                 <!-- Tab 5: Data Management -->
                 <TabItem Header="📊 Data Management">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-                        <StackPanel MaxWidth="600">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+                        <StackPanel>
                             <TextBlock Text="DATA MANAGEMENT" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Materials Management -->
@@ -1097,8 +1097,8 @@
 
                 <!-- Tab 6: Security -->
                 <TabItem Header="🔒 Security">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-                        <StackPanel MaxWidth="600">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+                        <StackPanel>
                             <TextBlock Text="SECURITY SETTINGS" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Session Settings -->
@@ -1136,8 +1136,8 @@
 
                 <!-- Tab 7: Weight Rules (Super Admin Only) -->
                 <TabItem Header="⚖️ Weight Rules" x:Name="WeightRulesTab">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-                        <StackPanel MaxWidth="600">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+                        <StackPanel>
                             <Border Background="#FFF5F5" BorderBrush="#FF6B6B" BorderThickness="2" CornerRadius="8" Padding="20">
                                 <StackPanel>
                                     <TextBlock Text="⚠️ SUPER ADMIN ONLY - WEIGHT MANIPULATION RULES" 
@@ -1182,8 +1182,8 @@
 
                 <!-- Tab 8: User Management -->
                 <TabItem Header="👥 Users">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-                        <StackPanel MaxWidth="700">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+                        <StackPanel>
                             <TextBlock Text="USER MANAGEMENT" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Current Users -->
@@ -1250,8 +1250,8 @@
 
                 <!-- Tab 9: System -->
                 <TabItem Header="🖥️ System">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-                        <StackPanel MaxWidth="600">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+                        <StackPanel>
                             <TextBlock Text="SYSTEM INFORMATION" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- System Info -->
@@ -1312,8 +1312,8 @@
 
                 <!-- Tab 9: Admin Tools (Super Admin Only) -->
                 <TabItem x:Name="AdminToolsTab" Header="⚖️ Admin Tools" Visibility="Collapsed">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-                        <StackPanel MaxWidth="800">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
+                        <StackPanel>
                             <TextBlock Text="ADMIN TOOLS (SUPER ADMIN ONLY)" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Weight Management Section -->
