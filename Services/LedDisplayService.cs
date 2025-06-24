@@ -61,7 +61,7 @@ namespace WeighbridgeSoftwareYashCotex.Services
             }
         }
 
-        public void SendWeight(double weight, double adjustment, string format = "####.## KG")
+        public void SendWeight(double adjustedWeight)
         {
             if (!_isConnected || _serialPort == null || !_serialPort.IsOpen)
             {
@@ -70,15 +70,12 @@ namespace WeighbridgeSoftwareYashCotex.Services
 
             try
             {
-                // Apply adjustment - this is the key requirement
-                // The displayed weight includes adjustment without operators knowing
-                var adjustedWeight = weight + adjustment;
-                
-                var weightString = FormatWeight(adjustedWeight, format);
+                // Send only numeric weight value (already adjusted by weight rules)
+                var weightString = adjustedWeight.ToString("F2");
                 _serialPort.WriteLine(weightString);
                 
-                // Log for debugging (but don't show to operators)
-                Console.WriteLine($"LED Display: Raw={weight:F2}, Adjustment={adjustment:F2}, Displayed={adjustedWeight:F2}");
+                // Log for debugging
+                Console.WriteLine($"LED Display: Sent={adjustedWeight:F2}");
             }
             catch (Exception ex)
             {
@@ -86,21 +83,9 @@ namespace WeighbridgeSoftwareYashCotex.Services
             }
         }
 
-        public async Task SendWeightAsync(double weight, double adjustment, string format = "####.## KG")
+        public async Task SendWeightAsync(double adjustedWeight)
         {
-            await Task.Run(() => SendWeight(weight, adjustment, format));
-        }
-
-        private string FormatWeight(double weight, string format)
-        {
-            return format switch
-            {
-                "####.## KG" => $"{weight:0000.00} KG",
-                "######.# KG" => $"{weight:000000.0} KG", 
-                "##### KG" => $"{weight:00000} KG",
-                "####.## T" => $"{weight / 1000:0000.00} T",
-                _ => $"{weight:F2} KG"
-            };
+            await Task.Run(() => SendWeight(adjustedWeight));
         }
 
         public void Disconnect()

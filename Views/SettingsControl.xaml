@@ -291,82 +291,29 @@
                             <!-- LED Display Settings -->
                             <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,20,0,0">
                                 <StackPanel>
-                                    <TextBlock Text="📺 LED DISPLAY SETTINGS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                                    
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="15"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        
-                                        <StackPanel Grid.Column="0">
-                                            <CheckBox x:Name="EnableLedDisplayCheckBox" Content="Enable LED Weight Display" IsChecked="False" Margin="0,0,0,15" FontWeight="SemiBold"/>
-                                            
-                                            <TextBlock Text="Display COM Port" Style="{StaticResource FieldLabelStyle}"/>
-                                            <ComboBox x:Name="LedDisplayComPortComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                                <ComboBoxItem Content="COM1"/>
-                                                <ComboBoxItem Content="COM2"/>
-                                                <ComboBoxItem Content="COM3"/>
-                                                <ComboBoxItem Content="COM4"/>
-                                                <ComboBoxItem Content="COM5"/>
-                                                <ComboBoxItem Content="COM6"/>
-                                                <ComboBoxItem Content="COM7"/>
-                                                <ComboBoxItem Content="COM8"/>
-                                            </ComboBox>
-                                            
-                                            <TextBlock Text="Baud Rate" Style="{StaticResource FieldLabelStyle}"/>
-                                            <ComboBox x:Name="LedDisplayBaudRateComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                                <ComboBoxItem Content="9600" IsSelected="True"/>
-                                                <ComboBoxItem Content="19200"/>
-                                                <ComboBoxItem Content="38400"/>
-                                                <ComboBoxItem Content="57600"/>
-                                                <ComboBoxItem Content="115200"/>
-                                            </ComboBox>
-                                            
-                                            <TextBlock Text="Weight Adjustment (KG)" Style="{StaticResource FieldLabelStyle}"/>
-                                            <TextBox x:Name="WeightAdjustmentTextBox" Style="{StaticResource FieldTextBoxStyle}" 
-                                                     Text="0" ToolTip="Adjustment value to add/subtract from displayed weight"/>
-                                        </StackPanel>
-                                        
-                                        <StackPanel Grid.Column="2">
-                                            <TextBlock Text="Display Protocol" Style="{StaticResource FieldLabelStyle}"/>
-                                            <ComboBox x:Name="LedDisplayProtocolComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                                <ComboBoxItem Content="Standard ASCII" IsSelected="True"/>
-                                                <ComboBoxItem Content="Modbus RTU"/>
-                                                <ComboBoxItem Content="Custom Protocol"/>
-                                            </ComboBox>
-                                            
-                                            <TextBlock Text="Update Frequency (ms)" Style="{StaticResource FieldLabelStyle}"/>
-                                            <TextBox x:Name="LedUpdateFrequencyTextBox" Style="{StaticResource FieldTextBoxStyle}" 
-                                                     Text="500" ToolTip="How often to update the LED display in milliseconds"/>
-                                            
-                                            <TextBlock Text="Display Format" Style="{StaticResource FieldLabelStyle}"/>
-                                            <ComboBox x:Name="LedDisplayFormatComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                                <ComboBoxItem Content="####.## KG" IsSelected="True"/>
-                                                <ComboBoxItem Content="######.# KG"/>
-                                                <ComboBoxItem Content="##### KG"/>
-                                                <ComboBoxItem Content="####.## T"/>
-                                            </ComboBox>
-                                            
-                                            <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
-                                                <Button x:Name="TestLedDisplayButton" Content="🔧 Test Display" 
-                                                        Padding="8,4" Margin="0,0,10,0" Click="TestLedDisplayButton_Click"/>
-                                                <Button x:Name="CalibrateLedButton" Content="⚙️ Calibrate" 
-                                                        Padding="8,4" Click="CalibrateLedButton_Click"/>
-                                            </StackPanel>
-                                        </StackPanel>
+                                        <TextBlock Text="📺 LED DISPLAYS" FontSize="14" FontWeight="Bold" Grid.Column="0"/>
+                                        <Button x:Name="AddLedDisplayButton" Content="➕ Add Display" Grid.Column="1"
+                                                Padding="8,4" Margin="5,0,0,0" Click="AddLedDisplayButton_Click"/>
                                     </Grid>
                                     
-                                    <Border Background="#FFF3CD" BorderBrush="#FFEAA7" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,15,0,0">
+                                    <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto" Margin="0,10,0,0">
+                                        <StackPanel x:Name="LedDisplaysPanel"/>
+                                    </ScrollViewer>
+                                    
+                                    <Border Background="#E3F2FD" BorderBrush="#2196F3" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,15,0,0">
                                         <StackPanel>
-                                            <TextBlock Text="⚠️ IMPORTANT: Weight Adjustment" FontWeight="Bold" FontSize="12" Foreground="#856404"/>
-                                            <TextBlock Text="• The weight displayed on LED will automatically include the adjustment value" 
-                                                       FontSize="11" Foreground="#856404" Margin="0,5,0,0"/>
-                                            <TextBlock Text="• Operators will see the adjusted weight without knowing about the adjustment" 
-                                                       FontSize="11" Foreground="#856404"/>
-                                            <TextBlock Text="• Use this for scale calibration or systematic weight corrections" 
-                                                       FontSize="11" Foreground="#856404"/>
+                                            <TextBlock Text="💡 LED Display Information" FontWeight="Bold" FontSize="12" Foreground="#1976D2"/>
+                                            <TextBlock Text="• Displays show numeric weight values only (adjusted by weight rules)" 
+                                                       FontSize="11" Foreground="#1976D2" Margin="0,5,0,0"/>
+                                            <TextBlock Text="• Configure weight adjustments in the Weight Rules tab" 
+                                                       FontSize="11" Foreground="#1976D2"/>
+                                            <TextBlock Text="• Each display can be configured for different COM ports" 
+                                                       FontSize="11" Foreground="#1976D2"/>
                                         </StackPanel>
                                     </Border>
                                 </StackPanel>

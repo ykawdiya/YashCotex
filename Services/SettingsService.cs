@@ -55,15 +55,7 @@ public class SettingsService
     public string SpreadsheetId { get; set; } = string.Empty;
     public List<string> Addresses { get; set; } = new();
     public List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration> Cameras { get; set; } = new();
-    
-    // LED Display Settings
-    public bool LedDisplayEnabled { get; set; } = false;
-    public string LedDisplayComPort { get; set; } = "COM2";
-    public int LedDisplayBaudRate { get; set; } = 9600;
-    public string LedDisplayProtocol { get; set; } = "Standard ASCII";
-    public int LedUpdateFrequency { get; set; } = 500;
-    public string LedDisplayFormat { get; set; } = "####.## KG";
-    public double WeightAdjustment { get; set; } = 0.0;
+    public List<WeighbridgeSoftwareYashCotex.Models.LedDisplayConfiguration> LedDisplays { get; set; } = new();
     
     private SettingsService()
     {

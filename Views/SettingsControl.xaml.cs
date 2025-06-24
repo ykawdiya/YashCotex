@@ -2758,50 +2758,28 @@ namespace WeighbridgeSoftwareYashCotex.Views
         {
             try
             {
-                EnableLedDisplayCheckBox.IsChecked = _settingsService.LedDisplayEnabled;
+                LedDisplaysPanel.Children.Clear();
                 
-                // Set COM port
-                foreach (ComboBoxItem item in LedDisplayComPortComboBox.Items)
+                var displays = _settingsService.LedDisplays ?? new List<Models.LedDisplayConfiguration>();
+                
+                for (int i = 0; i < displays.Count; i++)
                 {
-                    if (item.Content.ToString() == _settingsService.LedDisplayComPort)
-                    {
-                        LedDisplayComPortComboBox.SelectedItem = item;
-                        break;
-                    }
+                    CreateLedDisplayControl(displays[i], i);
                 }
                 
-                // Set baud rate
-                foreach (ComboBoxItem item in LedDisplayBaudRateComboBox.Items)
+                // Add at least one display if none exist
+                if (displays.Count == 0)
                 {
-                    if (item.Content.ToString() == _settingsService.LedDisplayBaudRate.ToString())
+                    var defaultDisplay = new Models.LedDisplayConfiguration
                     {
-                        LedDisplayBaudRateComboBox.SelectedItem = item;
-                        break;
-                    }
+                        Name = "LED Display 1",
+                        ComPort = "COM1",
+                        BaudRate = 9600,
+                        Enabled = false
+                    };
+                    _settingsService.LedDisplays.Add(defaultDisplay);
+                    CreateLedDisplayControl(defaultDisplay, 0);
                 }
-                
-                // Set protocol
-                foreach (ComboBoxItem item in LedDisplayProtocolComboBox.Items)
-                {
-                    if (item.Content.ToString() == _settingsService.LedDisplayProtocol)
-                    {
-                        LedDisplayProtocolComboBox.SelectedItem = item;
-                        break;
-                    }
-                }
-                
-                // Set format
-                foreach (ComboBoxItem item in LedDisplayFormatComboBox.Items)
-                {
-                    if (item.Content.ToString() == _settingsService.LedDisplayFormat)
-                    {
-                        LedDisplayFormatComboBox.SelectedItem = item;
-                        break;
-                    }
-                }
-                
-                LedUpdateFrequencyTextBox.Text = _settingsService.LedUpdateFrequency.ToString();
-                WeightAdjustmentTextBox.Text = _settingsService.WeightAdjustment.ToString("F2");
             }
             catch (Exception ex)
             {
@@ -2809,26 +2787,215 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
         }
 
+        private void CreateLedDisplayControl(Models.LedDisplayConfiguration display, int index)
+        {
+            var border = new Border
+            {
+                Background = new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                BorderBrush = new SolidColorBrush(Color.FromRgb(220, 220, 220)),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(5),
+                Padding = new Thickness(15),
+                Margin = new Thickness(0, 5, 0, 5),
+                Tag = display.Id
+            };
+
+            var grid = new Grid();
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(15) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(15) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            // Left column
+            var leftStack = new StackPanel();
+            Grid.SetColumn(leftStack, 0);
+
+            var headerGrid = new Grid();
+            headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+            var nameLabel = new TextBlock
+            {
+                Text = $"📺 {display.Name}",
+                FontWeight = FontWeights.Bold,
+                FontSize = 13,
+                Margin = new Thickness(0, 0, 0, 10)
+            };
+            Grid.SetColumn(nameLabel, 0);
+
+            var enableCheckBox = new CheckBox
+            {
+                Content = "Enable",
+                IsChecked = display.Enabled,
+                Name = $"Enable_{display.Id.Replace("-", "_")}",
+                Margin = new Thickness(0, 0, 0, 10)
+            };
+            Grid.SetColumn(enableCheckBox, 1);
+
+            headerGrid.Children.Add(nameLabel);
+            headerGrid.Children.Add(enableCheckBox);
+            leftStack.Children.Add(headerGrid);
+
+            var nameTextLabel = new TextBlock { Text = "Display Name", Style = (Style)FindResource("FieldLabelStyle") };
+            var nameTextBox = new TextBox
+            {
+                Text = display.Name,
+                Style = (Style)FindResource("FieldTextBoxStyle"),
+                Name = $"Name_{display.Id.Replace("-", "_")}"
+            };
+
+            var comPortLabel = new TextBlock { Text = "COM Port", Style = (Style)FindResource("FieldLabelStyle") };
+            var comPortCombo = new ComboBox
+            {
+                Style = (Style)FindResource("FieldComboBoxStyle"),
+                Name = $"ComPort_{display.Id.Replace("-", "_")}"
+            };
+
+            for (int i = 1; i <= 8; i++)
+            {
+                var item = new ComboBoxItem { Content = $"COM{i}" };
+                if ($"COM{i}" == display.ComPort)
+                    item.IsSelected = true;
+                comPortCombo.Items.Add(item);
+            }
+
+            leftStack.Children.Add(nameTextLabel);
+            leftStack.Children.Add(nameTextBox);
+            leftStack.Children.Add(comPortLabel);
+            leftStack.Children.Add(comPortCombo);
+
+            // Middle column
+            var middleStack = new StackPanel();
+            Grid.SetColumn(middleStack, 2);
+
+            var baudRateLabel = new TextBlock { Text = "Baud Rate", Style = (Style)FindResource("FieldLabelStyle") };
+            var baudRateCombo = new ComboBox
+            {
+                Style = (Style)FindResource("FieldComboBoxStyle"),
+                Name = $"BaudRate_{display.Id.Replace("-", "_")}"
+            };
+
+            var baudRates = new[] { 9600, 19200, 38400, 57600, 115200 };
+            foreach (var rate in baudRates)
+            {
+                var item = new ComboBoxItem { Content = rate.ToString() };
+                if (rate == display.BaudRate)
+                    item.IsSelected = true;
+                baudRateCombo.Items.Add(item);
+            }
+
+            var protocolLabel = new TextBlock { Text = "Protocol", Style = (Style)FindResource("FieldLabelStyle") };
+            var protocolCombo = new ComboBox
+            {
+                Style = (Style)FindResource("FieldComboBoxStyle"),
+                Name = $"Protocol_{display.Id.Replace("-", "_")}"
+            };
+
+            var protocols = new[] { "Standard ASCII", "Modbus RTU", "Custom Protocol" };
+            foreach (var protocol in protocols)
+            {
+                var item = new ComboBoxItem { Content = protocol };
+                if (protocol == display.Protocol)
+                    item.IsSelected = true;
+                protocolCombo.Items.Add(item);
+            }
+
+            middleStack.Children.Add(baudRateLabel);
+            middleStack.Children.Add(baudRateCombo);
+            middleStack.Children.Add(protocolLabel);
+            middleStack.Children.Add(protocolCombo);
+
+            // Right column
+            var rightStack = new StackPanel();
+            Grid.SetColumn(rightStack, 4);
+
+            var frequencyLabel = new TextBlock { Text = "Update Frequency (ms)", Style = (Style)FindResource("FieldLabelStyle") };
+            var frequencyTextBox = new TextBox
+            {
+                Text = display.UpdateFrequency.ToString(),
+                Style = (Style)FindResource("FieldTextBoxStyle"),
+                Name = $"Frequency_{display.Id.Replace("-", "_")}"
+            };
+
+            var buttonStack = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness(0, 15, 0, 0)
+            };
+
+            var testButton = new Button
+            {
+                Content = "🔧 Test",
+                Padding = new Thickness(8, 4),
+                Margin = new Thickness(0, 0, 5, 0),
+                Tag = display.Id
+            };
+            testButton.Click += TestSingleLedDisplay_Click;
+
+            var removeButton = new Button
+            {
+                Content = "🗑️ Remove",
+                Padding = new Thickness(8, 4),
+                Background = new SolidColorBrush(Color.FromRgb(220, 53, 69)),
+                Foreground = Brushes.White,
+                BorderThickness = new Thickness(0),
+                Tag = display.Id
+            };
+            removeButton.Click += RemoveLedDisplay_Click;
+
+            buttonStack.Children.Add(testButton);
+            buttonStack.Children.Add(removeButton);
+
+            rightStack.Children.Add(frequencyLabel);
+            rightStack.Children.Add(frequencyTextBox);
+            rightStack.Children.Add(buttonStack);
+
+            grid.Children.Add(leftStack);
+            grid.Children.Add(middleStack);
+            grid.Children.Add(rightStack);
+
+            border.Child = grid;
+            LedDisplaysPanel.Children.Add(border);
+        }
+
         private void SaveLedDisplaySettings()
         {
             try
             {
-                _settingsService.LedDisplayEnabled = EnableLedDisplayCheckBox.IsChecked == true;
-                _settingsService.LedDisplayComPort = ((ComboBoxItem)LedDisplayComPortComboBox.SelectedItem)?.Content?.ToString() ?? "COM2";
-                
-                if (int.TryParse(((ComboBoxItem)LedDisplayBaudRateComboBox.SelectedItem)?.Content?.ToString(), out var baudRate))
-                    _settingsService.LedDisplayBaudRate = baudRate;
-                
-                _settingsService.LedDisplayProtocol = ((ComboBoxItem)LedDisplayProtocolComboBox.SelectedItem)?.Content?.ToString() ?? "Standard ASCII";
-                _settingsService.LedDisplayFormat = ((ComboBoxItem)LedDisplayFormatComboBox.SelectedItem)?.Content?.ToString() ?? "####.## KG";
-                
-                if (int.TryParse(LedUpdateFrequencyTextBox.Text, out var frequency))
-                    _settingsService.LedUpdateFrequency = frequency;
-                
-                if (double.TryParse(WeightAdjustmentTextBox.Text, out var adjustment))
-                    _settingsService.WeightAdjustment = adjustment;
-                
-                Console.WriteLine($"LED Display settings saved: Enabled={_settingsService.LedDisplayEnabled}, Port={_settingsService.LedDisplayComPort}, Adjustment={_settingsService.WeightAdjustment}");
+                var displays = new List<Models.LedDisplayConfiguration>();
+
+                foreach (Border border in LedDisplaysPanel.Children.OfType<Border>())
+                {
+                    var displayId = border.Tag.ToString();
+                    var grid = border.Child as Grid;
+
+                    var display = new Models.LedDisplayConfiguration { Id = displayId };
+
+                    // Find controls by name
+                    var enableCheckBox = FindControlInGrid<CheckBox>(grid, $"Enable_{displayId.Replace("-", "_")}");
+                    var nameTextBox = FindControlInGrid<TextBox>(grid, $"Name_{displayId.Replace("-", "_")}");
+                    var comPortCombo = FindControlInGrid<ComboBox>(grid, $"ComPort_{displayId.Replace("-", "_")}");
+                    var baudRateCombo = FindControlInGrid<ComboBox>(grid, $"BaudRate_{displayId.Replace("-", "_")}");
+                    var protocolCombo = FindControlInGrid<ComboBox>(grid, $"Protocol_{displayId.Replace("-", "_")}");
+                    var frequencyTextBox = FindControlInGrid<TextBox>(grid, $"Frequency_{displayId.Replace("-", "_")}");
+
+                    display.Enabled = enableCheckBox?.IsChecked == true;
+                    display.Name = nameTextBox?.Text ?? "LED Display";
+                    display.ComPort = ((ComboBoxItem)comPortCombo?.SelectedItem)?.Content?.ToString() ?? "COM1";
+                    display.Protocol = ((ComboBoxItem)protocolCombo?.SelectedItem)?.Content?.ToString() ?? "Standard ASCII";
+
+                    if (int.TryParse(((ComboBoxItem)baudRateCombo?.SelectedItem)?.Content?.ToString(), out var baudRate))
+                        display.BaudRate = baudRate;
+
+                    if (int.TryParse(frequencyTextBox?.Text, out var frequency))
+                        display.UpdateFrequency = frequency;
+
+                    displays.Add(display);
+                }
+
+                _settingsService.LedDisplays = displays;
+                Console.WriteLine($"Saved {displays.Count} LED display configurations");
             }
             catch (Exception ex)
             {
@@ -2836,47 +3003,93 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
         }
 
+        private T FindControlInGrid<T>(Grid grid, string name) where T : FrameworkElement
+        {
+            return FindControlByName<T>(grid, name);
+        }
+
+        private T FindControlByName<T>(DependencyObject parent, string name) where T : FrameworkElement
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                
+                if (child is T element && element.Name == name)
+                    return element;
+
+                var result = FindControlByName<T>(child, name);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+
         #endregion
 
         #region LED Display Event Handlers
 
-        private void TestLedDisplayButton_Click(object sender, RoutedEventArgs e)
+        private void AddLedDisplayButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (!EnableLedDisplayCheckBox.IsChecked == true)
+                var newDisplay = new Models.LedDisplayConfiguration
                 {
-                    MessageBox.Show("Please enable LED Display first.", "LED Display Disabled", 
-                                   MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
+                    Name = $"LED Display {_settingsService.LedDisplays.Count + 1}",
+                    ComPort = "COM1",
+                    BaudRate = 9600,
+                    Enabled = false
+                };
 
-                var comPort = ((ComboBoxItem)LedDisplayComPortComboBox.SelectedItem)?.Content?.ToString();
-                var baudRate = ((ComboBoxItem)LedDisplayBaudRateComboBox.SelectedItem)?.Content?.ToString();
+                _settingsService.LedDisplays.Add(newDisplay);
+                CreateLedDisplayControl(newDisplay, _settingsService.LedDisplays.Count - 1);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error adding LED display: {ex.Message}", "Add Display Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void TestSingleLedDisplay_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var button = sender as Button;
+                var displayId = button?.Tag?.ToString();
                 
-                if (string.IsNullOrEmpty(comPort) || string.IsNullOrEmpty(baudRate))
+                if (string.IsNullOrEmpty(displayId))
+                    return;
+
+                // Find the display configuration
+                var display = _settingsService.LedDisplays.FirstOrDefault(d => d.Id == displayId);
+                if (display == null)
                 {
-                    MessageBox.Show("Please select COM port and baud rate.", "Missing Configuration", 
+                    MessageBox.Show("Display configuration not found.", "Test Error", 
+                                   MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (!display.Enabled)
+                {
+                    MessageBox.Show("Please enable this display first.", "Display Disabled", 
                                    MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
-                // Test LED display with sample weight
+                // Test LED display with sample weight (no adjustment here - that's handled by weight rules)
                 var testWeight = 1234.56;
-                var adjustment = double.TryParse(WeightAdjustmentTextBox.Text, out var adj) ? adj : 0;
-                var adjustedWeight = testWeight + adjustment;
                 
                 var ledService = new LedDisplayService();
-                var success = ledService.TestDisplay(comPort, int.Parse(baudRate), adjustedWeight);
+                var success = ledService.TestDisplay(display.ComPort, display.BaudRate, testWeight);
                 
                 if (success)
                 {
-                    MessageBox.Show($"LED Display test successful!\n\nTest weight: {testWeight:F2} KG\nAdjustment: {adjustment:F2} KG\nDisplayed: {adjustedWeight:F2} KG", 
+                    MessageBox.Show($"LED Display '{display.Name}' test successful!\n\nPort: {display.ComPort}\nBaud Rate: {display.BaudRate}\nTest Weight Sent: {testWeight:F2}", 
                                    "Test Successful", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    MessageBox.Show("LED Display test failed. Please check:\n• COM port is correct\n• Device is connected\n• Baud rate matches device", 
+                    MessageBox.Show($"LED Display '{display.Name}' test failed.\n\nPlease check:\n• COM port {display.ComPort} is correct\n• Device is connected\n• Baud rate {display.BaudRate} matches device", 
                                    "Test Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -2887,43 +3100,38 @@ namespace WeighbridgeSoftwareYashCotex.Views
             }
         }
 
-        private void CalibrateLedButton_Click(object sender, RoutedEventArgs e)
+        private void RemoveLedDisplay_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (!EnableLedDisplayCheckBox.IsChecked == true)
-                {
-                    MessageBox.Show("Please enable LED Display first.", "LED Display Disabled", 
-                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                var button = sender as Button;
+                var displayId = button?.Tag?.ToString();
+                
+                if (string.IsNullOrEmpty(displayId))
                     return;
-                }
 
-                var result = MessageBox.Show("LED Display Calibration\n\n" +
-                                           "This will help you determine the correct weight adjustment.\n\n" +
-                                           "Instructions:\n" +
-                                           "1. Place a known weight on the scale\n" +
-                                           "2. Note the actual weight\n" +
-                                           "3. Check what the LED display shows\n" +
-                                           "4. Calculate the difference\n\n" +
-                                           "Continue with calibration?", 
-                                           "LED Calibration", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var display = _settingsService.LedDisplays.FirstOrDefault(d => d.Id == displayId);
+                if (display == null)
+                    return;
+
+                var result = MessageBox.Show($"Remove LED Display '{display.Name}'?", "Confirm Removal", 
+                                           MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    var calibrationWindow = new LedCalibrationWindow();
-                    calibrationWindow.Owner = Window.GetWindow(this);
+                    _settingsService.LedDisplays.RemoveAll(d => d.Id == displayId);
                     
-                    if (calibrationWindow.ShowDialog() == true)
-                    {
-                        WeightAdjustmentTextBox.Text = calibrationWindow.CalculatedAdjustment.ToString("F2");
-                        MessageBox.Show($"Calibration complete!\nWeight adjustment set to: {calibrationWindow.CalculatedAdjustment:F2} KG", 
-                                       "Calibration Complete", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
+                    // Remove the UI control
+                    var borderToRemove = LedDisplaysPanel.Children.OfType<Border>()
+                        .FirstOrDefault(b => b.Tag?.ToString() == displayId);
+                    
+                    if (borderToRemove != null)
+                        LedDisplaysPanel.Children.Remove(borderToRemove);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error during calibration: {ex.Message}", "Calibration Error", 
+                MessageBox.Show($"Error removing LED display: {ex.Message}", "Remove Error", 
                                MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
