@@ -612,7 +612,7 @@
                                                     <TextBlock Text="Entry Gate" FontFamily="Consolas" FontSize="12" 
                                                                Foreground="#888888" HorizontalAlignment="Center"/>
                                                 </StackPanel>
-                                                <Border Background="rgba(76, 175, 80, 0.8)" CornerRadius="4" 
+                                                <Border Background="#CC4CAF50" CornerRadius="4" 
                                                         Padding="6,3" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top">
                                                     <TextBlock x:Name="Camera1StatusIndicator" Text="OFFLINE" 
                                                                FontFamily="Consolas" FontSize="10" FontWeight="Bold" 
@@ -635,7 +635,7 @@
                                                     <TextBlock Text="Exit Gate" FontFamily="Consolas" FontSize="12" 
                                                                Foreground="#888888" HorizontalAlignment="Center"/>
                                                 </StackPanel>
-                                                <Border Background="rgba(33, 150, 243, 0.8)" CornerRadius="4" 
+                                                <Border Background="#CC2196F3" CornerRadius="4" 
                                                         Padding="6,3" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top">
                                                     <TextBlock x:Name="Camera2StatusIndicator" Text="OFFLINE" 
                                                                FontFamily="Consolas" FontSize="10" FontWeight="Bold" 
@@ -658,7 +658,7 @@
                                                     <TextBlock Text="Weighbridge Left" FontFamily="Consolas" FontSize="12" 
                                                                Foreground="#888888" HorizontalAlignment="Center"/>
                                                 </StackPanel>
-                                                <Border Background="rgba(255, 152, 0, 0.8)" CornerRadius="4" 
+                                                <Border Background="#CCFF9800" CornerRadius="4" 
                                                         Padding="6,3" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top">
                                                     <TextBlock x:Name="Camera3StatusIndicator" Text="OFFLINE" 
                                                                FontFamily="Consolas" FontSize="10" FontWeight="Bold" 
@@ -681,7 +681,7 @@
                                                     <TextBlock Text="Weighbridge Right" FontFamily="Consolas" FontSize="12" 
                                                                Foreground="#888888" HorizontalAlignment="Center"/>
                                                 </StackPanel>
-                                                <Border Background="rgba(156, 39, 176, 0.8)" CornerRadius="4" 
+                                                <Border Background="#CC9C27B0" CornerRadius="4" 
                                                         Padding="6,3" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top">
                                                     <TextBlock x:Name="Camera4StatusIndicator" Text="OFFLINE" 
                                                                FontFamily="Consolas" FontSize="10" FontWeight="Bold" 
