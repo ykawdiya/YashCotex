@@ -316,8 +316,16 @@ namespace WeighbridgeSoftwareYashCotex
                     settingsControl.Dispose();
                 
                 _currentFormControl = null;
+                
+                // Hide any full-screen overlays
+                FullScreenFormPresenter.Content = null;
+                FullScreenFormPresenter.Visibility = Visibility.Collapsed;
                 FormContentPresenter.Content = null;
                 FormContentPresenter.Visibility = Visibility.Collapsed;
+                
+                // Show all camera grids and live weight panel
+                LeftCamerasGrid.Visibility = Visibility.Visible;
+                RightCamerasGrid.Visibility = Visibility.Visible;
                 LiveWeightPanel.Visibility = Visibility.Visible;
                 
                 LatestOperation.Text = "Home - Live Weight Display";
@@ -350,6 +358,14 @@ namespace WeighbridgeSoftwareYashCotex
                 };
                 
                 _currentFormControl = entryControl;
+                
+                // Hide full-screen overlay and show cameras
+                FullScreenFormPresenter.Content = null;
+                FullScreenFormPresenter.Visibility = Visibility.Collapsed;
+                LeftCamerasGrid.Visibility = Visibility.Visible;
+                RightCamerasGrid.Visibility = Visibility.Visible;
+                
+                // Show entry form in center area only
                 FormContentPresenter.Content = entryControl;
                 FormContentPresenter.Visibility = Visibility.Visible;
                 LiveWeightPanel.Visibility = Visibility.Collapsed;
@@ -379,6 +395,14 @@ namespace WeighbridgeSoftwareYashCotex
                 };
                 
                 _currentFormControl = exitControl;
+                
+                // Hide full-screen overlay and show cameras
+                FullScreenFormPresenter.Content = null;
+                FullScreenFormPresenter.Visibility = Visibility.Collapsed;
+                LeftCamerasGrid.Visibility = Visibility.Visible;
+                RightCamerasGrid.Visibility = Visibility.Visible;
+                
+                // Show exit form in center area only
                 FormContentPresenter.Content = exitControl;
                 FormContentPresenter.Visibility = Visibility.Visible;
                 LiveWeightPanel.Visibility = Visibility.Collapsed;
@@ -417,6 +441,14 @@ namespace WeighbridgeSoftwareYashCotex
                 };
                 
                 _currentFormControl = printControl;
+                
+                // Hide full-screen overlay and show cameras
+                FullScreenFormPresenter.Content = null;
+                FullScreenFormPresenter.Visibility = Visibility.Collapsed;
+                LeftCamerasGrid.Visibility = Visibility.Visible;
+                RightCamerasGrid.Visibility = Visibility.Visible;
+                
+                // Show print form in center area only
                 FormContentPresenter.Content = printControl;
                 FormContentPresenter.Visibility = Visibility.Visible;
                 LiveWeightPanel.Visibility = Visibility.Collapsed;
@@ -479,9 +511,15 @@ namespace WeighbridgeSoftwareYashCotex
                 };
                 
                 _currentFormControl = settingsControl;
-                FormContentPresenter.Content = settingsControl;
-                FormContentPresenter.Visibility = Visibility.Visible;
+                
+                // Hide all camera grids and live weight panel
+                LeftCamerasGrid.Visibility = Visibility.Collapsed;
+                RightCamerasGrid.Visibility = Visibility.Collapsed;
                 LiveWeightPanel.Visibility = Visibility.Collapsed;
+                
+                // Show settings in full-screen overlay
+                FullScreenFormPresenter.Content = settingsControl;
+                FullScreenFormPresenter.Visibility = Visibility.Visible;
                 
                 LatestOperation.Text = "Settings opened";
             }

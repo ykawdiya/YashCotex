@@ -120,7 +120,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- Column A: Left Cameras -->
-            <Grid Grid.Column="0">
+            <Grid Grid.Column="0" x:Name="LeftCamerasGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>   <!-- Camera 1 -->
                     <RowDefinition Height="*"/>   <!-- Camera 2 -->
@@ -204,7 +204,7 @@
             </Border>
 
             <!-- Column C: Right Cameras -->
-            <Grid Grid.Column="2">
+            <Grid Grid.Column="2" x:Name="RightCamerasGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>   <!-- Camera 3 -->
                     <RowDefinition Height="*"/>   <!-- Camera 4 -->
@@ -236,6 +236,11 @@
                     </Border>
                 </Viewbox>
             </Grid>
+            
+            <!-- Full Screen Settings Overlay (Initially Hidden) -->
+            <ContentPresenter x:Name="FullScreenFormPresenter" 
+                            Grid.ColumnSpan="3" 
+                            Visibility="Collapsed"/>
         </Grid>
 
         <!-- BUTTON BAR SECTION -->
