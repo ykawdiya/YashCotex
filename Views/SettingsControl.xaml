@@ -445,6 +445,109 @@
                                     </Border>
                                 </StackPanel>
                             </Border>
+
+                            <!-- Live Weight Display -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,20,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="📊 LIVE WEIGHT DISPLAY" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
+                                    
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="3*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- Weight Display Controls -->
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Display Settings" FontWeight="Bold" Margin="0,0,0,10"/>
+                                            
+                                            <CheckBox x:Name="EnableLiveWeightDisplayCheckBox" Content="Enable Live Weight Display" 
+                                                      IsChecked="True" Margin="0,0,0,10" Checked="EnableLiveWeightDisplayCheckBox_Checked" 
+                                                      Unchecked="EnableLiveWeightDisplayCheckBox_Unchecked"/>
+                                            
+                                            <TextBlock Text="Refresh Rate (ms)" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="WeightRefreshRateComboBox" Style="{StaticResource FieldComboBoxStyle}" 
+                                                      SelectionChanged="WeightRefreshRateComboBox_SelectionChanged">
+                                                <ComboBoxItem Content="100 ms (Very Fast)" Tag="100"/>
+                                                <ComboBoxItem Content="250 ms (Fast)" Tag="250"/>
+                                                <ComboBoxItem Content="500 ms (Normal)" Tag="500" IsSelected="True"/>
+                                                <ComboBoxItem Content="1000 ms (Slow)" Tag="1000"/>
+                                            </ComboBox>
+                                            
+                                            <TextBlock Text="Weight Format" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="WeightFormatComboBox" Style="{StaticResource FieldComboBoxStyle}">
+                                                <ComboBoxItem Content="####.## kg" IsSelected="True"/>
+                                                <ComboBoxItem Content="####.### kg"/>
+                                                <ComboBoxItem Content="#### kg"/>
+                                                <ComboBoxItem Content="####.## KG"/>
+                                            </ComboBox>
+                                            
+                                            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                <Button x:Name="TestWeightDisplayButton" Content="🔄 Test Display" Padding="8,4" 
+                                                        Margin="0,0,10,0" Click="TestWeightDisplayButton_Click"/>
+                                                <Button x:Name="CalibrateWeightButton" Content="⚖️ Calibrate" Padding="8,4" 
+                                                        Click="CalibrateWeightButton_Click"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        
+                                        <!-- Live Weight Display Panel -->
+                                        <Border Grid.Column="2" Background="#1E1E1E" CornerRadius="8" Padding="20" 
+                                                BorderBrush="#4CAF50" BorderThickness="2">
+                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock Text="LIVE WEIGHT" FontFamily="Consolas" FontSize="16" 
+                                                           Foreground="#4CAF50" FontWeight="Bold" 
+                                                           HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                                                
+                                                <TextBlock x:Name="LiveWeightDisplayText" Text="0000.00" 
+                                                           FontFamily="Consolas" FontSize="48" FontWeight="Bold" 
+                                                           Foreground="#00FF00" HorizontalAlignment="Center" 
+                                                           Margin="0,0,0,10"/>
+                                                
+                                                <TextBlock x:Name="WeightUnitText" Text="kg" 
+                                                           FontFamily="Consolas" FontSize="20" 
+                                                           Foreground="#4CAF50" HorizontalAlignment="Center" 
+                                                           Margin="0,0,0,15"/>
+                                                
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <Border x:Name="WeightStabilityIndicator" CornerRadius="10" 
+                                                            Padding="8,4" Margin="0,0,10,0">
+                                                        <TextBlock x:Name="WeightStabilityText" Text="STABLE" 
+                                                                   FontFamily="Consolas" FontSize="12" FontWeight="Bold" 
+                                                                   Foreground="White"/>
+                                                    </Border>
+                                                    
+                                                    <Border x:Name="WeightConnectionIndicator" CornerRadius="10" 
+                                                            Padding="8,4">
+                                                        <TextBlock x:Name="WeightConnectionText" Text="CONNECTED" 
+                                                                   FontFamily="Consolas" FontSize="12" FontWeight="Bold" 
+                                                                   Foreground="White"/>
+                                                    </Border>
+                                                </StackPanel>
+                                                
+                                                <TextBlock x:Name="WeightLastUpdatedText" Text="Last Updated: --:--:--" 
+                                                           FontFamily="Consolas" FontSize="10" 
+                                                           Foreground="#888888" HorizontalAlignment="Center" 
+                                                           Margin="0,10,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                    
+                                    <Border Background="#FFF3CD" BorderBrush="#FFEAA7" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,15,0,0">
+                                        <StackPanel>
+                                            <TextBlock Text="💡 Live Weight Display Information" FontWeight="Bold" FontSize="12" Foreground="#856404"/>
+                                            <TextBlock Text="• This display shows real-time weight readings from the scale" 
+                                                       FontSize="11" Foreground="#856404" Margin="0,5,0,0"/>
+                                            <TextBlock Text="• Weight adjustments from Weight Rules are applied automatically" 
+                                                       FontSize="11" Foreground="#856404"/>
+                                            <TextBlock Text="• Green indicates stable weight, orange indicates unstable readings" 
+                                                       FontSize="11" Foreground="#856404"/>
+                                            <TextBlock Text="• Use this for real-time monitoring during weighment operations" 
+                                                       FontSize="11" Foreground="#856404"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
@@ -466,6 +569,141 @@
                                         <Button Content="📸 Capture All" Padding="10,5" x:Name="CaptureAllButton" Click="CaptureAllButton_Click"/>
                                     </StackPanel>
                                     <TextBlock x:Name="CameraStatusText" Text="Ready to configure cameras" Margin="0,10,0,0" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Live Camera Preview Grid -->
+                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="📺 LIVE CAMERA PREVIEW" FontSize="14" FontWeight="Bold" Grid.Column="0"/>
+                                        <CheckBox x:Name="EnableCameraPreviewCheckBox" Content="Enable Live Preview" 
+                                                  IsChecked="True" Grid.Column="1" Checked="EnableCameraPreviewCheckBox_Checked" 
+                                                  Unchecked="EnableCameraPreviewCheckBox_Unchecked"/>
+                                    </Grid>
+                                    
+                                    <Grid Margin="0,15,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="15"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- Camera 1 Preview (Entry) -->
+                                        <Border Grid.Row="0" Grid.Column="0" Background="#1E1E1E" CornerRadius="8" 
+                                                BorderBrush="#4CAF50" BorderThickness="2" Height="200">
+                                            <Grid>
+                                                <Image x:Name="Camera1PreviewImage" Stretch="Uniform"/>
+                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                                           x:Name="Camera1PlaceholderPanel">
+                                                    <TextBlock Text="📹" FontSize="48" Foreground="#4CAF50" 
+                                                               HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="CAMERA 1" FontFamily="Consolas" FontSize="14" 
+                                                               Foreground="#4CAF50" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                                    <TextBlock Text="Entry Gate" FontFamily="Consolas" FontSize="12" 
+                                                               Foreground="#888888" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                                <Border Background="rgba(76, 175, 80, 0.8)" CornerRadius="4" 
+                                                        Padding="6,3" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                    <TextBlock x:Name="Camera1StatusIndicator" Text="OFFLINE" 
+                                                               FontFamily="Consolas" FontSize="10" FontWeight="Bold" 
+                                                               Foreground="White"/>
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                        
+                                        <!-- Camera 2 Preview (Exit) -->
+                                        <Border Grid.Row="0" Grid.Column="2" Background="#1E1E1E" CornerRadius="8" 
+                                                BorderBrush="#2196F3" BorderThickness="2" Height="200">
+                                            <Grid>
+                                                <Image x:Name="Camera2PreviewImage" Stretch="Uniform"/>
+                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                                           x:Name="Camera2PlaceholderPanel">
+                                                    <TextBlock Text="📹" FontSize="48" Foreground="#2196F3" 
+                                                               HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="CAMERA 2" FontFamily="Consolas" FontSize="14" 
+                                                               Foreground="#2196F3" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                                    <TextBlock Text="Exit Gate" FontFamily="Consolas" FontSize="12" 
+                                                               Foreground="#888888" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                                <Border Background="rgba(33, 150, 243, 0.8)" CornerRadius="4" 
+                                                        Padding="6,3" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                    <TextBlock x:Name="Camera2StatusIndicator" Text="OFFLINE" 
+                                                               FontFamily="Consolas" FontSize="10" FontWeight="Bold" 
+                                                               Foreground="White"/>
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                        
+                                        <!-- Camera 3 Preview (Left Side) -->
+                                        <Border Grid.Row="2" Grid.Column="0" Background="#1E1E1E" CornerRadius="8" 
+                                                BorderBrush="#FF9800" BorderThickness="2" Height="200">
+                                            <Grid>
+                                                <Image x:Name="Camera3PreviewImage" Stretch="Uniform"/>
+                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                                           x:Name="Camera3PlaceholderPanel">
+                                                    <TextBlock Text="📹" FontSize="48" Foreground="#FF9800" 
+                                                               HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="CAMERA 3" FontFamily="Consolas" FontSize="14" 
+                                                               Foreground="#FF9800" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                                    <TextBlock Text="Weighbridge Left" FontFamily="Consolas" FontSize="12" 
+                                                               Foreground="#888888" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                                <Border Background="rgba(255, 152, 0, 0.8)" CornerRadius="4" 
+                                                        Padding="6,3" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                    <TextBlock x:Name="Camera3StatusIndicator" Text="OFFLINE" 
+                                                               FontFamily="Consolas" FontSize="10" FontWeight="Bold" 
+                                                               Foreground="White"/>
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                        
+                                        <!-- Camera 4 Preview (Right Side) -->
+                                        <Border Grid.Row="2" Grid.Column="2" Background="#1E1E1E" CornerRadius="8" 
+                                                BorderBrush="#9C27B0" BorderThickness="2" Height="200">
+                                            <Grid>
+                                                <Image x:Name="Camera4PreviewImage" Stretch="Uniform"/>
+                                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                                           x:Name="Camera4PlaceholderPanel">
+                                                    <TextBlock Text="📹" FontSize="48" Foreground="#9C27B0" 
+                                                               HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="CAMERA 4" FontFamily="Consolas" FontSize="14" 
+                                                               Foreground="#9C27B0" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                                    <TextBlock Text="Weighbridge Right" FontFamily="Consolas" FontSize="12" 
+                                                               Foreground="#888888" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                                <Border Background="rgba(156, 39, 176, 0.8)" CornerRadius="4" 
+                                                        Padding="6,3" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                    <TextBlock x:Name="Camera4StatusIndicator" Text="OFFLINE" 
+                                                               FontFamily="Consolas" FontSize="10" FontWeight="Bold" 
+                                                               Foreground="White"/>
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                    
+                                    <Border Background="#E8F5E8" BorderBrush="#4CAF50" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,15,0,0">
+                                        <StackPanel>
+                                            <TextBlock Text="📹 Live Camera Preview Information" FontWeight="Bold" FontSize="12" Foreground="#2E7D32"/>
+                                            <TextBlock Text="• Live feeds show real-time camera streams when monitoring is active" 
+                                                       FontSize="11" Foreground="#2E7D32" Margin="0,5,0,0"/>
+                                            <TextBlock Text="• Green status indicates camera is connected and streaming" 
+                                                       FontSize="11" Foreground="#2E7D32"/>
+                                            <TextBlock Text="• Configure individual camera settings below to enable live feeds" 
+                                                       FontSize="11" Foreground="#2E7D32"/>
+                                            <TextBlock Text="• Use camera controls above to start/stop monitoring all cameras" 
+                                                       FontSize="11" Foreground="#2E7D32"/>
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
                             </Border>
                             

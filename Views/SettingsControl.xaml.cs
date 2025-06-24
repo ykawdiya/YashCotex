@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using WeighbridgeSoftwareYashCotex.Services;
 using WeighbridgeSoftwareYashCotex.Models;
@@ -25,6 +26,9 @@ namespace WeighbridgeSoftwareYashCotex.Views
         private AuthenticationService? _authService;
         private GoogleSheetsService? _googleSheetsService;
         private CameraService? _cameraService;
+        private WeightService? _weightService;
+        private DispatcherTimer? _weightDisplayTimer;
+        private DispatcherTimer? _cameraPreviewTimer;
         private string _currentUserRole = "User"; // This would come from authentication service
 
         public event EventHandler<string>? FormCompleted;
@@ -37,6 +41,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
             _settingsService = SettingsService.Instance;
             _googleSheetsService = new GoogleSheetsService(_databaseService);
             _cameraService = new CameraService();
+            _weightService = new WeightService();
 
             // Subscribe to Google Sheets events
             _googleSheetsService.SyncStatusChanged += OnSyncStatusChanged;
@@ -54,6 +59,9 @@ namespace WeighbridgeSoftwareYashCotex.Views
             // Subscribe to Camera events
             _cameraService.StatusChanged += OnCameraStatusChanged;
             _cameraService.ImageUpdated += OnCameraImageUpdated;
+
+            // Subscribe to Weight events
+            _weightService.WeightChanged += OnWeightChanged;
 
             this.Loaded += SettingsControl_Loaded;
             this.KeyDown += SettingsControl_KeyDown;
@@ -3531,5 +3539,312 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 System.Diagnostics.Debug.WriteLine("Settings save failed: " + ex.Message);
             }
         }
+
+        #region Live Weight Display Event Handlers
+
+        private void OnWeightChanged(object? sender, WeightChangedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    // Update live weight display
+                    LiveWeightDisplayText.Text = e.Weight.ToString("0000.00");
+                    WeightLastUpdatedText.Text = $"Last Updated: {DateTime.Now:HH:mm:ss}";
+                    
+                    // Update stability indicator
+                    if (e.IsStable)
+                    {
+                        WeightStabilityIndicator.Background = new SolidColorBrush(Color.FromRgb(76, 175, 80)); // Green
+                        WeightStabilityText.Text = "STABLE";
+                    }
+                    else
+                    {
+                        WeightStabilityIndicator.Background = new SolidColorBrush(Color.FromRgb(255, 152, 0)); // Orange
+                        WeightStabilityText.Text = "UNSTABLE";
+                    }
+                    
+                    // Update connection indicator (assuming connected if we receive data)
+                    WeightConnectionIndicator.Background = new SolidColorBrush(Color.FromRgb(76, 175, 80)); // Green
+                    WeightConnectionText.Text = "CONNECTED";
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error updating weight display: {ex.Message}");
+                }
+            });
+        }
+
+        private void EnableLiveWeightDisplayCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_weightDisplayTimer == null)
+                {
+                    _weightDisplayTimer = new DispatcherTimer
+                    {
+                        Interval = TimeSpan.FromMilliseconds(500)
+                    };
+                    _weightDisplayTimer.Tick += (s, args) => UpdateLiveWeightDisplay();
+                }
+                _weightDisplayTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error enabling weight display: {ex.Message}");
+            }
+        }
+
+        private void EnableLiveWeightDisplayCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _weightDisplayTimer?.Stop();
+                
+                // Reset display to default values
+                LiveWeightDisplayText.Text = "-----.--";
+                WeightLastUpdatedText.Text = "Last Updated: --:--:--";
+                WeightStabilityIndicator.Background = new SolidColorBrush(Color.FromRgb(149, 165, 166)); // Gray
+                WeightStabilityText.Text = "DISABLED";
+                WeightConnectionIndicator.Background = new SolidColorBrush(Color.FromRgb(149, 165, 166)); // Gray
+                WeightConnectionText.Text = "DISABLED";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error disabling weight display: {ex.Message}");
+            }
+        }
+
+        private void WeightRefreshRateComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (WeightRefreshRateComboBox.SelectedItem is ComboBoxItem item && item.Tag is string tagValue)
+                {
+                    if (int.TryParse(tagValue, out var refreshRate) && _weightDisplayTimer != null)
+                    {
+                        _weightDisplayTimer.Interval = TimeSpan.FromMilliseconds(refreshRate);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error changing refresh rate: {ex.Message}");
+            }
+        }
+
+        private void TestWeightDisplayButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Simulate weight readings for testing
+                var random = new Random();
+                LiveWeightDisplayText.Text = (random.NextDouble() * 50000).ToString("0000.00");
+                WeightLastUpdatedText.Text = $"Last Updated: {DateTime.Now:HH:mm:ss}";
+                WeightStabilityIndicator.Background = new SolidColorBrush(Color.FromRgb(76, 175, 80));
+                WeightStabilityText.Text = "STABLE";
+                WeightConnectionIndicator.Background = new SolidColorBrush(Color.FromRgb(76, 175, 80));
+                WeightConnectionText.Text = "CONNECTED";
+                
+                MessageBox.Show("Test weight display updated with random values!", "Test Complete", 
+                               MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error during test: {ex.Message}", "Test Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CalibrateWeightButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var result = MessageBox.Show("This will open the weight calibration wizard. Continue?", 
+                                            "Weight Calibration", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                
+                if (result == MessageBoxResult.Yes)
+                {
+                    // TODO: Implement calibration wizard
+                    MessageBox.Show("Weight calibration wizard would open here.\n\nThis feature will guide you through:\n• Zero point calibration\n• Span calibration\n• Linearity verification", 
+                                   "Calibration Wizard", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening calibration: {ex.Message}", "Calibration Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void UpdateLiveWeightDisplay()
+        {
+            // This method can be used for additional periodic updates if needed
+            // The main updates come from the OnWeightChanged event handler
+        }
+
+        #endregion
+
+        #region Live Camera Preview Event Handlers
+
+        private void EnableCameraPreviewCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_cameraPreviewTimer == null)
+                {
+                    _cameraPreviewTimer = new DispatcherTimer
+                    {
+                        Interval = TimeSpan.FromSeconds(1)
+                    };
+                    _cameraPreviewTimer.Tick += (s, args) => UpdateCameraPreviews();
+                }
+                _cameraPreviewTimer.Start();
+                _ = _cameraService?.StartMonitoringAsync();
+                
+                // Update status indicators
+                UpdateCameraStatusIndicators();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error enabling camera preview: {ex.Message}");
+            }
+        }
+
+        private void EnableCameraPreviewCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _cameraPreviewTimer?.Stop();
+                _cameraService?.StopMonitoring();
+                
+                // Clear preview images and show placeholders
+                Camera1PreviewImage.Source = null;
+                Camera2PreviewImage.Source = null;
+                Camera3PreviewImage.Source = null;
+                Camera4PreviewImage.Source = null;
+                
+                Camera1PlaceholderPanel.Visibility = Visibility.Visible;
+                Camera2PlaceholderPanel.Visibility = Visibility.Visible;
+                Camera3PlaceholderPanel.Visibility = Visibility.Visible;
+                Camera4PlaceholderPanel.Visibility = Visibility.Visible;
+                
+                // Reset status indicators
+                Camera1StatusIndicator.Text = "OFFLINE";
+                Camera2StatusIndicator.Text = "OFFLINE";
+                Camera3StatusIndicator.Text = "OFFLINE";
+                Camera4StatusIndicator.Text = "OFFLINE";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error disabling camera preview: {ex.Message}");
+            }
+        }
+
+        private async void UpdateCameraPreviews()
+        {
+            try
+            {
+                if (_cameraService == null) return;
+                
+                // Update camera preview images from camera service
+                var cameras = _cameraService.Cameras;
+                
+                // Update Camera 1 (Entry)
+                var camera1 = _cameraService.GetCameraByPosition(CameraPosition.Entry);
+                if (camera1 != null)
+                {
+                    var image1 = await _cameraService.CaptureImageByPositionAsync(CameraPosition.Entry);
+                    await Dispatcher.InvokeAsync(() =>
+                        UpdateCameraPreview(Camera1PreviewImage, Camera1PlaceholderPanel, Camera1StatusIndicator, image1, camera1.IsEnabled));
+                }
+
+                // Update Camera 2 (Exit)
+                var camera2 = _cameraService.GetCameraByPosition(CameraPosition.Exit);
+                if (camera2 != null)
+                {
+                    var image2 = await _cameraService.CaptureImageByPositionAsync(CameraPosition.Exit);
+                    await Dispatcher.InvokeAsync(() =>
+                        UpdateCameraPreview(Camera2PreviewImage, Camera2PlaceholderPanel, Camera2StatusIndicator, image2, camera2.IsEnabled));
+                }
+
+                // Update Camera 3 (Left Side)
+                var camera3 = _cameraService.GetCameraByPosition(CameraPosition.LeftSide);
+                if (camera3 != null)
+                {
+                    var image3 = await _cameraService.CaptureImageByPositionAsync(CameraPosition.LeftSide);
+                    await Dispatcher.InvokeAsync(() =>
+                        UpdateCameraPreview(Camera3PreviewImage, Camera3PlaceholderPanel, Camera3StatusIndicator, image3, camera3.IsEnabled));
+                }
+
+                // Update Camera 4 (Right Side)
+                var camera4 = _cameraService.GetCameraByPosition(CameraPosition.RightSide);
+                if (camera4 != null)
+                {
+                    var image4 = await _cameraService.CaptureImageByPositionAsync(CameraPosition.RightSide);
+                    await Dispatcher.InvokeAsync(() =>
+                        UpdateCameraPreview(Camera4PreviewImage, Camera4PlaceholderPanel, Camera4StatusIndicator, image4, camera4.IsEnabled));
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating camera previews: {ex.Message}");
+            }
+        }
+
+        private void UpdateCameraPreview(Image previewImage, StackPanel placeholderPanel, TextBlock statusIndicator, 
+                                       BitmapImage? image, bool isEnabled)
+        {
+            try
+            {
+                if (image != null && isEnabled)
+                {
+                    previewImage.Source = image;
+                    placeholderPanel.Visibility = Visibility.Collapsed;
+                    statusIndicator.Text = "LIVE";
+                }
+                else
+                {
+                    previewImage.Source = null;
+                    placeholderPanel.Visibility = Visibility.Visible;
+                    statusIndicator.Text = isEnabled ? "CONNECTING" : "OFFLINE";
+                }
+            }
+            catch (Exception ex)
+            {
+                previewImage.Source = null;
+                placeholderPanel.Visibility = Visibility.Visible;
+                statusIndicator.Text = "ERROR";
+                System.Diagnostics.Debug.WriteLine($"Error updating camera preview: {ex.Message}");
+            }
+        }
+
+        private void UpdateCameraStatusIndicators()
+        {
+            // Update camera status based on camera service state
+            try
+            {
+                if (_cameraService?.IsMonitoring == true)
+                {
+                    Camera1StatusIndicator.Text = "CONNECTING";
+                    Camera2StatusIndicator.Text = "CONNECTING";
+                    Camera3StatusIndicator.Text = "CONNECTING";
+                    Camera4StatusIndicator.Text = "CONNECTING";
+                }
+                else
+                {
+                    Camera1StatusIndicator.Text = "OFFLINE";
+                    Camera2StatusIndicator.Text = "OFFLINE";
+                    Camera3StatusIndicator.Text = "OFFLINE";
+                    Camera4StatusIndicator.Text = "OFFLINE";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating camera status indicators: {ex.Message}");
+            }
+        }
+
+        #endregion
     }
 }
