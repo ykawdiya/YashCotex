@@ -90,7 +90,7 @@
                 <!-- Section B: Company Info (Centered) -->
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <TextBlock x:Name="CompanyNameHeader" Text="YASH COTEX PRIVATE LIMITED" 
-                               FontSize="24" FontWeight="Bold" Style="{StaticResource HeaderTextStyle}" HorizontalAlignment="Center"/>
+                               FontSize="28" FontWeight="Bold" Style="{StaticResource HeaderTextStyle}" HorizontalAlignment="Center"/>
                     <TextBlock x:Name="CompanyAddressLine1Header" Text="Address Line 1" 
                                FontSize="16" Foreground="#BDC3C7" HorizontalAlignment="Center" Margin="0,6,0,2"/>
                     <TextBlock x:Name="CompanyAddressLine2Header" Text="Address Line 2" 
