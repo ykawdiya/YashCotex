@@ -1415,6 +1415,9 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 // Save Hardware Settings
                 SaveHardwareSettings();
 
+                // Save LED Display Settings
+                SaveLedDisplaySettings();
+
                 // Save Camera Settings
                 SaveCameraSettings();
 
@@ -1487,6 +1490,9 @@ namespace WeighbridgeSoftwareYashCotex.Views
 
             // Printer
             DefaultPrinterComboBox.SelectedItem = _settingsService.DefaultPrinter;
+
+            // LED Display
+            LoadLedDisplaySettings();
 
             // Backup path
             BackupLocationTextBox.Text = _settingsService.BackupPath;
@@ -2741,6 +2747,184 @@ namespace WeighbridgeSoftwareYashCotex.Views
             {
                 Console.WriteLine($"Error loading logo preview: {ex.Message}");
                 LogoPreviewImage.Source = null;
+            }
+        }
+
+        #endregion
+
+        #region LED Display Management
+
+        private void LoadLedDisplaySettings()
+        {
+            try
+            {
+                EnableLedDisplayCheckBox.IsChecked = _settingsService.LedDisplayEnabled;
+                
+                // Set COM port
+                foreach (ComboBoxItem item in LedDisplayComPortComboBox.Items)
+                {
+                    if (item.Content.ToString() == _settingsService.LedDisplayComPort)
+                    {
+                        LedDisplayComPortComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+                
+                // Set baud rate
+                foreach (ComboBoxItem item in LedDisplayBaudRateComboBox.Items)
+                {
+                    if (item.Content.ToString() == _settingsService.LedDisplayBaudRate.ToString())
+                    {
+                        LedDisplayBaudRateComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+                
+                // Set protocol
+                foreach (ComboBoxItem item in LedDisplayProtocolComboBox.Items)
+                {
+                    if (item.Content.ToString() == _settingsService.LedDisplayProtocol)
+                    {
+                        LedDisplayProtocolComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+                
+                // Set format
+                foreach (ComboBoxItem item in LedDisplayFormatComboBox.Items)
+                {
+                    if (item.Content.ToString() == _settingsService.LedDisplayFormat)
+                    {
+                        LedDisplayFormatComboBox.SelectedItem = item;
+                        break;
+                    }
+                }
+                
+                LedUpdateFrequencyTextBox.Text = _settingsService.LedUpdateFrequency.ToString();
+                WeightAdjustmentTextBox.Text = _settingsService.WeightAdjustment.ToString("F2");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading LED display settings: {ex.Message}");
+            }
+        }
+
+        private void SaveLedDisplaySettings()
+        {
+            try
+            {
+                _settingsService.LedDisplayEnabled = EnableLedDisplayCheckBox.IsChecked == true;
+                _settingsService.LedDisplayComPort = ((ComboBoxItem)LedDisplayComPortComboBox.SelectedItem)?.Content?.ToString() ?? "COM2";
+                
+                if (int.TryParse(((ComboBoxItem)LedDisplayBaudRateComboBox.SelectedItem)?.Content?.ToString(), out var baudRate))
+                    _settingsService.LedDisplayBaudRate = baudRate;
+                
+                _settingsService.LedDisplayProtocol = ((ComboBoxItem)LedDisplayProtocolComboBox.SelectedItem)?.Content?.ToString() ?? "Standard ASCII";
+                _settingsService.LedDisplayFormat = ((ComboBoxItem)LedDisplayFormatComboBox.SelectedItem)?.Content?.ToString() ?? "####.## KG";
+                
+                if (int.TryParse(LedUpdateFrequencyTextBox.Text, out var frequency))
+                    _settingsService.LedUpdateFrequency = frequency;
+                
+                if (double.TryParse(WeightAdjustmentTextBox.Text, out var adjustment))
+                    _settingsService.WeightAdjustment = adjustment;
+                
+                Console.WriteLine($"LED Display settings saved: Enabled={_settingsService.LedDisplayEnabled}, Port={_settingsService.LedDisplayComPort}, Adjustment={_settingsService.WeightAdjustment}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving LED display settings: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region LED Display Event Handlers
+
+        private void TestLedDisplayButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!EnableLedDisplayCheckBox.IsChecked == true)
+                {
+                    MessageBox.Show("Please enable LED Display first.", "LED Display Disabled", 
+                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var comPort = ((ComboBoxItem)LedDisplayComPortComboBox.SelectedItem)?.Content?.ToString();
+                var baudRate = ((ComboBoxItem)LedDisplayBaudRateComboBox.SelectedItem)?.Content?.ToString();
+                
+                if (string.IsNullOrEmpty(comPort) || string.IsNullOrEmpty(baudRate))
+                {
+                    MessageBox.Show("Please select COM port and baud rate.", "Missing Configuration", 
+                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Test LED display with sample weight
+                var testWeight = 1234.56;
+                var adjustment = double.TryParse(WeightAdjustmentTextBox.Text, out var adj) ? adj : 0;
+                var adjustedWeight = testWeight + adjustment;
+                
+                var ledService = new LedDisplayService();
+                var success = ledService.TestDisplay(comPort, int.Parse(baudRate), adjustedWeight);
+                
+                if (success)
+                {
+                    MessageBox.Show($"LED Display test successful!\n\nTest weight: {testWeight:F2} KG\nAdjustment: {adjustment:F2} KG\nDisplayed: {adjustedWeight:F2} KG", 
+                                   "Test Successful", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("LED Display test failed. Please check:\n• COM port is correct\n• Device is connected\n• Baud rate matches device", 
+                                   "Test Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error testing LED display: {ex.Message}", "Test Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CalibrateLedButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!EnableLedDisplayCheckBox.IsChecked == true)
+                {
+                    MessageBox.Show("Please enable LED Display first.", "LED Display Disabled", 
+                                   MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var result = MessageBox.Show("LED Display Calibration\n\n" +
+                                           "This will help you determine the correct weight adjustment.\n\n" +
+                                           "Instructions:\n" +
+                                           "1. Place a known weight on the scale\n" +
+                                           "2. Note the actual weight\n" +
+                                           "3. Check what the LED display shows\n" +
+                                           "4. Calculate the difference\n\n" +
+                                           "Continue with calibration?", 
+                                           "LED Calibration", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    var calibrationWindow = new LedCalibrationWindow();
+                    calibrationWindow.Owner = Window.GetWindow(this);
+                    
+                    if (calibrationWindow.ShowDialog() == true)
+                    {
+                        WeightAdjustmentTextBox.Text = calibrationWindow.CalculatedAdjustment.ToString("F2");
+                        MessageBox.Show($"Calibration complete!\nWeight adjustment set to: {calibrationWindow.CalculatedAdjustment:F2} KG", 
+                                       "Calibration Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error during calibration: {ex.Message}", "Calibration Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
