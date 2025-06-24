@@ -103,7 +103,8 @@
                 <!-- Tab 1: Company Information -->
                 <TabItem Header="🏢 Company Info">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <StackPanel>
+                        <Grid MaxWidth="1200" HorizontalAlignment="Center">
+                            <StackPanel>
                             <TextBlock Text="COMPANY INFORMATION" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <Grid>
@@ -184,13 +185,15 @@
                                 </StackPanel>
                             </Border>
                         </StackPanel>
+                        </Grid>
                     </ScrollViewer>
                 </TabItem>
 
                 <!-- Tab 2: Hardware Configuration -->
                 <TabItem Header="🔧 Hardware">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <StackPanel>
+                        <Grid MaxWidth="1400" HorizontalAlignment="Center">
+                            <StackPanel>
                             <TextBlock Text="HARDWARE CONFIGURATION" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Weighbridge Settings -->
@@ -549,13 +552,15 @@
                                 </StackPanel>
                             </Border>
                         </StackPanel>
+                        </Grid>
                     </ScrollViewer>
                 </TabItem>
 
                 <!-- Tab 3: Camera Settings -->
                 <TabItem Header="📹 Cameras">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <StackPanel>
+                        <Grid MaxWidth="1400" HorizontalAlignment="Center">
+                            <StackPanel>
                             <TextBlock Text="IP CAMERA CONFIGURATION" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Camera Control Buttons -->
@@ -967,13 +972,15 @@
                                 </StackPanel>
                             </Border>
                         </StackPanel>
+                        </Grid>
                     </ScrollViewer>
                 </TabItem>
 
                 <!-- Tab 4: Integrations -->
                 <TabItem Header="🔗 Integrations">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <StackPanel>
+                        <Grid MaxWidth="1200" HorizontalAlignment="Center">
+                            <StackPanel>
                             <TextBlock Text="EXTERNAL INTEGRATIONS" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Google Sheets Integration -->
@@ -1037,13 +1044,15 @@
                                 </StackPanel>
                             </Border>
                         </StackPanel>
+                        </Grid>
                     </ScrollViewer>
                 </TabItem>
 
                 <!-- Tab 5: Data Management -->
                 <TabItem Header="📊 Data Management">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <StackPanel>
+                        <Grid MaxWidth="1200" HorizontalAlignment="Center">
+                            <StackPanel>
                             <TextBlock Text="DATA MANAGEMENT" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Materials Management -->
@@ -1092,13 +1101,15 @@
                                 </StackPanel>
                             </Border>
                         </StackPanel>
+                        </Grid>
                     </ScrollViewer>
                 </TabItem>
 
                 <!-- Tab 6: Security -->
                 <TabItem Header="🔒 Security">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <StackPanel>
+                        <Grid MaxWidth="1200" HorizontalAlignment="Center">
+                            <StackPanel>
                             <TextBlock Text="SECURITY SETTINGS" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Session Settings -->
@@ -1131,13 +1142,15 @@
                                 </StackPanel>
                             </Border>
                         </StackPanel>
+                        </Grid>
                     </ScrollViewer>
                 </TabItem>
 
                 <!-- Tab 7: Weight Rules (Super Admin Only) -->
                 <TabItem Header="⚖️ Weight Rules" x:Name="WeightRulesTab">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <StackPanel>
+                        <Grid MaxWidth="1200" HorizontalAlignment="Center">
+                            <StackPanel>
                             <Border Background="#FFF5F5" BorderBrush="#FF6B6B" BorderThickness="2" CornerRadius="8" Padding="20">
                                 <StackPanel>
                                     <TextBlock Text="⚠️ SUPER ADMIN ONLY - WEIGHT MANIPULATION RULES" 
@@ -1177,13 +1190,15 @@
                                 </StackPanel>
                             </Border>
                         </StackPanel>
+                        </Grid>
                     </ScrollViewer>
                 </TabItem>
 
                 <!-- Tab 8: User Management -->
                 <TabItem Header="👥 Users">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <StackPanel>
+                        <Grid MaxWidth="1200" HorizontalAlignment="Center">
+                            <StackPanel>
                             <TextBlock Text="USER MANAGEMENT" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Current Users -->
@@ -1245,13 +1260,15 @@
                                 </StackPanel>
                             </Border>
                         </StackPanel>
+                        </Grid>
                     </ScrollViewer>
                 </TabItem>
 
                 <!-- Tab 9: System -->
                 <TabItem Header="🖥️ System">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <StackPanel>
+                        <Grid MaxWidth="1200" HorizontalAlignment="Center">
+                            <StackPanel>
                             <TextBlock Text="SYSTEM INFORMATION" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- System Info -->
@@ -1307,13 +1324,15 @@
                                 </StackPanel>
                             </Border>
                         </StackPanel>
+                        </Grid>
                     </ScrollViewer>
                 </TabItem>
 
                 <!-- Tab 9: Admin Tools (Super Admin Only) -->
                 <TabItem x:Name="AdminToolsTab" Header="⚖️ Admin Tools" Visibility="Collapsed">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <StackPanel>
+                        <Grid MaxWidth="1200" HorizontalAlignment="Center">
+                            <StackPanel>
                             <TextBlock Text="ADMIN TOOLS (SUPER ADMIN ONLY)" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <!-- Weight Management Section -->
@@ -1449,6 +1468,7 @@
                                 </StackPanel>
                             </GroupBox>
                         </StackPanel>
+                        </Grid>
                     </ScrollViewer>
                 </TabItem>
 
