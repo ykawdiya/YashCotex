@@ -1,0 +1,100 @@
+﻿<Window x:Class="WeighbridgeSoftwareYashCotex.Views.PlaceholderSelectorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Select Placeholder" Height="500" Width="600"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize">
+    
+    <Window.Resources>
+        <Style x:Key="CategoryHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,10,0,5"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+        </Style>
+        
+        <Style x:Key="PlaceholderButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Background" Value="#ECF0F1"/>
+            <Setter Property="BorderBrush" Value="#BDC3C7"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontFamily" Value="Consolas, monospace"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#D5DBDB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#3498DB" Padding="15">
+            <StackPanel>
+                <TextBlock Text="📝 Select Placeholder" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="Choose a placeholder to insert into your template" FontSize="12" Foreground="#ECF0F1"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20">
+            <StackPanel>
+                <!-- Company Information -->
+                <TextBlock Text="🏢 Company Information" Style="{StaticResource CategoryHeaderStyle}"/>
+                <WrapPanel x:Name="CompanyInfoPanel">
+                </WrapPanel>
+
+                <!-- Weighment Data -->
+                <TextBlock Text="⚖️ Weighment Data" Style="{StaticResource CategoryHeaderStyle}"/>
+                <WrapPanel x:Name="WeighmentDataPanel">
+                </WrapPanel>
+
+                <!-- Weight Information -->
+                <TextBlock Text="📊 Weight Information" Style="{StaticResource CategoryHeaderStyle}"/>
+                <WrapPanel x:Name="WeightInfoPanel">
+                </WrapPanel>
+
+                <!-- Date and Time -->
+                <TextBlock Text="📅 Date and Time" Style="{StaticResource CategoryHeaderStyle}"/>
+                <WrapPanel x:Name="DateTimePanel">
+                </WrapPanel>
+
+                <!-- Formatting -->
+                <TextBlock Text="📐 Formatting" Style="{StaticResource CategoryHeaderStyle}"/>
+                <WrapPanel x:Name="FormattingPanel">
+                </WrapPanel>
+
+                <!-- Selected Placeholder Preview -->
+                <Border Background="#D1ECF1" BorderBrush="#BEE5EB" BorderThickness="1" CornerRadius="4" Padding="15" Margin="0,20,0,0">
+                    <StackPanel>
+                        <TextBlock Text="📋 Selected Placeholder" FontWeight="Bold" FontSize="12" Foreground="#0C5460"/>
+                        <TextBlock x:Name="SelectedPlaceholderText" Text="Click a placeholder above to select it" 
+                                   FontFamily="Consolas" FontSize="14" Foreground="#0C5460" Margin="0,5,0,0"/>
+                        <TextBlock x:Name="PlaceholderDescriptionText" Text="" 
+                                   FontSize="11" Foreground="#0C5460" Margin="0,5,0,0" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer -->
+        <Border Grid.Row="2" Background="#ECF0F1" BorderBrush="#BDC3C7" BorderThickness="0,1,0,0" Padding="15">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="InsertButton" Content="✅ Insert Placeholder" Padding="15,8" Margin="0,0,10,0"
+                        Background="#27AE60" Foreground="White" BorderThickness="0" FontWeight="Bold" 
+                        Click="InsertButton_Click" IsEnabled="False"/>
+                <Button x:Name="CancelButton" Content="❌ Cancel" Padding="15,8"
+                        Background="#95A5A6" Foreground="White" BorderThickness="0" FontWeight="Bold" 
+                        Click="CancelButton_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

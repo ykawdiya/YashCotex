@@ -67,6 +67,7 @@ public class SettingsService
     public List<string> Addresses { get; set; } = new();
     public List<WeighbridgeSoftwareYashCotex.Services.CameraConfiguration> Cameras { get; set; } = new();
     public List<WeighbridgeSoftwareYashCotex.Models.LedDisplayConfiguration> LedDisplays { get; set; } = new();
+    public WeighbridgeSoftwareYashCotex.Models.RstTemplate RstTemplate { get; set; } = new();
     
     private SettingsService()
     {

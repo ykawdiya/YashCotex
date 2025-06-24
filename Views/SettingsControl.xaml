@@ -319,6 +319,86 @@
                                         </StackPanel>
                                     </Grid>
                                     
+                                    <!-- RST Template Designer -->
+                                    <Border Background="#E8F5E8" BorderBrush="#28A745" BorderThickness="1" CornerRadius="4" Padding="15" Margin="0,20,0,0">
+                                        <StackPanel>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="📄 RST TEMPLATE DESIGNER" FontWeight="Bold" FontSize="14" Foreground="#155724" Grid.Column="0"/>
+                                                <Button x:Name="PreviewTemplateButton" Content="👁️ Preview" Grid.Column="1"
+                                                        Padding="10,5" Click="PreviewTemplateButton_Click"
+                                                        Background="#28A745" Foreground="White" BorderThickness="0"/>
+                                            </Grid>
+                                            
+                                            <Grid Margin="0,15,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                
+                                                <!-- Template Builder -->
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="Template Rows" FontWeight="Bold" Margin="0,0,0,10"/>
+                                                    
+                                                    <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto" 
+                                                                  Background="White" BorderBrush="#CCC" BorderThickness="1">
+                                                        <StackPanel x:Name="TemplateRowsPanel" Margin="5"/>
+                                                    </ScrollViewer>
+                                                    
+                                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                                        <Button x:Name="AddRowButton" Content="➕ Add Row" Padding="8,4" 
+                                                                Margin="0,0,5,0" Click="AddRowButton_Click"/>
+                                                        <Button x:Name="AddPlaceholderButton" Content="📝 Add Placeholder" Padding="8,4" 
+                                                                Margin="0,0,5,0" Click="AddPlaceholderButton_Click"/>
+                                                        <Button x:Name="ClearTemplateButton" Content="🗑️ Clear" Padding="8,4" 
+                                                                Click="ClearTemplateButton_Click"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                
+                                                <!-- Available Placeholders -->
+                                                <StackPanel Grid.Column="2">
+                                                    <TextBlock Text="Available Placeholders" FontWeight="Bold" Margin="0,0,0,10"/>
+                                                    
+                                                    <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto" 
+                                                                  Background="#F8F9FA" BorderBrush="#CCC" BorderThickness="1">
+                                                        <StackPanel Margin="10">
+                                                            <TextBlock Text="Company Info:" FontWeight="Bold" FontSize="12" Margin="0,0,0,5"/>
+                                                            <TextBlock Text="{}{COMPANY_NAME}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{COMPANY_ADDRESS}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{COMPANY_PHONE}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{COMPANY_EMAIL}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{COMPANY_GST}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            
+                                                            <TextBlock Text="Weighment Data:" FontWeight="Bold" FontSize="12" Margin="0,10,0,5"/>
+                                                            <TextBlock Text="{}{RST_NUMBER}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{VEHICLE_NUMBER}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{CUSTOMER_NAME}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{CUSTOMER_PHONE}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{CUSTOMER_ADDRESS}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{MATERIAL}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{ENTRY_WEIGHT}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{EXIT_WEIGHT}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{NET_WEIGHT}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{ENTRY_DATE}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{ENTRY_TIME}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{EXIT_DATE}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{EXIT_TIME}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            
+                                                            <TextBlock Text="Formatting:" FontWeight="Bold" FontSize="12" Margin="0,10,0,5"/>
+                                                            <TextBlock Text="{}{LINE_SEPARATOR}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{CURRENT_DATE}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                            <TextBlock Text="{}{CURRENT_TIME}" FontFamily="Consolas" FontSize="10" Margin="5,2"/>
+                                                        </StackPanel>
+                                                    </ScrollViewer>
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
                                     <Border Background="#FFF3CD" BorderBrush="#FFEAA7" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,15,0,0">
                                         <StackPanel>
                                             <TextBlock Text="📝 Dot Matrix Printer Tips" FontWeight="Bold" FontSize="12" Foreground="#856404"/>

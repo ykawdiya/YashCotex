@@ -1569,6 +1569,9 @@ namespace WeighbridgeSoftwareYashCotex.Views
             // LED Display
             LoadLedDisplaySettings();
 
+            // RST Template
+            LoadTemplateRows();
+
             // Backup path
             BackupLocationTextBox.Text = _settingsService.BackupPath;
 
@@ -3215,6 +3218,288 @@ namespace WeighbridgeSoftwareYashCotex.Views
             catch (Exception ex)
             {
                 MessageBox.Show($"Error removing LED display: {ex.Message}", "Remove Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        #endregion
+
+        #region RST Template Designer Event Handlers
+
+        private void PreviewTemplateButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var template = _settingsService.RstTemplate ?? new Models.RstTemplate();
+                var previewWindow = new RstTemplatePreviewWindow(template);
+                previewWindow.Owner = Window.GetWindow(this);
+                previewWindow.ShowDialog();
+                
+                // Reload template after preview window closes (user might have saved changes)
+                LoadTemplateRows();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error opening template preview: {ex.Message}", "Preview Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void AddRowButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var template = _settingsService.RstTemplate ?? new Models.RstTemplate();
+                var newRow = new Models.RstTemplateRow
+                {
+                    Content = "New Row - Click to edit",
+                    Alignment = "Left"
+                };
+                
+                template.Rows.Add(newRow);
+                _settingsService.RstTemplate = template;
+                
+                CreateTemplateRowControl(newRow, template.Rows.Count - 1);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error adding template row: {ex.Message}", "Add Row Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void AddPlaceholderButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var placeholderWindow = new PlaceholderSelectorWindow();
+                placeholderWindow.Owner = Window.GetWindow(this);
+                
+                if (placeholderWindow.ShowDialog() == true && !string.IsNullOrEmpty(placeholderWindow.SelectedPlaceholder))
+                {
+                    var template = _settingsService.RstTemplate ?? new Models.RstTemplate();
+                    var newRow = new Models.RstTemplateRow
+                    {
+                        Content = placeholderWindow.SelectedPlaceholder,
+                        Alignment = "Left"
+                    };
+                    
+                    template.Rows.Add(newRow);
+                    _settingsService.RstTemplate = template;
+                    
+                    CreateTemplateRowControl(newRow, template.Rows.Count - 1);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error adding placeholder: {ex.Message}", "Add Placeholder Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ClearTemplateButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var result = MessageBox.Show("Clear all template rows?", "Clear Template", 
+                                           MessageBoxButton.YesNo, MessageBoxImage.Question);
+                
+                if (result == MessageBoxResult.Yes)
+                {
+                    var template = _settingsService.RstTemplate ?? new Models.RstTemplate();
+                    template.Rows.Clear();
+                    _settingsService.RstTemplate = template;
+                    
+                    TemplateRowsPanel.Children.Clear();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error clearing template: {ex.Message}", "Clear Error", 
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void LoadTemplateRows()
+        {
+            try
+            {
+                TemplateRowsPanel.Children.Clear();
+                var template = _settingsService.RstTemplate ?? new Models.RstTemplate();
+                
+                for (int i = 0; i < template.Rows.Count; i++)
+                {
+                    CreateTemplateRowControl(template.Rows[i], i);
+                }
+                
+                // Add default rows if template is empty
+                if (template.Rows.Count == 0)
+                {
+                    var defaultRows = new[]
+                    {
+                        new Models.RstTemplateRow { Content = "{COMPANY_NAME}", Alignment = "Center" },
+                        new Models.RstTemplateRow { Content = "{COMPANY_ADDRESS}", Alignment = "Center" },
+                        new Models.RstTemplateRow { Content = "{LINE_SEPARATOR}", Alignment = "Left" },
+                        new Models.RstTemplateRow { Content = "RST No: {RST_NUMBER}    Date: {ENTRY_DATE}", Alignment = "Left" },
+                        new Models.RstTemplateRow { Content = "Vehicle: {VEHICLE_NUMBER}", Alignment = "Left" },
+                        new Models.RstTemplateRow { Content = "Customer: {CUSTOMER_NAME}", Alignment = "Left" },
+                        new Models.RstTemplateRow { Content = "Material: {MATERIAL}", Alignment = "Left" },
+                        new Models.RstTemplateRow { Content = "Entry Wt: {ENTRY_WEIGHT} KG", Alignment = "Left" },
+                        new Models.RstTemplateRow { Content = "Exit Wt: {EXIT_WEIGHT} KG", Alignment = "Left" },
+                        new Models.RstTemplateRow { Content = "Net Wt: {NET_WEIGHT} KG", Alignment = "Left" },
+                        new Models.RstTemplateRow { Content = "{LINE_SEPARATOR}", Alignment = "Left" }
+                    };
+                    
+                    template.Rows.AddRange(defaultRows);
+                    _settingsService.RstTemplate = template;
+                    
+                    for (int i = 0; i < template.Rows.Count; i++)
+                    {
+                        CreateTemplateRowControl(template.Rows[i], i);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading template rows: {ex.Message}");
+            }
+        }
+
+        private void CreateTemplateRowControl(Models.RstTemplateRow row, int index)
+        {
+            var border = new Border
+            {
+                Background = new SolidColorBrush(Color.FromRgb(249, 249, 249)),
+                BorderBrush = new SolidColorBrush(Color.FromRgb(220, 220, 220)),
+                BorderThickness = new Thickness(1.0),
+                CornerRadius = new CornerRadius(3),
+                Padding = new Thickness(8.0),
+                Margin = new Thickness(0.0, 2.0, 0.0, 2.0),
+                Tag = row.Id
+            };
+
+            var grid = new Grid();
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(80) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(60) });
+
+            // Content TextBox
+            var contentTextBox = new TextBox
+            {
+                Text = row.Content,
+                FontFamily = new FontFamily("Consolas"),
+                FontSize = 11,
+                Background = Brushes.White,
+                BorderThickness = new Thickness(1.0),
+                Padding = new Thickness(4.0),
+                Name = $"Content_{row.Id.Replace("-", "_")}"
+            };
+            contentTextBox.TextChanged += (s, e) => UpdateRowContent(row.Id, contentTextBox.Text);
+            Grid.SetColumn(contentTextBox, 0);
+
+            // Alignment ComboBox
+            var alignmentCombo = new ComboBox
+            {
+                Width = 75,
+                FontSize = 10,
+                Name = $"Alignment_{row.Id.Replace("-", "_")}"
+            };
+            
+            var alignments = new[] { "Left", "Center", "Right" };
+            foreach (var alignment in alignments)
+            {
+                var item = new ComboBoxItem { Content = alignment };
+                if (alignment == row.Alignment)
+                    item.IsSelected = true;
+                alignmentCombo.Items.Add(item);
+            }
+            
+            alignmentCombo.SelectionChanged += (s, e) => UpdateRowAlignment(row.Id, ((ComboBoxItem)alignmentCombo.SelectedItem)?.Content?.ToString() ?? "Left");
+            Grid.SetColumn(alignmentCombo, 1);
+
+            // Remove Button
+            var removeButton = new Button
+            {
+                Content = "🗑️",
+                Width = 25,
+                Height = 25,
+                Background = new SolidColorBrush(Color.FromRgb(220, 53, 69)),
+                Foreground = Brushes.White,
+                BorderThickness = new Thickness(0.0),
+                FontSize = 10,
+                Tag = row.Id
+            };
+            removeButton.Click += RemoveTemplateRow_Click;
+            Grid.SetColumn(removeButton, 2);
+
+            grid.Children.Add(contentTextBox);
+            grid.Children.Add(alignmentCombo);
+            grid.Children.Add(removeButton);
+
+            border.Child = grid;
+            TemplateRowsPanel.Children.Add(border);
+        }
+
+        private void UpdateRowContent(string rowId, string content)
+        {
+            try
+            {
+                var template = _settingsService.RstTemplate ?? new Models.RstTemplate();
+                var row = template.Rows.FirstOrDefault(r => r.Id == rowId);
+                if (row != null)
+                {
+                    row.Content = content;
+                    _settingsService.RstTemplate = template;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating row content: {ex.Message}");
+            }
+        }
+
+        private void UpdateRowAlignment(string rowId, string alignment)
+        {
+            try
+            {
+                var template = _settingsService.RstTemplate ?? new Models.RstTemplate();
+                var row = template.Rows.FirstOrDefault(r => r.Id == rowId);
+                if (row != null)
+                {
+                    row.Alignment = alignment;
+                    _settingsService.RstTemplate = template;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating row alignment: {ex.Message}");
+            }
+        }
+
+        private void RemoveTemplateRow_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var button = sender as Button;
+                var rowId = button?.Tag?.ToString();
+                
+                if (string.IsNullOrEmpty(rowId))
+                    return;
+
+                var template = _settingsService.RstTemplate ?? new Models.RstTemplate();
+                template.Rows.RemoveAll(r => r.Id == rowId);
+                _settingsService.RstTemplate = template;
+                
+                // Remove the UI control
+                var borderToRemove = TemplateRowsPanel.Children.OfType<Border>()
+                    .FirstOrDefault(b => b.Tag?.ToString() == rowId);
+                
+                if (borderToRemove != null)
+                    TemplateRowsPanel.Children.Remove(borderToRemove);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error removing template row: {ex.Message}", "Remove Error", 
                                MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

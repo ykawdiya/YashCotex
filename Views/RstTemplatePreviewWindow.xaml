@@ -1,0 +1,137 @@
+﻿<Window x:Class="WeighbridgeSoftwareYashCotex.Views.RstTemplatePreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="RST Template Preview" Height="600" Width="900"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize">
+    
+    <Window.Resources>
+        <Style x:Key="PreviewTextStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas, Courier New, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#2C3E50" Padding="15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="📄 RST Template Preview" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="See how your weighment slip will appear when printed" FontSize="12" Foreground="#BDC3C7"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button x:Name="RefreshPreviewButton" Content="🔄 Refresh" Padding="10,5" Margin="0,0,10,0"
+                            Background="#3498DB" Foreground="White" BorderThickness="0" Click="RefreshPreviewButton_Click"/>
+                    <Button x:Name="TestPrintButton" Content="🖨️ Test Print" Padding="10,5"
+                            Background="#27AE60" Foreground="White" BorderThickness="0" Click="TestPrintButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Preview Area -->
+            <Border Grid.Column="0" Background="White" BorderBrush="#CCC" BorderThickness="2" CornerRadius="5">
+                <StackPanel>
+                    <!-- Paper Representation -->
+                    <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="0,0,0,1" Padding="10,5">
+                        <TextBlock Text="📄 Continuous Form Paper Preview (80 columns)" 
+                                   FontWeight="Bold" FontSize="12" HorizontalAlignment="Center"/>
+                    </Border>
+                    
+                    <!-- Ruler for character positioning -->
+                    <Border Background="#E9ECEF" Padding="10,2">
+                        <TextBlock x:Name="RulerText" FontFamily="Consolas" FontSize="10" 
+                                   Text="1234567890123456789012345678901234567890123456789012345678901234567890123456789" 
+                                   Foreground="#6C757D"/>
+                    </Border>
+                    
+                    <!-- Preview Content -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                                  Background="White" Padding="10">
+                        <TextBlock x:Name="PreviewTextBlock" Style="{StaticResource PreviewTextStyle}" 
+                                   Text="Template preview will appear here..." 
+                                   TextWrapping="NoWrap"/>
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+
+            <!-- Template Info Panel -->
+            <Border Grid.Column="2" Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="5" Padding="15">
+                <StackPanel>
+                    <TextBlock Text="📋 Template Information" FontWeight="Bold" FontSize="14" Margin="0,0,0,15"/>
+                    
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Grid.Row="0" Text="Template Name:" FontWeight="SemiBold" Margin="0,5"/>
+                        <TextBox x:Name="TemplateNameTextBox" Grid.Row="1" Text="Default RST Template" Margin="0,0,0,10"/>
+                        
+                        <TextBlock Grid.Row="2" Text="Paper Width:" FontWeight="SemiBold" Margin="0,5"/>
+                        <ComboBox x:Name="PaperWidthComboBox" Grid.Row="3" Margin="0,0,0,10" SelectionChanged="PaperWidthComboBox_SelectionChanged">
+                            <ComboBoxItem Content="80 characters" IsSelected="True" Tag="80"/>
+                            <ComboBoxItem Content="132 characters" Tag="132"/>
+                            <ComboBoxItem Content="96 characters" Tag="96"/>
+                        </ComboBox>
+                        
+                        <TextBlock Grid.Row="4" Text="Statistics:" FontWeight="SemiBold" Margin="0,5"/>
+                        <StackPanel Grid.Row="5">
+                            <TextBlock x:Name="RowCountText" Text="Rows: 0" FontSize="11" Margin="0,2"/>
+                            <TextBlock x:Name="PlaceholderCountText" Text="Placeholders: 0" FontSize="11" Margin="0,2"/>
+                            <TextBlock x:Name="EstimatedHeightText" Text="Est. Height: 0 lines" FontSize="11" Margin="0,2"/>
+                        </StackPanel>
+                    </Grid>
+                    
+                    <Border Background="#D1ECF1" BorderBrush="#BEE5EB" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,20,0,0">
+                        <StackPanel>
+                            <TextBlock Text="💡 Preview Tips" FontWeight="Bold" FontSize="12" Foreground="#0C5460"/>
+                            <TextBlock Text="• Characters beyond paper width will be truncated" 
+                                       FontSize="10" Foreground="#0C5460" Margin="0,5,0,0" TextWrapping="Wrap"/>
+                            <TextBlock Text="• Use ruler above to position text accurately" 
+                                       FontSize="10" Foreground="#0C5460" TextWrapping="Wrap"/>
+                            <TextBlock Text="• Sample data is used for placeholder preview" 
+                                       FontSize="10" Foreground="#0C5460" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Footer -->
+        <Border Grid.Row="2" Background="#ECF0F1" BorderBrush="#BDC3C7" BorderThickness="0,1,0,0" Padding="15">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="SaveTemplateButton" Content="💾 Save Template" Padding="15,8" Margin="0,0,10,0"
+                        Background="#27AE60" Foreground="White" BorderThickness="0" FontWeight="Bold" Click="SaveTemplateButton_Click"/>
+                <Button x:Name="CloseButton" Content="✖️ Close" Padding="15,8"
+                        Background="#95A5A6" Foreground="White" BorderThickness="0" FontWeight="Bold" Click="CloseButton_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
