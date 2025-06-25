@@ -110,29 +110,34 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="20"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 
-                                <!-- Left Column -->
+                                <!-- Column 1: Company Identity -->
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="Company Name *" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBox x:Name="CompanyNameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="YASH COTEX PRIVATE LIMITED"/>
                                     
                                     <TextBlock Text="Address Line 1 *" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBox x:Name="AddressLine1TextBox" Style="{StaticResource FieldTextBoxStyle}" Text=""/>
-                                    
-                                    <TextBlock Text="Address Line 2" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="AddressLine2TextBox" Style="{StaticResource FieldTextBoxStyle}" Text=""/>
                                 </StackPanel>
                                 
-                                <!-- Right Column -->
+                                <!-- Column 2: Contact Info -->
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="Phone Number *" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBox x:Name="CompanyPhoneTextBox" Style="{StaticResource FieldTextBoxStyle}" MaxLength="15" Text=""/>
                                     
                                     <TextBlock Text="Email Address" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBox x:Name="CompanyEmailTextBox" Style="{StaticResource FieldTextBoxStyle}" Text=""/>
+                                </StackPanel>
+                                
+                                <!-- Column 3: Legal Info -->
+                                <StackPanel Grid.Column="4">
+                                    <TextBlock Text="Address Line 2" Style="{StaticResource FieldLabelStyle}"/>
+                                    <TextBox x:Name="AddressLine2TextBox" Style="{StaticResource FieldTextBoxStyle}" Text=""/>
                                     
                                     <TextBlock Text="GST Number" Style="{StaticResource FieldLabelStyle}"/>
                                     <TextBox x:Name="GstNumberTextBox" Style="{StaticResource FieldTextBoxStyle}" MaxLength="15" Text=""/>
@@ -245,7 +250,22 @@
                                                 <ComboBoxItem Content="1" IsSelected="True"/>
                                                 <ComboBoxItem Content="2"/>
                                             </ComboBox>
-                                            
+                                        </StackPanel>
+                                    </Grid>
+                                    
+                                    <Grid Margin="0,15,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Timeout (ms) *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="TimeoutTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="5000"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="2">
                                             <TextBlock Text="Maximum Capacity (KG) *" Style="{StaticResource FieldLabelStyle}"/>
                                             <TextBox x:Name="MaxCapacityTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="100000"/>
                                         </StackPanel>
@@ -988,23 +1008,42 @@
                                 <StackPanel>
                                     <TextBlock Text="📊 GOOGLE SHEETS INTEGRATION" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
                                     
-                                    <CheckBox x:Name="GoogleSheetsEnabledCheckBox" Content="Enable Google Sheets Sync" Margin="0,0,0,10"/>
+                                    <CheckBox x:Name="GoogleSheetsEnabledCheckBox" Content="Enable Google Sheets Sync" Margin="0,0,0,20"/>
                                     
-                                    <TextBlock Text="Service Account Key File" Style="{StaticResource FieldLabelStyle}"/>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="20"/>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBox x:Name="ServiceAccountKeyTextBox" Style="{StaticResource FieldTextBoxStyle}" Grid.Column="0" IsReadOnly="True"/>
-                                        <Button Content="Browse..." Grid.Column="1" Margin="5,0,0,12" Padding="10,5" x:Name="BrowseKeyFileButton" Click="BrowseKeyFileButton_Click"/>
+                                        
+                                        <!-- Service Account Key File (wider) -->
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Service Account Key File" Style="{StaticResource FieldLabelStyle}"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBox x:Name="ServiceAccountKeyTextBox" Style="{StaticResource FieldTextBoxStyle}" Grid.Column="0" IsReadOnly="True"/>
+                                                <Button Content="Browse..." Grid.Column="1" Margin="5,0,0,15" Padding="10,5" x:Name="BrowseKeyFileButton" Click="BrowseKeyFileButton_Click"/>
+                                            </Grid>
+                                        </StackPanel>
+                                        
+                                        <!-- Spreadsheet ID -->
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Spreadsheet ID" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="SpreadsheetIdTextBox" Style="{StaticResource FieldTextBoxStyle}"/>
+                                        </StackPanel>
+                                        
+                                        <!-- Worksheet Name -->
+                                        <StackPanel Grid.Column="4">
+                                            <TextBlock Text="Worksheet Name" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="WorksheetNameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="WeighmentData"/>
+                                        </StackPanel>
                                     </Grid>
-                                    
-                                    <TextBlock Text="Spreadsheet ID" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="SpreadsheetIdTextBox" Style="{StaticResource FieldTextBoxStyle}"/>
-                                    
-                                    <TextBlock Text="Worksheet Name" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="WorksheetNameTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="WeighmentData"/>
                                     
                                     <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                                         <Button Content="🔄 Test Connection" Padding="10,5" Margin="0,0,10,0" x:Name="TestGoogleSheetsButton" Click="TestGoogleSheetsButton_Click"/>
@@ -1117,13 +1156,25 @@
                                 <StackPanel>
                                     <TextBlock Text="⏱️ SESSION MANAGEMENT" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
                                     
-                                    <TextBlock Text="Admin Session Timeout (minutes)" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="AdminTimeoutTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="5"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Admin Session Timeout (minutes)" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="AdminTimeoutTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="5"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Super Admin Session Timeout (minutes)" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="SuperAdminTimeoutTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="1"/>
+                                        </StackPanel>
+                                    </Grid>
                                     
-                                    <TextBlock Text="Super Admin Session Timeout (minutes)" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="SuperAdminTimeoutTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="1"/>
-                                    
-                                    <CheckBox x:Name="AutoLogoutCheckBox" Content="Enable auto-logout on inactivity" IsChecked="True" Margin="0,10,0,0"/>
+                                    <CheckBox x:Name="AutoLogoutCheckBox" Content="Enable auto-logout on inactivity" IsChecked="True" Margin="0,20,0,0"/>
                                 </StackPanel>
                             </Border>
 
@@ -1149,7 +1200,7 @@
                 <!-- Tab 7: Weight Rules (Super Admin Only) -->
                 <TabItem Header="⚖️ Weight Rules" x:Name="WeightRulesTab">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <Grid MaxWidth="1200" HorizontalAlignment="Center">
+                        <Grid MaxWidth="1400" HorizontalAlignment="Center">
                             <StackPanel>
                             <Border Background="#FFF5F5" BorderBrush="#FF6B6B" BorderThickness="2" CornerRadius="8" Padding="20">
                                 <StackPanel>
@@ -1157,36 +1208,58 @@
                                               Style="{StaticResource SectionHeaderStyle}" Foreground="#E17055" HorizontalAlignment="Center"/>
                                     
                                     <TextBlock Text="🛡️ WARNING: These settings affect weight calculations and should only be modified by authorized Super Admin users." 
-                                              FontSize="12" Foreground="#E17055" TextWrapping="Wrap" Margin="0,0,0,20" HorizontalAlignment="Center"/>
+                                              FontSize="12" Foreground="#E17055" TextWrapping="Wrap" Margin="0,0,0,25" HorizontalAlignment="Center"/>
                                     
-                                    <!-- Weight Tolerance Settings -->
-                                    <Border Background="#FFEAA7" BorderBrush="#FDCB6E" BorderThickness="1" CornerRadius="5" Padding="15" Margin="0,0,0,15">
-                                        <StackPanel>
-                                            <TextBlock Text="📊 WEIGHT TOLERANCE SETTINGS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                                            
-                                            <TextBlock Text="Minimum Weight Difference (KG)" Style="{StaticResource FieldLabelStyle}"/>
-                                            <TextBox x:Name="MinWeightDifferenceTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="5.0"/>
-                                            
-                                            <TextBlock Text="Maximum Weight Variance (%)" Style="{StaticResource FieldLabelStyle}"/>
-                                            <TextBox x:Name="MaxWeightVarianceTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="10.0"/>
-                                            
-                                            <CheckBox x:Name="AllowNegativeWeightCheckBox" Content="Allow negative weight calculations" Margin="0,10,0,0"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Weight Adjustment Rules -->
-                                    <Border Background="#FFD3D3" BorderBrush="#FF6B6B" BorderThickness="1" CornerRadius="5" Padding="15">
-                                        <StackPanel>
-                                            <TextBlock Text="⚙️ WEIGHT ADJUSTMENT RULES" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                                            
-                                            <CheckBox x:Name="AllowManualWeightAdjustmentCheckBox" Content="Allow manual weight adjustments" Margin="0,0,0,5"/>
-                                            <CheckBox x:Name="RequireJustificationCheckBox" Content="Require justification for adjustments" Margin="0,0,0,5"/>
-                                            <CheckBox x:Name="LogAllAdjustmentsCheckBox" Content="Log all weight adjustments" IsChecked="True" Margin="0,0,0,10"/>
-                                            
-                                            <TextBlock Text="Maximum Adjustment Limit (KG)" Style="{StaticResource FieldLabelStyle}"/>
-                                            <TextBox x:Name="MaxAdjustmentLimitTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="50.0"/>
-                                        </StackPanel>
-                                    </Border>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <!-- Column 1: Weight Tolerance Settings -->
+                                        <Border Grid.Column="0" Background="#FFEAA7" BorderBrush="#FDCB6E" BorderThickness="1" CornerRadius="5" Padding="15">
+                                            <StackPanel>
+                                                <TextBlock Text="📊 WEIGHT TOLERANCE SETTINGS" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
+                                                
+                                                <TextBlock Text="Minimum Weight Difference (KG)" Style="{StaticResource FieldLabelStyle}"/>
+                                                <TextBox x:Name="MinWeightDifferenceTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="5.0" ToolTip="Minimum difference required between entry and exit weights"/>
+                                                
+                                                <TextBlock Text="Maximum Weight Variance (%)" Style="{StaticResource FieldLabelStyle}"/>
+                                                <TextBox x:Name="MaxWeightVarianceTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="10.0" ToolTip="Maximum allowed percentage variance in weight readings"/>
+                                                
+                                                <TextBlock Text="Stability Timeout (seconds)" Style="{StaticResource FieldLabelStyle}"/>
+                                                <TextBox x:Name="StabilityTimeoutTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="30" ToolTip="Time to wait for weight stability before accepting reading"/>
+                                                
+                                                <CheckBox x:Name="AllowNegativeWeightCheckBox" Content="Allow negative weight calculations" Margin="0,15,0,5" ToolTip="Allow calculations that result in negative net weights"/>
+                                                <CheckBox x:Name="EnableWeightValidationCheckBox" Content="Enable weight validation rules" IsChecked="True" Margin="0,0,0,0" ToolTip="Apply validation rules to all weight measurements"/>
+                                            </StackPanel>
+                                        </Border>
+                                        
+                                        <!-- Column 2: Weight Adjustment Rules -->
+                                        <Border Grid.Column="2" Background="#FFD3D3" BorderBrush="#FF6B6B" BorderThickness="1" CornerRadius="5" Padding="15">
+                                            <StackPanel>
+                                                <TextBlock Text="⚙️ WEIGHT ADJUSTMENT RULES" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
+                                                
+                                                <TextBlock Text="Maximum Adjustment Limit (KG)" Style="{StaticResource FieldLabelStyle}"/>
+                                                <TextBox x:Name="MaxAdjustmentLimitTextBox" Style="{StaticResource FieldTextBoxStyle}" Text="50.0" ToolTip="Maximum weight adjustment allowed per operation"/>
+                                                
+                                                <TextBlock Text="Adjustment Reason Categories" Style="{StaticResource FieldLabelStyle}"/>
+                                                <ComboBox x:Name="AdjustmentReasonComboBox" Style="{StaticResource FieldComboBoxStyle}" ToolTip="Default reason categories for adjustments">
+                                                    <ComboBoxItem Content="Scale Calibration Error" IsSelected="True"/>
+                                                    <ComboBoxItem Content="Environmental Factors"/>
+                                                    <ComboBoxItem Content="Operator Error"/>
+                                                    <ComboBoxItem Content="Technical Malfunction"/>
+                                                </ComboBox>
+                                                
+                                                <TextBlock Text="Adjustment Permissions" Style="{StaticResource FieldLabelStyle}" Margin="0,15,0,5"/>
+                                                <CheckBox x:Name="AllowManualWeightAdjustmentCheckBox" Content="Allow manual weight adjustments" Margin="0,0,0,5" ToolTip="Enable manual adjustment of recorded weights"/>
+                                                <CheckBox x:Name="RequireJustificationCheckBox" Content="Require justification for adjustments" Margin="0,0,0,5" ToolTip="Force users to provide reason for weight adjustments"/>
+                                                <CheckBox x:Name="LogAllAdjustmentsCheckBox" Content="Log all weight adjustments" IsChecked="True" Margin="0,0,0,5" ToolTip="Maintain audit trail of all weight modifications"/>
+                                                <CheckBox x:Name="RequireSecondApprovalCheckBox" Content="Require second approval for large adjustments" Margin="0,0,0,0" ToolTip="Large adjustments need approval from another admin"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -1197,7 +1270,7 @@
                 <!-- Tab 8: User Management -->
                 <TabItem Header="👥 Users">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <Grid MaxWidth="1200" HorizontalAlignment="Center">
+                        <Grid MaxWidth="1400" HorizontalAlignment="Center">
                             <StackPanel>
                             <TextBlock Text="USER MANAGEMENT" Style="{StaticResource SectionHeaderStyle}"/>
                             
@@ -1226,37 +1299,78 @@
                             <!-- Add New User -->
                             <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15">
                                 <StackPanel>
-                                    <TextBlock Text="➕ ADD NEW USER" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                                    <TextBlock Text="➕ ADD NEW USER" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
                                     
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="15"/>
+                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="20"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         
+                                        <!-- Column 1: Account Credentials -->
                                         <StackPanel Grid.Column="0">
+                                            <TextBlock Text="Account Credentials" Style="{StaticResource SectionHeaderStyle}" FontSize="16" Margin="0,0,0,15"/>
+                                            
                                             <TextBlock Text="Username *" Style="{StaticResource FieldLabelStyle}"/>
-                                            <TextBox x:Name="NewUsernameTextBox" Style="{StaticResource FieldTextBoxStyle}"/>
+                                            <TextBox x:Name="NewUsernameTextBox" Style="{StaticResource FieldTextBoxStyle}" ToolTip="Enter unique username for login"/>
                                             
                                             <TextBlock Text="Password *" Style="{StaticResource FieldLabelStyle}"/>
-                                            <PasswordBox x:Name="NewPasswordBox" Height="35" Margin="0,0,0,12" Padding="8"/>
+                                            <PasswordBox x:Name="NewPasswordBox" Height="42" Margin="0,0,0,15" Padding="12" ToolTip="Enter secure password (minimum 6 characters)"/>
+                                            
+                                            <TextBlock Text="Confirm Password *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <PasswordBox x:Name="ConfirmPasswordBox" Height="42" Margin="0,0,0,15" Padding="12" ToolTip="Re-enter password to confirm"/>
                                         </StackPanel>
                                         
+                                        <!-- Column 2: User Information -->
                                         <StackPanel Grid.Column="2">
-                                            <TextBlock Text="Role *" Style="{StaticResource FieldLabelStyle}"/>
-                                            <ComboBox x:Name="NewUserRoleComboBox" Style="{StaticResource FieldComboBoxStyle}">
-                                                <ComboBoxItem Content="User" IsSelected="True"/>
-                                                <ComboBoxItem Content="Admin"/>
-                                                <ComboBoxItem Content="Super Admin"/>
+                                            <TextBlock Text="User Information" Style="{StaticResource SectionHeaderStyle}" FontSize="16" Margin="0,0,0,15"/>
+                                            
+                                            <TextBlock Text="Full Name *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="NewUserFullNameTextBox" Style="{StaticResource FieldTextBoxStyle}" ToolTip="Enter user's full name"/>
+                                            
+                                            <TextBlock Text="Email Address" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="NewUserEmailTextBox" Style="{StaticResource FieldTextBoxStyle}" ToolTip="Enter email address for notifications"/>
+                                            
+                                            <TextBlock Text="Phone Number" Style="{StaticResource FieldLabelStyle}"/>
+                                            <TextBox x:Name="NewUserPhoneTextBox" Style="{StaticResource FieldTextBoxStyle}" ToolTip="Enter contact phone number"/>
+                                        </StackPanel>
+                                        
+                                        <!-- Column 3: Role & Permissions -->
+                                        <StackPanel Grid.Column="4">
+                                            <TextBlock Text="Role & Permissions" Style="{StaticResource SectionHeaderStyle}" FontSize="16" Margin="0,0,0,15"/>
+                                            
+                                            <TextBlock Text="User Role *" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="NewUserRoleComboBox" Style="{StaticResource FieldComboBoxStyle}" ToolTip="Select user access level">
+                                                <ComboBoxItem Content="User" IsSelected="True" ToolTip="Basic access - Entry/Exit operations only"/>
+                                                <ComboBoxItem Content="Admin" ToolTip="Admin access - Settings and user management"/>
+                                                <ComboBoxItem Content="Super Admin" ToolTip="Full access - All admin tools and weight modifications"/>
                                             </ComboBox>
                                             
-                                            <TextBlock Text="Full Name" Style="{StaticResource FieldLabelStyle}"/>
-                                            <TextBox x:Name="NewUserFullNameTextBox" Style="{StaticResource FieldTextBoxStyle}"/>
+                                            <TextBlock Text="Department" Style="{StaticResource FieldLabelStyle}"/>
+                                            <ComboBox x:Name="NewUserDepartmentComboBox" Style="{StaticResource FieldComboBoxStyle}" ToolTip="Select user's department">
+                                                <ComboBoxItem Content="Operations" IsSelected="True"/>
+                                                <ComboBoxItem Content="Administration"/>
+                                                <ComboBoxItem Content="Quality Control"/>
+                                                <ComboBoxItem Content="Management"/>
+                                            </ComboBox>
+                                            
+                                            <CheckBox x:Name="NewUserActiveCheckBox" Content="Account Active" IsChecked="True" Margin="0,10,0,0" ToolTip="Enable/disable user account"/>
                                         </StackPanel>
                                     </Grid>
                                     
-                                    <Button Content="👤 Create User" Padding="15,8" Margin="0,10,0,0" x:Name="CreateUserButton" HorizontalAlignment="Left" Click="CreateUserButton_Click"/>
+                                    <Grid Margin="0,20,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <Button Grid.Column="0" Content="👤 Create User" Padding="15,8" x:Name="CreateUserButton" Click="CreateUserButton_Click" ToolTip="Create new user account"/>
+                                        <Button Grid.Column="2" Content="🔄 Clear Form" Padding="15,8" x:Name="ClearUserFormButton" Click="ClearUserFormButton_Click" Background="#636E72" Foreground="White" ToolTip="Clear all form fields"/>
+                                    </Grid>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -1267,62 +1381,129 @@
                 <!-- Tab 9: System -->
                 <TabItem Header="🖥️ System">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
-                        <Grid MaxWidth="1200" HorizontalAlignment="Center">
+                        <Grid MaxWidth="1400" HorizontalAlignment="Center">
                             <StackPanel>
-                            <TextBlock Text="SYSTEM INFORMATION" Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Text="SYSTEM INFORMATION & MANAGEMENT" Style="{StaticResource SectionHeaderStyle}"/>
                             
-                            <!-- System Info -->
-                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,20">
-                                <StackPanel>
-                                    <TextBlock Text="ℹ️ SYSTEM INFORMATION" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                                    
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Column 1: System Information -->
+                                <Border Grid.Column="0" Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15">
+                                    <StackPanel>
+                                        <TextBlock Text="ℹ️ SYSTEM INFORMATION" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
                                         
-                                        <TextBlock Text="Software Version:" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Margin="0,0,10,5"/>
-                                        <TextBlock Text="v2.1.0" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            
+                                            <TextBlock Text="Software Version:" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Margin="0,0,5,8" FontSize="12"/>
+                                            <TextBlock Text="v2.1.0" Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" FontFamily="Consolas" FontSize="12"/>
+                                            
+                                            <TextBlock Text="Database Version:" FontWeight="Bold" Grid.Row="1" Grid.Column="0" Margin="0,0,5,8" FontSize="12"/>
+                                            <TextBlock x:Name="DatabaseVersionText" Text="Loading..." Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" FontFamily="Consolas" FontSize="12"/>
+                                            
+                                            <TextBlock Text="Last Backup:" FontWeight="Bold" Grid.Row="2" Grid.Column="0" Margin="0,0,5,8" FontSize="12"/>
+                                            <TextBlock x:Name="LastBackupText" Text="Loading..." Grid.Row="2" Grid.Column="1" Margin="0,0,0,8" FontFamily="Consolas" FontSize="12"/>
+                                            
+                                            <TextBlock Text="Total Records:" FontWeight="Bold" Grid.Row="3" Grid.Column="0" Margin="0,0,5,8" FontSize="12"/>
+                                            <TextBlock x:Name="TotalRecordsText" Text="Loading..." Grid.Row="3" Grid.Column="1" Margin="0,0,0,8" FontFamily="Consolas" FontSize="12"/>
+                                            
+                                            <TextBlock Text="Disk Usage:" FontWeight="Bold" Grid.Row="4" Grid.Column="0" Margin="0,0,5,8" FontSize="12"/>
+                                            <TextBlock x:Name="DiskUsageText" Text="Loading..." Grid.Row="4" Grid.Column="1" Margin="0,0,0,8" FontFamily="Consolas" FontSize="12"/>
+                                            
+                                            <TextBlock Text="System Uptime:" FontWeight="Bold" Grid.Row="5" Grid.Column="0" Margin="0,0,5,8" FontSize="12"/>
+                                            <TextBlock x:Name="SystemUptimeText" Text="Loading..." Grid.Row="5" Grid.Column="1" Margin="0,0,0,8" FontFamily="Consolas" FontSize="12"/>
+                                            
+                                            <TextBlock Text="Active Users:" FontWeight="Bold" Grid.Row="6" Grid.Column="0" Margin="0,0,5,0" FontSize="12"/>
+                                            <TextBlock x:Name="ActiveUsersText" Text="Loading..." Grid.Row="6" Grid.Column="1" Margin="0,0,0,0" FontFamily="Consolas" FontSize="12"/>
+                                        </Grid>
                                         
-                                        <TextBlock Text="Database Version:" FontWeight="Bold" Grid.Row="1" Grid.Column="0" Margin="0,0,10,5"/>
-                                        <TextBlock x:Name="DatabaseVersionText" Text="Loading..." Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
-                                        
-                                        <TextBlock Text="Last Backup:" FontWeight="Bold" Grid.Row="2" Grid.Column="0" Margin="0,0,10,5"/>
-                                        <TextBlock x:Name="LastBackupText" Text="Loading..." Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
-                                        
-                                        <TextBlock Text="Total Records:" FontWeight="Bold" Grid.Row="3" Grid.Column="0" Margin="0,0,10,5"/>
-                                        <TextBlock x:Name="TotalRecordsText" Text="Loading..." Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
-                                        
-                                        <TextBlock Text="Disk Usage:" FontWeight="Bold" Grid.Row="4" Grid.Column="0" Margin="0,0,10,5"/>
-                                        <TextBlock x:Name="DiskUsageText" Text="Loading..." Grid.Row="4" Grid.Column="1" Margin="0,0,0,5"/>
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- System Actions -->
-                            <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="8" Padding="15">
-                                <StackPanel>
-                                    <TextBlock Text="🔧 SYSTEM ACTIONS" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                                    
-                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                        <Button Content="🔄 Restart Application" Padding="10,5" Margin="0,0,10,0" x:Name="RestartAppButton" Click="RestartAppButton_Click"/>
-                                        <Button Content="📊 System Diagnostics" Padding="10,5" x:Name="SystemDiagnosticsButton" Click="SystemDiagnosticsButton_Click"/>
+                                        <Button Content="🔄 Refresh Info" Padding="8,5" Margin="0,15,0,0" x:Name="RefreshSystemInfoButton" Click="RefreshSystemInfoButton_Click" HorizontalAlignment="Center"/>
                                     </StackPanel>
-                                    
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button Content="🗑️ Clear Cache" Padding="10,5" Margin="0,0,10,0" x:Name="ClearCacheButton" Click="ClearCacheButton_Click"/>
-                                        <Button Content="📋 Export Logs" Padding="10,5" x:Name="ExportLogsButton" Click="ExportLogsButton_Click"/>
+                                </Border>
+                                
+                                <!-- Column 2: System Actions -->
+                                <Border Grid.Column="2" Background="#E3F2FD" BorderBrush="#2196F3" BorderThickness="1" CornerRadius="8" Padding="15">
+                                    <StackPanel>
+                                        <TextBlock Text="🔧 SYSTEM ACTIONS" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
+                                        
+                                        <TextBlock Text="Application Management" Style="{StaticResource FieldLabelStyle}" FontSize="13" Margin="0,0,0,8"/>
+                                        <Button Content="🔄 Restart Application" Padding="10,6" Margin="0,0,0,8" x:Name="RestartAppButton" Click="RestartAppButton_Click" HorizontalAlignment="Stretch"/>
+                                        <Button Content="📊 System Diagnostics" Padding="10,6" Margin="0,0,0,15" x:Name="SystemDiagnosticsButton" Click="SystemDiagnosticsButton_Click" HorizontalAlignment="Stretch"/>
+                                        
+                                        <TextBlock Text="Data Management" Style="{StaticResource FieldLabelStyle}" FontSize="13" Margin="0,0,0,8"/>
+                                        <Button Content="🗑️ Clear Cache" Padding="10,6" Margin="0,0,0,8" x:Name="ClearCacheButton" Click="ClearCacheButton_Click" HorizontalAlignment="Stretch"/>
+                                        <Button Content="📋 Export Logs" Padding="10,6" Margin="0,0,0,8" x:Name="ExportLogsButton" Click="ExportLogsButton_Click" HorizontalAlignment="Stretch"/>
+                                        <Button Content="💾 Force Backup" Padding="10,6" Margin="0,0,0,0" x:Name="ForceBackupButton2" Click="ForceBackupButton2_Click" HorizontalAlignment="Stretch"/>
                                     </StackPanel>
-                                </StackPanel>
-                            </Border>
+                                </Border>
+                                
+                                <!-- Column 3: Performance & Health -->
+                                <Border Grid.Column="4" Background="#FFF3E0" BorderBrush="#FF9800" BorderThickness="1" CornerRadius="8" Padding="15">
+                                    <StackPanel>
+                                        <TextBlock Text="📈 PERFORMANCE & HEALTH" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
+                                        
+                                        <TextBlock Text="System Performance" Style="{StaticResource FieldLabelStyle}" FontSize="13" Margin="0,0,0,8"/>
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            
+                                            <TextBlock Text="CPU:" FontSize="11" Grid.Row="0" Grid.Column="0" Margin="0,2"/>
+                                            <ProgressBar x:Name="CpuUsageBar" Grid.Row="0" Grid.Column="1" Height="12" Margin="5,2" Value="25"/>
+                                            <TextBlock x:Name="CpuUsageText" Text="25%" FontSize="10" Grid.Row="0" Grid.Column="2" Margin="5,2"/>
+                                            
+                                            <TextBlock Text="Memory:" FontSize="11" Grid.Row="1" Grid.Column="0" Margin="0,2"/>
+                                            <ProgressBar x:Name="MemoryUsageBar" Grid.Row="1" Grid.Column="1" Height="12" Margin="5,2" Value="40"/>
+                                            <TextBlock x:Name="MemoryUsageText" Text="40%" FontSize="10" Grid.Row="1" Grid.Column="2" Margin="5,2"/>
+                                            
+                                            <TextBlock Text="Disk:" FontSize="11" Grid.Row="2" Grid.Column="0" Margin="0,2"/>
+                                            <ProgressBar x:Name="DiskUsageBar" Grid.Row="2" Grid.Column="1" Height="12" Margin="5,2" Value="60"/>
+                                            <TextBlock x:Name="DiskUsagePercentText" Text="60%" FontSize="10" Grid.Row="2" Grid.Column="2" Margin="5,2"/>
+                                        </Grid>
+                                        
+                                        <TextBlock Text="Health Status" Style="{StaticResource FieldLabelStyle}" FontSize="13" Margin="0,5,0,8"/>
+                                        <StackPanel>
+                                            <Border x:Name="WeighbridgeHealthIndicator" Background="#4CAF50" CornerRadius="3" Padding="5,3" Margin="0,2">
+                                                <TextBlock Text="⚖️ Weighbridge: Online" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                                            </Border>
+                                            <Border x:Name="DatabaseHealthIndicator" Background="#4CAF50" CornerRadius="3" Padding="5,3" Margin="0,2">
+                                                <TextBlock Text="🗄️ Database: Connected" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                                            </Border>
+                                            <Border x:Name="NetworkHealthIndicator" Background="#4CAF50" CornerRadius="3" Padding="5,3" Margin="0,2">
+                                                <TextBlock Text="🌐 Network: Connected" Foreground="White" FontSize="10" FontWeight="Bold"/>
+                                            </Border>
+                                        </StackPanel>
+                                        
+                                        <Button Content="📊 Detailed Health Check" Padding="8,5" Margin="0,10,0,0" x:Name="DetailedHealthCheckButton" Click="DetailedHealthCheckButton_Click" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
                         </StackPanel>
                         </Grid>
                     </ScrollViewer>
