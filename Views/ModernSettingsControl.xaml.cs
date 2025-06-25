@@ -18,7 +18,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
         private void ModernSettingsControl_Loaded(object sender, RoutedEventArgs e)
         {
             // Initialize any additional setup here
-            if (DataContext is ModernSettingsViewModel viewModel)
+            if (DataContext is ComprehensiveModernSettingsViewModel viewModel)
             {
                 // Subscribe to view model events
                 viewModel.SettingsOperationCompleted += OnSettingsOperationCompleted;
@@ -34,7 +34,7 @@ namespace WeighbridgeSoftwareYashCotex.Views
         public void Dispose()
         {
             // Clean up resources
-            if (DataContext is ModernSettingsViewModel viewModel)
+            if (DataContext is ComprehensiveModernSettingsViewModel viewModel)
             {
                 viewModel.SettingsOperationCompleted -= OnSettingsOperationCompleted;
             }

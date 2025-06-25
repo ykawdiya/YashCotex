@@ -7,7 +7,7 @@
              xmlns:converters="clr-namespace:WeighbridgeSoftwareYashCotex.Converters">
 
     <UserControl.DataContext>
-        <viewmodels:ModernSettingsViewModel/>
+        <viewmodels:ComprehensiveModernSettingsViewModel/>
     </UserControl.DataContext>
 
     <UserControl.Resources>
@@ -163,7 +163,7 @@
                 </TabItem>
 
                 <!-- Hardware Configuration Tab -->
-                <TabItem Header="⚙️ Hardware" Style="{StaticResource ModernTabStyle}">
+                <TabItem Header="🔧 Hardware" Style="{StaticResource ModernTabStyle}">
                     <ItemsControl ItemsSource="{Binding HardwareSettings}" ItemTemplate="{StaticResource FieldGroupTemplate}"/>
                 </TabItem>
 
@@ -177,14 +177,34 @@
                     <ItemsControl ItemsSource="{Binding IntegrationSettings}" ItemTemplate="{StaticResource FieldGroupTemplate}"/>
                 </TabItem>
 
+                <!-- Data Management Tab -->
+                <TabItem Header="📊 Data Management" Style="{StaticResource ModernTabStyle}">
+                    <ItemsControl ItemsSource="{Binding DataManagementSettings}" ItemTemplate="{StaticResource FieldGroupTemplate}"/>
+                </TabItem>
+
+                <!-- Security Tab -->
+                <TabItem Header="🔒 Security" Style="{StaticResource ModernTabStyle}">
+                    <ItemsControl ItemsSource="{Binding SecuritySettings}" ItemTemplate="{StaticResource FieldGroupTemplate}"/>
+                </TabItem>
+
+                <!-- Weight Rules Tab (Super Admin Only) -->
+                <TabItem Header="⚖️ Weight Rules" Style="{StaticResource ModernTabStyle}">
+                    <ItemsControl ItemsSource="{Binding WeightRulesSettings}" ItemTemplate="{StaticResource FieldGroupTemplate}"/>
+                </TabItem>
+
                 <!-- User Management Tab -->
                 <TabItem Header="👥 Users" Style="{StaticResource ModernTabStyle}">
                     <ItemsControl ItemsSource="{Binding UserSettings}" ItemTemplate="{StaticResource FieldGroupTemplate}"/>
                 </TabItem>
 
                 <!-- System Health Tab -->
-                <TabItem Header="📊 System" Style="{StaticResource ModernTabStyle}">
+                <TabItem Header="🖥️ System" Style="{StaticResource ModernTabStyle}">
                     <ItemsControl ItemsSource="{Binding SystemSettings}" ItemTemplate="{StaticResource FieldGroupTemplate}"/>
+                </TabItem>
+
+                <!-- Admin Tools Tab (Super Admin Only) -->
+                <TabItem Header="⚖️ Admin Tools" Style="{StaticResource ModernTabStyle}">
+                    <ItemsControl ItemsSource="{Binding AdminToolsSettings}" ItemTemplate="{StaticResource FieldGroupTemplate}"/>
                 </TabItem>
             </TabControl>
         </ScrollViewer>
