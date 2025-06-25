@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Printing;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -3902,10 +3903,14 @@ namespace WeighbridgeSoftwareYashCotex.Views
                     var backupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 
                                                  "WeighbridgeBackups", $"backup_{DateTime.Now:yyyyMMdd_HHmmss}.db");
                     
-                    Directory.CreateDirectory(Path.GetDirectoryName(backupPath));
+                    var backupDirectory = Path.GetDirectoryName(backupPath);
+                    if (!string.IsNullOrEmpty(backupDirectory))
+                    {
+                        Directory.CreateDirectory(backupDirectory);
+                    }
                     
                     // Simulate backup process (replace with actual backup logic)
-                    System.Threading.Thread.Sleep(2000);
+                    Thread.Sleep(2000);
                     
                     MessageBox.Show($"Database backup completed successfully.\nBackup saved to: {backupPath}", 
                                    "Backup Complete", MessageBoxButton.OK, MessageBoxImage.Information);

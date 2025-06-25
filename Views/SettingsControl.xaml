@@ -1340,7 +1340,7 @@
                                         
                                         <!-- Column 3: Role & Permissions -->
                                         <StackPanel Grid.Column="4">
-                                            <TextBlock Text="Role & Permissions" Style="{StaticResource SectionHeaderStyle}" FontSize="16" Margin="0,0,0,15"/>
+                                            <TextBlock Text="Role &amp; Permissions" Style="{StaticResource SectionHeaderStyle}" FontSize="16" Margin="0,0,0,15"/>
                                             
                                             <TextBlock Text="User Role *" Style="{StaticResource FieldLabelStyle}"/>
                                             <ComboBox x:Name="NewUserRoleComboBox" Style="{StaticResource FieldComboBoxStyle}" ToolTip="Select user access level">
@@ -1383,7 +1383,7 @@
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="40">
                         <Grid MaxWidth="1400" HorizontalAlignment="Center">
                             <StackPanel>
-                            <TextBlock Text="SYSTEM INFORMATION & MANAGEMENT" Style="{StaticResource SectionHeaderStyle}"/>
+                            <TextBlock Text="SYSTEM INFORMATION &amp; MANAGEMENT" Style="{StaticResource SectionHeaderStyle}"/>
                             
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -1459,7 +1459,7 @@
                                 <!-- Column 3: Performance & Health -->
                                 <Border Grid.Column="4" Background="#FFF3E0" BorderBrush="#FF9800" BorderThickness="1" CornerRadius="8" Padding="15">
                                     <StackPanel>
-                                        <TextBlock Text="📈 PERFORMANCE & HEALTH" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
+                                        <TextBlock Text="📈 PERFORMANCE &amp; HEALTH" FontSize="14" FontWeight="Bold" Margin="0,0,0,15"/>
                                         
                                         <TextBlock Text="System Performance" Style="{StaticResource FieldLabelStyle}" FontSize="13" Margin="0,0,0,8"/>
                                         <Grid Margin="0,0,0,10">
