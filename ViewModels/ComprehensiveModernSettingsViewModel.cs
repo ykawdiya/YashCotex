@@ -237,20 +237,24 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "CompanyName", Label = "Company Name", FieldType = FieldType.Text, IsRequired = true, 
-                           Placeholder = "YASH COTEX PRIVATE LIMITED", Tooltip = "Official registered company name" },
+                           Placeholder = "YASH COTEX PRIVATE LIMITED", Tooltip = "Official registered company name",
+                           DefaultValue = "YASH COTEX PRIVATE LIMITED", Value = "YASH COTEX PRIVATE LIMITED" },
                     new() { Key = "CompanyAddressLine1", Label = "Address Line 1", FieldType = FieldType.Text, IsRequired = true,
-                           Placeholder = "Enter primary address" },
+                           Placeholder = "Enter primary address", DefaultValue = "", Value = "" },
                     new() { Key = "CompanyAddressLine2", Label = "Address Line 2", FieldType = FieldType.Text,
-                           Placeholder = "Enter secondary address" },
+                           Placeholder = "Enter secondary address", DefaultValue = "", Value = "" },
                     new() { Key = "CompanyPhone", Label = "Phone Number", FieldType = FieldType.Text, IsRequired = true,
-                           Placeholder = "Enter contact number", ValidationPattern = @"^[\+]?[0-9\-\(\)\s]+$" },
+                           Placeholder = "Enter contact number", ValidationPattern = @"^[\+]?[0-9\-\(\)\s]+$",
+                           DefaultValue = "", Value = "" },
                     new() { Key = "CompanyEmail", Label = "Email Address", FieldType = FieldType.Text,
-                           ValidationPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$", ValidationMessage = "Invalid email format" },
+                           ValidationPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$", ValidationMessage = "Invalid email format",
+                           DefaultValue = "", Value = "" },
                     new() { Key = "CompanyGSTIN", Label = "GST Number", FieldType = FieldType.Text,
-                           Placeholder = "Enter GST number", Tooltip = "Goods and Services Tax Identification Number" },
+                           Placeholder = "Enter GST number", Tooltip = "Goods and Services Tax Identification Number",
+                           DefaultValue = "", Value = "" },
                     new() { Key = "CompanyLogo", Label = "Company Logo", FieldType = FieldType.File,
                            FileFilter = "Image Files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg",
-                           Tooltip = "Supported formats: PNG, JPG, JPEG" }
+                           Tooltip = "Supported formats: PNG, JPG, JPEG", DefaultValue = "", Value = "" }
                 }
             };
 
@@ -268,19 +272,20 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "WeighbridgeComPort", Label = "Scale COM Port", FieldType = FieldType.Dropdown, IsRequired = true,
-                           Options = GetComPortOptions(), Tooltip = "Serial port for weighbridge communication" },
+                           Options = GetComPortOptions(), Tooltip = "Serial port for weighbridge communication",
+                           DefaultValue = "COM1", Value = "COM1" },
                     new() { Key = "WeighbridgeBaudRate", Label = "Baud Rate", FieldType = FieldType.Dropdown, IsRequired = true,
-                           Options = GetBaudRateOptions(), DefaultValue = "9600" },
+                           Options = GetBaudRateOptions(), DefaultValue = "9600", Value = "9600" },
                     new() { Key = "WeighbridgeDataBits", Label = "Data Bits", FieldType = FieldType.Dropdown, IsRequired = true,
-                           Options = GetDataBitsOptions(), DefaultValue = "8" },
+                           Options = GetDataBitsOptions(), DefaultValue = "8", Value = "8" },
                     new() { Key = "WeighbridgeParity", Label = "Parity", FieldType = FieldType.Dropdown, IsRequired = true,
-                           Options = GetParityOptions(), DefaultValue = "None" },
+                           Options = GetParityOptions(), DefaultValue = "None", Value = "None" },
                     new() { Key = "WeighbridgeStopBits", Label = "Stop Bits", FieldType = FieldType.Dropdown, IsRequired = true,
-                           Options = GetStopBitsOptions(), DefaultValue = "1" },
+                           Options = GetStopBitsOptions(), DefaultValue = "1", Value = "1" },
                     new() { Key = "WeighbridgeTimeout", Label = "Timeout (ms)", FieldType = FieldType.Number, IsRequired = true,
-                           DefaultValue = "5000", Tooltip = "Communication timeout in milliseconds" },
+                           DefaultValue = "5000", Value = "5000", Tooltip = "Communication timeout in milliseconds" },
                     new() { Key = "WeighbridgeCapacity", Label = "Maximum Capacity (KG)", FieldType = FieldType.Number, IsRequired = true,
-                           DefaultValue = "100000", Tooltip = "Maximum weighing capacity" }
+                           DefaultValue = "100000", Value = "100000", Tooltip = "Maximum weighing capacity" }
                 }
             };
 
@@ -293,23 +298,24 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "PrinterName", Label = "Printer Name/Model", FieldType = FieldType.Dropdown,
-                           Options = GetPrinterOptions(), Tooltip = "Select installed dot matrix printer" },
+                           Options = GetPrinterOptions(), Tooltip = "Select installed dot matrix printer",
+                           DefaultValue = "Epson LQ-310", Value = "Epson LQ-310" },
                     new() { Key = "PaperSize", Label = "Paper Size", FieldType = FieldType.Dropdown,
-                           Options = GetPaperSizeOptions(), DefaultValue = "Continuous Form (9.5\" x 11\")" },
+                           Options = GetPaperSizeOptions(), DefaultValue = "Continuous Form (9.5\" x 11\")", Value = "Continuous Form (9.5\" x 11\")" },
                     new() { Key = "CharactersPerLine", Label = "Characters Per Line", FieldType = FieldType.Dropdown,
-                           Options = GetCharactersPerLineOptions(), DefaultValue = "80" },
+                           Options = GetCharactersPerLineOptions(), DefaultValue = "80", Value = "80" },
                     new() { Key = "PrintSpeed", Label = "Print Speed", FieldType = FieldType.Dropdown,
-                           Options = GetPrintSpeedOptions(), DefaultValue = "Draft" },
+                           Options = GetPrintSpeedOptions(), DefaultValue = "Draft", Value = "Draft" },
                     new() { Key = "FontType", Label = "Font Type", FieldType = FieldType.Dropdown,
-                           Options = GetFontTypeOptions(), DefaultValue = "Draft" },
+                           Options = GetFontTypeOptions(), DefaultValue = "Draft", Value = "Draft" },
                     new() { Key = "LineSpacing", Label = "Line Spacing", FieldType = FieldType.Dropdown,
-                           Options = GetLineSpacingOptions(), DefaultValue = "6 LPI" },
+                           Options = GetLineSpacingOptions(), DefaultValue = "6 LPI", Value = "6 LPI" },
                     new() { Key = "PaperFeed", Label = "Paper Feed", FieldType = FieldType.Dropdown,
-                           Options = GetPaperFeedOptions(), DefaultValue = "Tractor Feed" },
+                           Options = GetPaperFeedOptions(), DefaultValue = "Tractor Feed", Value = "Tractor Feed" },
                     new() { Key = "AutoPrintAfterWeighment", Label = "Auto-print after weighment", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Enable automatic printing", DefaultValue = true },
+                           CheckboxText = "Enable automatic printing", DefaultValue = true, Value = true },
                     new() { Key = "FormFeedAfterPrint", Label = "Form feed after print", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Enable form feed", DefaultValue = true }
+                           CheckboxText = "Enable form feed", DefaultValue = true, Value = true }
                 }
             };
 
@@ -322,11 +328,11 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "EnableLiveWeightDisplay", Label = "Enable Live Weight Display", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Show real-time weight", DefaultValue = true },
+                           CheckboxText = "Show real-time weight", DefaultValue = true, Value = true },
                     new() { Key = "WeightRefreshRate", Label = "Refresh Rate", FieldType = FieldType.Dropdown,
-                           Options = GetRefreshRateOptions(), DefaultValue = "500ms" },
+                           Options = GetRefreshRateOptions(), DefaultValue = "500ms", Value = "500ms" },
                     new() { Key = "WeightFormat", Label = "Weight Format", FieldType = FieldType.Dropdown,
-                           Options = GetWeightFormatOptions(), DefaultValue = "0.00 kg" }
+                           Options = GetWeightFormatOptions(), DefaultValue = "0.00 kg", Value = "0.00 kg" }
                 }
             };
 
@@ -346,7 +352,7 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "EnableCameraPreview", Label = "Enable Live Preview", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Show live camera feeds in interface", DefaultValue = true }
+                           CheckboxText = "Show live camera feeds in interface", DefaultValue = true, Value = true }
                 }
             };
 
@@ -361,21 +367,22 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                     Fields = new List<SettingsField>
                     {
                         new() { Key = $"Camera{i}Enable", Label = "Enable Camera", FieldType = FieldType.Checkbox,
-                               CheckboxText = $"Enable Camera {i}", DefaultValue = false },
+                               CheckboxText = $"Enable Camera {i}", DefaultValue = false, Value = false },
                         new() { Key = $"Camera{i}Name", Label = "Camera Name", FieldType = FieldType.Text,
-                               Placeholder = GetCameraLocation(i) },
+                               Placeholder = GetCameraLocation(i), DefaultValue = GetCameraLocation(i), Value = GetCameraLocation(i) },
                         new() { Key = $"Camera{i}Protocol", Label = "Protocol", FieldType = FieldType.Dropdown, IsRequired = true,
-                               Options = GetProtocolOptions(), DefaultValue = "HTTP" },
+                               Options = GetProtocolOptions(), DefaultValue = "HTTP", Value = "HTTP" },
                         new() { Key = $"Camera{i}IpAddress", Label = "IP Address", FieldType = FieldType.Text, IsRequired = true,
-                               Placeholder = "192.168.1.100", ValidationPattern = @"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$" },
+                               Placeholder = "192.168.1.100", ValidationPattern = @"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$",
+                               DefaultValue = $"192.168.1.{100 + i}", Value = $"192.168.1.{100 + i}" },
                         new() { Key = $"Camera{i}Port", Label = "Port", FieldType = FieldType.Number, IsRequired = true,
-                               DefaultValue = "80" },
+                               DefaultValue = "80", Value = "80" },
                         new() { Key = $"Camera{i}StreamPath", Label = "Stream Path", FieldType = FieldType.Text,
-                               Placeholder = "/video.mjpg" },
+                               Placeholder = "/video.mjpg", DefaultValue = "/video.mjpg", Value = "/video.mjpg" },
                         new() { Key = $"Camera{i}Username", Label = "Username", FieldType = FieldType.Text,
-                               Placeholder = "admin" },
+                               Placeholder = "admin", DefaultValue = "admin", Value = "admin" },
                         new() { Key = $"Camera{i}Password", Label = "Password", FieldType = FieldType.Password,
-                               Placeholder = "Enter camera password" }
+                               Placeholder = "Enter camera password", DefaultValue = "", Value = "" }
                     }
                 };
                 CameraSettings.Add(cameraGroup);
@@ -775,6 +782,30 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
 
         #region Helper Methods
 
+        private SettingsField CreateField(string key, string label, FieldType fieldType, object? defaultValue = null, 
+            bool isRequired = false, string? placeholder = null, string? tooltip = null, string? checkboxText = null,
+            List<SettingsOption>? options = null, string? validationPattern = null, string? validationMessage = null,
+            string? fileFilter = null, bool isEnabled = true)
+        {
+            return new SettingsField
+            {
+                Key = key,
+                Label = label,
+                FieldType = fieldType,
+                DefaultValue = defaultValue,
+                Value = defaultValue, // Set both DefaultValue and Value
+                IsRequired = isRequired,
+                Placeholder = placeholder,
+                Tooltip = tooltip,
+                CheckboxText = checkboxText,
+                Options = options,
+                ValidationPattern = validationPattern,
+                ValidationMessage = validationMessage,
+                FileFilter = fileFilter,
+                IsEnabled = isEnabled
+            };
+        }
+
         private IEnumerable<SettingsGroup> GetAllSettingsGroups()
         {
             return CompanySettings
@@ -838,13 +869,14 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "EnableGoogleSheets", Label = "Enable Google Sheets Sync", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Enable real-time sync", DefaultValue = false },
+                           CheckboxText = "Enable real-time sync", DefaultValue = false, Value = false },
                     new() { Key = "ServiceAccountKeyFile", Label = "Service Account Key File", FieldType = FieldType.File,
-                           FileFilter = "JSON Files (*.json)|*.json", Tooltip = "Google Cloud service account key file" },
+                           FileFilter = "JSON Files (*.json)|*.json", Tooltip = "Google Cloud service account key file",
+                           DefaultValue = "", Value = "" },
                     new() { Key = "SpreadsheetId", Label = "Spreadsheet ID", FieldType = FieldType.Text,
-                           Placeholder = "Google Sheets document ID" },
+                           Placeholder = "Google Sheets document ID", DefaultValue = "", Value = "" },
                     new() { Key = "WorksheetName", Label = "Worksheet Name", FieldType = FieldType.Text,
-                           DefaultValue = "WeighmentData", Placeholder = "Sheet name for data" }
+                           DefaultValue = "WeighmentData", Value = "WeighmentData", Placeholder = "Sheet name for data" }
                 }
             };
 
