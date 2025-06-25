@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Microsoft.Win32;
 using WeighbridgeSoftwareYashCotex.Models;
+using WeighbridgeSoftwareYashCotex.Converters;
 
 namespace WeighbridgeSoftwareYashCotex.Controls
 {
@@ -60,7 +61,11 @@ namespace WeighbridgeSoftwareYashCotex.Controls
             {
                 case FieldType.Text:
                 case FieldType.Number:
-                    ((TextBox)element).SetBinding(TextBox.TextProperty, binding);
+                    var textBox = (TextBox)element;
+                    textBox.SetBinding(TextBox.TextProperty, binding);
+                    // Set initial value to avoid placeholder interference
+                    if (field.Value != null)
+                        textBox.Text = field.Value.ToString() ?? "";
                     break;
                 case FieldType.Password:
                     // Password boxes require special handling for security
@@ -69,10 +74,31 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                     passwordBox.PasswordChanged += (s, e) => field.Value = passwordBox.Password;
                     break;
                 case FieldType.Dropdown:
-                    ((ComboBox)element).SetBinding(ComboBox.SelectedValueProperty, binding);
+                    var comboBox = (ComboBox)element;
+                    comboBox.SetBinding(ComboBox.SelectedValueProperty, binding);
+                    // Set initial selected value
+                    if (field.Value != null)
+                        comboBox.SelectedValue = field.Value;
                     break;
                 case FieldType.Checkbox:
-                    ((CheckBox)element).SetBinding(CheckBox.IsCheckedProperty, binding);
+                    var checkBox = (CheckBox)element;
+                    // Handle boolean conversion properly
+                    var checkBoxBinding = new Binding("Value")
+                    {
+                        Source = field,
+                        Mode = BindingMode.TwoWay,
+                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                        Converter = new BooleanConverter()
+                    };
+                    checkBox.SetBinding(CheckBox.IsCheckedProperty, checkBoxBinding);
+                    break;
+                case FieldType.File:
+                    var filePanel = (StackPanel)element;
+                    var fileTextBox = (TextBox)filePanel.Children[0];
+                    fileTextBox.SetBinding(TextBox.TextProperty, binding);
+                    // Set initial value
+                    if (field.Value != null)
+                        fileTextBox.Text = field.Value.ToString() ?? "";
                     break;
             }
 
@@ -255,13 +281,18 @@ namespace WeighbridgeSoftwareYashCotex.Controls
         private void SetPlaceholderBehavior(TextBox textBox)
         {
             var placeholder = textBox.Tag.ToString();
+            bool isPlaceholderShown = false;
+            
+            // Check if textBox already has a real value
+            bool hasRealValue = !string.IsNullOrEmpty(textBox.Text) && textBox.Text != placeholder;
             
             textBox.GotFocus += (s, e) =>
             {
-                if (textBox.Text == placeholder)
+                if (isPlaceholderShown && textBox.Text == placeholder)
                 {
                     textBox.Text = "";
                     textBox.Foreground = System.Windows.Media.Brushes.Black;
+                    isPlaceholderShown = false;
                 }
             };
             
@@ -271,14 +302,26 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                 {
                     textBox.Text = placeholder;
                     textBox.Foreground = System.Windows.Media.Brushes.Gray;
+                    isPlaceholderShown = true;
+                }
+                else
+                {
+                    textBox.Foreground = System.Windows.Media.Brushes.Black;
+                    isPlaceholderShown = false;
                 }
             };
             
-            // Set initial placeholder
-            if (string.IsNullOrWhiteSpace(textBox.Text))
+            // Set initial placeholder only if no real value exists
+            if (!hasRealValue && string.IsNullOrWhiteSpace(textBox.Text))
             {
                 textBox.Text = placeholder;
                 textBox.Foreground = System.Windows.Media.Brushes.Gray;
+                isPlaceholderShown = true;
+            }
+            else if (hasRealValue)
+            {
+                textBox.Foreground = System.Windows.Media.Brushes.Black;
+                isPlaceholderShown = false;
             }
         }
 
