@@ -834,28 +834,55 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
             var companyGroup = CompanySettings.FirstOrDefault();
             if (companyGroup != null)
             {
-                var values = new Dictionary<string, object?>
-                {
-                    { "CompanyName", _settingsService.CompanyName },
-                    { "CompanyAddressLine1", _settingsService.CompanyAddressLine1 },
-                    { "CompanyAddressLine2", _settingsService.CompanyAddressLine2 },
-                    { "CompanyPhone", _settingsService.CompanyPhone },
-                    { "CompanyEmail", _settingsService.CompanyEmail },
-                    { "CompanyGSTIN", _settingsService.CompanyGSTIN },
-                    { "CompanyLogo", _settingsService.CompanyLogo }
-                };
-                companyGroup.SetValues(values);
+                // Only set values that are not null/empty from settings service
+                // This preserves our default values
+                var values = new Dictionary<string, object?>();
+                
+                if (!string.IsNullOrEmpty(_settingsService.CompanyName))
+                    values["CompanyName"] = _settingsService.CompanyName;
+                if (!string.IsNullOrEmpty(_settingsService.CompanyAddressLine1))
+                    values["CompanyAddressLine1"] = _settingsService.CompanyAddressLine1;
+                if (!string.IsNullOrEmpty(_settingsService.CompanyAddressLine2))
+                    values["CompanyAddressLine2"] = _settingsService.CompanyAddressLine2;
+                if (!string.IsNullOrEmpty(_settingsService.CompanyPhone))
+                    values["CompanyPhone"] = _settingsService.CompanyPhone;
+                if (!string.IsNullOrEmpty(_settingsService.CompanyEmail))
+                    values["CompanyEmail"] = _settingsService.CompanyEmail;
+                if (!string.IsNullOrEmpty(_settingsService.CompanyGSTIN))
+                    values["CompanyGSTIN"] = _settingsService.CompanyGSTIN;
+                if (!string.IsNullOrEmpty(_settingsService.CompanyLogo))
+                    values["CompanyLogo"] = _settingsService.CompanyLogo;
+                
+                // Only call SetValues if we have values to set
+                if (values.Any())
+                    companyGroup.SetValues(values);
             }
         }
 
         private void LoadHardwareValues()
         {
-            // Load hardware values from settings service
+            // Load hardware values from settings service - only if they exist
+            // This preserves our default values for demo purposes
+            foreach (var group in HardwareSettings)
+            {
+                if (group.Title.Contains("Weighbridge") && !string.IsNullOrEmpty(_settingsService.WeighbridgeComPort))
+                {
+                    var values = new Dictionary<string, object?>();
+                    if (!string.IsNullOrEmpty(_settingsService.WeighbridgeComPort))
+                        values["WeighbridgeComPort"] = _settingsService.WeighbridgeComPort;
+                    if (_settingsService.WeighbridgeBaudRate.HasValue)
+                        values["WeighbridgeBaudRate"] = _settingsService.WeighbridgeBaudRate.ToString();
+                    
+                    if (values.Any())
+                        group.SetValues(values);
+                }
+            }
         }
 
         private void LoadCameraValues()
         {
-            // Load camera values from settings service
+            // Load camera values from settings service - preserve defaults for demo
+            // In a real application, this would load actual saved camera settings
         }
 
         private void InitializeIntegrationSettings()
@@ -889,11 +916,11 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "EnableAutomaticBackup", Label = "Enable Automatic Backup", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Schedule automatic backups", DefaultValue = true },
+                           CheckboxText = "Schedule automatic backups", DefaultValue = true, Value = true },
                     new() { Key = "BackupLocation", Label = "Backup Location", FieldType = FieldType.File,
-                           Tooltip = "Directory to store backup files" },
+                           Tooltip = "Directory to store backup files", DefaultValue = "", Value = "" },
                     new() { Key = "BackupFrequency", Label = "Backup Frequency", FieldType = FieldType.Dropdown,
-                           Options = GetBackupFrequencyOptions(), DefaultValue = "Daily" }
+                           Options = GetBackupFrequencyOptions(), DefaultValue = "Daily", Value = "Daily" }
                 }
             };
 
@@ -912,7 +939,7 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "NewMaterial", Label = "Add New Material", FieldType = FieldType.Text,
-                           Placeholder = "Enter material name" }
+                           Placeholder = "Enter material name", DefaultValue = "", Value = "" }
                 }
             };
 
@@ -925,7 +952,7 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "NewAddress", Label = "Add New Address", FieldType = FieldType.Text,
-                           Placeholder = "Enter address details" }
+                           Placeholder = "Enter address details", DefaultValue = "", Value = "" }
                 }
             };
 
@@ -943,11 +970,11 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "AdminSessionTimeout", Label = "Admin Session Timeout (minutes)", FieldType = FieldType.Number,
-                           DefaultValue = "5", Tooltip = "Auto-logout time for admin users" },
+                           DefaultValue = "5", Value = "5", Tooltip = "Auto-logout time for admin users" },
                     new() { Key = "SuperAdminSessionTimeout", Label = "Super Admin Session Timeout (minutes)", FieldType = FieldType.Number,
-                           DefaultValue = "1", Tooltip = "Auto-logout time for super admin" },
+                           DefaultValue = "1", Value = "1", Tooltip = "Auto-logout time for super admin" },
                     new() { Key = "EnableAutoLogout", Label = "Enable auto-logout on inactivity", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Auto-logout inactive users", DefaultValue = true }
+                           CheckboxText = "Auto-logout inactive users", DefaultValue = true, Value = true }
                 }
             };
 
@@ -965,15 +992,15 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "MinWeightDifference", Label = "Minimum Weight Difference (KG)", FieldType = FieldType.Number,
-                           DefaultValue = "5.0", Tooltip = "Minimum difference between entry and exit weights" },
+                           DefaultValue = "5.0", Value = "5.0", Tooltip = "Minimum difference between entry and exit weights" },
                     new() { Key = "MaxWeightVariance", Label = "Maximum Weight Variance (%)", FieldType = FieldType.Number,
-                           DefaultValue = "10.0", Tooltip = "Maximum allowed weight variance percentage" },
+                           DefaultValue = "10.0", Value = "10.0", Tooltip = "Maximum allowed weight variance percentage" },
                     new() { Key = "StabilityTimeout", Label = "Stability Timeout (seconds)", FieldType = FieldType.Number,
-                           DefaultValue = "30", Tooltip = "Time to wait for weight stabilization" },
+                           DefaultValue = "30", Value = "30", Tooltip = "Time to wait for weight stabilization" },
                     new() { Key = "AllowNegativeWeights", Label = "Allow negative weight calculations", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Enable negative weight calculations", DefaultValue = false },
+                           CheckboxText = "Enable negative weight calculations", DefaultValue = false, Value = false },
                     new() { Key = "EnableWeightValidation", Label = "Enable weight validation rules", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Apply weight validation", DefaultValue = true }
+                           CheckboxText = "Apply weight validation", DefaultValue = true, Value = true }
                 }
             };
 
@@ -986,17 +1013,17 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "MaxAdjustmentLimit", Label = "Maximum Adjustment Limit (KG)", FieldType = FieldType.Number,
-                           DefaultValue = "50.0", Tooltip = "Maximum allowed manual weight adjustment" },
+                           DefaultValue = "50.0", Value = "50.0", Tooltip = "Maximum allowed manual weight adjustment" },
                     new() { Key = "AdjustmentReasonCategories", Label = "Adjustment Reason Categories", FieldType = FieldType.Dropdown,
-                           Options = GetAdjustmentReasonOptions() },
+                           Options = GetAdjustmentReasonOptions(), DefaultValue = "Calibration", Value = "Calibration" },
                     new() { Key = "AllowManualAdjustments", Label = "Allow manual weight adjustments", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Enable manual adjustments", DefaultValue = false },
+                           CheckboxText = "Enable manual adjustments", DefaultValue = false, Value = false },
                     new() { Key = "RequireJustification", Label = "Require justification for adjustments", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Require adjustment reason", DefaultValue = true },
+                           CheckboxText = "Require adjustment reason", DefaultValue = true, Value = true },
                     new() { Key = "LogAllAdjustments", Label = "Log all weight adjustments", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Enable adjustment logging", DefaultValue = true },
+                           CheckboxText = "Enable adjustment logging", DefaultValue = true, Value = true },
                     new() { Key = "RequireSecondApproval", Label = "Require second approval for large adjustments", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Dual approval for large adjustments", DefaultValue = true }
+                           CheckboxText = "Dual approval for large adjustments", DefaultValue = true, Value = true }
                 }
             };
 
@@ -1014,23 +1041,23 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "NewUsername", Label = "Username", FieldType = FieldType.Text, IsRequired = true,
-                           Placeholder = "Enter username" },
+                           Placeholder = "Enter username", DefaultValue = "", Value = "" },
                     new() { Key = "NewPassword", Label = "Password", FieldType = FieldType.Password, IsRequired = true,
-                           Placeholder = "Enter password" },
+                           Placeholder = "Enter password", DefaultValue = "", Value = "" },
                     new() { Key = "ConfirmPassword", Label = "Confirm Password", FieldType = FieldType.Password, IsRequired = true,
-                           Placeholder = "Confirm password" },
+                           Placeholder = "Confirm password", DefaultValue = "", Value = "" },
                     new() { Key = "FullName", Label = "Full Name", FieldType = FieldType.Text, IsRequired = true,
-                           Placeholder = "Enter full name" },
+                           Placeholder = "Enter full name", DefaultValue = "", Value = "" },
                     new() { Key = "EmailAddress", Label = "Email Address", FieldType = FieldType.Text,
-                           ValidationPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$" },
+                           ValidationPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$", DefaultValue = "", Value = "" },
                     new() { Key = "PhoneNumber", Label = "Phone Number", FieldType = FieldType.Text,
-                           Placeholder = "Enter phone number" },
+                           Placeholder = "Enter phone number", DefaultValue = "", Value = "" },
                     new() { Key = "UserRole", Label = "User Role", FieldType = FieldType.Dropdown, IsRequired = true,
-                           Options = GetUserRoleOptions(), DefaultValue = "User" },
+                           Options = GetUserRoleOptions(), DefaultValue = "User", Value = "User" },
                     new() { Key = "Department", Label = "Department", FieldType = FieldType.Dropdown,
-                           Options = GetDepartmentOptions(), DefaultValue = "Operations" },
+                           Options = GetDepartmentOptions(), DefaultValue = "Operations", Value = "Operations" },
                     new() { Key = "AccountActive", Label = "Account Active", FieldType = FieldType.Checkbox,
-                           CheckboxText = "Enable account", DefaultValue = true }
+                           CheckboxText = "Enable account", DefaultValue = true, Value = true }
                 }
             };
 

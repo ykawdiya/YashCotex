@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -31,6 +32,8 @@ namespace WeighbridgeSoftwareYashCotex.Controls
             
             if (field != null)
             {
+                // Set the DataContext so the XAML bindings work
+                control.DataContext = field;
                 control.CreateFieldContent(field);
             }
         }
@@ -49,7 +52,15 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                 _ => CreateTextBox(field)
             };
 
-            // Bind the value
+            // Set up binding and initial values based on field type
+            SetupFieldBinding(element, field);
+
+            FieldContent.Content = element;
+        }
+
+        private void SetupFieldBinding(FrameworkElement element, SettingsField field)
+        {
+            // Common binding setup
             var binding = new Binding("Value")
             {
                 Source = field,
@@ -63,26 +74,64 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                 case FieldType.Number:
                     var textBox = (TextBox)element;
                     textBox.SetBinding(TextBox.TextProperty, binding);
-                    // Set initial value to avoid placeholder interference
-                    if (field.Value != null)
-                        textBox.Text = field.Value.ToString() ?? "";
+                    
+                    // Force initial value to be visible
+                    textBox.Loaded += (s, e) =>
+                    {
+                        if (field.Value != null && !string.IsNullOrEmpty(field.Value.ToString()))
+                        {
+                            textBox.Text = field.Value.ToString();
+                            textBox.Foreground = System.Windows.Media.Brushes.Black;
+                        }
+                    };
                     break;
+
                 case FieldType.Password:
-                    // Password boxes require special handling for security
                     var passwordBox = (PasswordBox)element;
+                    // Set initial value immediately
                     passwordBox.Password = field.Value?.ToString() ?? "";
+                    
+                    // Set up two-way binding manually for PasswordBox
                     passwordBox.PasswordChanged += (s, e) => field.Value = passwordBox.Password;
+                    
+                    // Update password when field value changes
+                    field.PropertyChanged += (s, e) =>
+                    {
+                        if (e.PropertyName == "Value" && passwordBox.Password != field.Value?.ToString())
+                        {
+                            passwordBox.Password = field.Value?.ToString() ?? "";
+                        }
+                    };
                     break;
+
                 case FieldType.Dropdown:
                     var comboBox = (ComboBox)element;
                     comboBox.SetBinding(ComboBox.SelectedValueProperty, binding);
-                    // Set initial selected value
-                    if (field.Value != null)
-                        comboBox.SelectedValue = field.Value;
+                    
+                    // Ensure selection is visible after loading
+                    comboBox.Loaded += (s, e) =>
+                    {
+                        if (field.Value != null)
+                        {
+                            comboBox.SelectedValue = field.Value;
+                            // If SelectedValue doesn't work, try finding by string match
+                            if (comboBox.SelectedItem == null && field.Options != null)
+                            {
+                                var matchingOption = field.Options.FirstOrDefault(o => 
+                                    o.Value?.ToString() == field.Value.ToString());
+                                if (matchingOption != null)
+                                {
+                                    comboBox.SelectedItem = matchingOption;
+                                }
+                            }
+                        }
+                    };
                     break;
+
                 case FieldType.Checkbox:
                     var checkBox = (CheckBox)element;
-                    // Handle boolean conversion properly
+                    
+                    // Set up boolean conversion binding
                     var checkBoxBinding = new Binding("Value")
                     {
                         Source = field,
@@ -91,18 +140,56 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                         Converter = new BooleanConverter()
                     };
                     checkBox.SetBinding(CheckBox.IsCheckedProperty, checkBoxBinding);
+                    
+                    // Force initial checked state
+                    checkBox.Loaded += (s, e) =>
+                    {
+                        if (field.Value != null)
+                        {
+                            if (bool.TryParse(field.Value.ToString(), out bool isChecked))
+                            {
+                                checkBox.IsChecked = isChecked;
+                            }
+                            else
+                            {
+                                checkBox.IsChecked = field.Value as bool? ?? false;
+                            }
+                        }
+                    };
                     break;
+
                 case FieldType.File:
                     var filePanel = (StackPanel)element;
                     var fileTextBox = (TextBox)filePanel.Children[0];
                     fileTextBox.SetBinding(TextBox.TextProperty, binding);
-                    // Set initial value
+                    
+                    // Set initial file path
+                    fileTextBox.Loaded += (s, e) =>
+                    {
+                        if (field.Value != null)
+                        {
+                            fileTextBox.Text = field.Value.ToString();
+                        }
+                    };
+                    break;
+
+                case FieldType.Color:
+                    var colorBorder = (Border)element;
+                    // Set initial color if available
                     if (field.Value != null)
-                        fileTextBox.Text = field.Value.ToString() ?? "";
+                    {
+                        try
+                        {
+                            var color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(field.Value.ToString());
+                            colorBorder.Background = new System.Windows.Media.SolidColorBrush(color);
+                        }
+                        catch
+                        {
+                            // Use default color if parsing fails
+                        }
+                    }
                     break;
             }
-
-            FieldContent.Content = element;
         }
 
         private TextBox CreateTextBox(SettingsField field)
@@ -110,8 +197,17 @@ namespace WeighbridgeSoftwareYashCotex.Controls
             var textBox = new TextBox
             {
                 Style = (Style)FindResource("ModernTextBoxStyle"),
-                ToolTip = field.Tooltip
+                ToolTip = field.Tooltip,
+                IsEnabled = field.IsEnabled
             };
+            
+            // Bind IsEnabled to field's IsEnabled property
+            var enabledBinding = new Binding("IsEnabled")
+            {
+                Source = field,
+                Mode = BindingMode.OneWay
+            };
+            textBox.SetBinding(TextBox.IsEnabledProperty, enabledBinding);
             
             if (!string.IsNullOrEmpty(field.Placeholder))
             {
@@ -125,11 +221,22 @@ namespace WeighbridgeSoftwareYashCotex.Controls
 
         private PasswordBox CreatePasswordBox(SettingsField field)
         {
-            return new PasswordBox
+            var passwordBox = new PasswordBox
             {
                 Style = (Style)FindResource("ModernInputStyle"),
-                ToolTip = field.Tooltip
+                ToolTip = field.Tooltip,
+                IsEnabled = field.IsEnabled
             };
+            
+            // Bind IsEnabled to field's IsEnabled property
+            var enabledBinding = new Binding("IsEnabled")
+            {
+                Source = field,
+                Mode = BindingMode.OneWay
+            };
+            passwordBox.SetBinding(PasswordBox.IsEnabledProperty, enabledBinding);
+            
+            return passwordBox;
         }
 
         private TextBox CreateNumberBox(SettingsField field)
@@ -152,12 +259,32 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                 Style = (Style)FindResource("ModernComboBoxStyle"),
                 ToolTip = field.Tooltip,
                 DisplayMemberPath = "Text",
-                SelectedValuePath = "Value"
+                SelectedValuePath = "Value",
+                IsEnabled = field.IsEnabled
             };
+
+            // Bind IsEnabled to field's IsEnabled property
+            var enabledBinding = new Binding("IsEnabled")
+            {
+                Source = field,
+                Mode = BindingMode.OneWay
+            };
+            comboBox.SetBinding(ComboBox.IsEnabledProperty, enabledBinding);
 
             if (field.Options != null)
             {
                 comboBox.ItemsSource = field.Options;
+                
+                // Pre-select the default value if it exists
+                if (field.Value != null)
+                {
+                    var matchingOption = field.Options.FirstOrDefault(o => 
+                        o.Value?.ToString() == field.Value.ToString());
+                    if (matchingOption != null)
+                    {
+                        comboBox.SelectedItem = matchingOption;
+                    }
+                }
             }
 
             return comboBox;
@@ -165,12 +292,36 @@ namespace WeighbridgeSoftwareYashCotex.Controls
 
         private CheckBox CreateCheckBox(SettingsField field)
         {
-            return new CheckBox
+            var checkBox = new CheckBox
             {
                 Style = (Style)FindResource("ModernCheckBoxStyle"),
                 Content = field.CheckboxText ?? "",
-                ToolTip = field.Tooltip
+                ToolTip = field.Tooltip,
+                IsEnabled = field.IsEnabled
             };
+            
+            // Bind IsEnabled to field's IsEnabled property
+            var enabledBinding = new Binding("IsEnabled")
+            {
+                Source = field,
+                Mode = BindingMode.OneWay
+            };
+            checkBox.SetBinding(CheckBox.IsEnabledProperty, enabledBinding);
+            
+            // Set initial checked state
+            if (field.Value != null)
+            {
+                if (bool.TryParse(field.Value.ToString(), out bool isChecked))
+                {
+                    checkBox.IsChecked = isChecked;
+                }
+                else if (field.Value is bool boolValue)
+                {
+                    checkBox.IsChecked = boolValue;
+                }
+            }
+            
+            return checkBox;
         }
 
         private StackPanel CreateFileSelector(SettingsField field)
@@ -182,15 +333,32 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                 Style = (Style)FindResource("ModernTextBoxStyle"),
                 IsReadOnly = true,
                 MinWidth = 200,
-                ToolTip = field.Tooltip
+                ToolTip = field.Tooltip,
+                IsEnabled = field.IsEnabled
             };
             
             var button = new Button
             {
                 Content = "📁 Browse...",
                 Style = (Style)FindResource("ModernButtonStyle"),
-                Margin = new Thickness(8, 0, 0, 0)
+                Margin = new Thickness(8, 0, 0, 0),
+                IsEnabled = field.IsEnabled
             };
+            
+            // Bind IsEnabled to field's IsEnabled property for both controls
+            var enabledBinding = new Binding("IsEnabled")
+            {
+                Source = field,
+                Mode = BindingMode.OneWay
+            };
+            textBox.SetBinding(TextBox.IsEnabledProperty, enabledBinding);
+            button.SetBinding(Button.IsEnabledProperty, enabledBinding);
+            
+            // Set initial file path if exists
+            if (field.Value != null && !string.IsNullOrEmpty(field.Value.ToString()))
+            {
+                textBox.Text = field.Value.ToString();
+            }
             
             button.Click += (s, e) =>
             {
