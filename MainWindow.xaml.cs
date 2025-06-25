@@ -314,6 +314,8 @@ namespace WeighbridgeSoftwareYashCotex
                     printControl.Dispose();
                 else if (_currentFormControl is SettingsControl settingsControl)
                     settingsControl.Dispose();
+                else if (_currentFormControl is ModernSettingsControl modernSettingsControl)
+                    modernSettingsControl.Dispose();
                 
                 _currentFormControl = null;
                 
@@ -494,38 +496,36 @@ namespace WeighbridgeSoftwareYashCotex
                     oldExit.Dispose();
                 else if (_currentFormControl is PrintControl oldPrint)
                     oldPrint.Dispose();
+                else if (_currentFormControl is SettingsControl oldSettings)
+                    oldSettings.Dispose();
+                else if (_currentFormControl is ModernSettingsControl oldModernSettings)
+                    oldModernSettings.Dispose();
                 
-                Console.WriteLine("Disposed old controls, creating SettingsControl...");
-                var settingsControl = new SettingsControl();
-                Console.WriteLine("SettingsControl created successfully");
+                Console.WriteLine("Disposed old controls, creating ModernSettingsControl...");
+                var modernSettings = new ModernSettingsControl();
+                Console.WriteLine("ModernSettingsControl created successfully");
                 
-                // Pass authentication service to settings control for role-based access
-                if (settingsControl is SettingsControl settings)
-                {
-                    settings.SetAuthenticationService(_authService);
-                }
-                
-                settingsControl.FormCompleted += (s, message) => {
+                modernSettings.FormCompleted += (s, message) => {
                     LatestOperation.Text = message;
                     ShowHome();
                 };
                 
-                _currentFormControl = settingsControl;
+                _currentFormControl = modernSettings;
                 
                 // Hide all camera grids and live weight panel
                 LeftCamerasGrid.Visibility = Visibility.Collapsed;
                 RightCamerasGrid.Visibility = Visibility.Collapsed;
                 LiveWeightPanel.Visibility = Visibility.Collapsed;
                 
-                // Show settings in full-screen overlay
-                FullScreenFormPresenter.Content = settingsControl;
+                // Show modern settings in full-screen overlay
+                FullScreenFormPresenter.Content = modernSettings;
                 FullScreenFormPresenter.Visibility = Visibility.Visible;
                 
-                LatestOperation.Text = "Settings opened";
+                LatestOperation.Text = "Modern Settings opened";
             }
             catch (Exception ex)
             {
-                var errorMessage = $"Error opening settings: {ex.Message}";
+                var errorMessage = $"Error opening modern settings: {ex.Message}";
                 Console.WriteLine($"SETTINGS ERROR: {errorMessage}");
                 Console.WriteLine($"Exception type: {ex.GetType().Name}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
@@ -533,7 +533,7 @@ namespace WeighbridgeSoftwareYashCotex
                 LatestOperation.Text = errorMessage;
                 
                 // Show error dialog for user visibility
-                MessageBox.Show($"Failed to open settings:\n\n{ex.Message}", 
+                MessageBox.Show($"Failed to open modern settings:\n\n{ex.Message}", 
                     "Settings Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -1063,6 +1063,8 @@ namespace WeighbridgeSoftwareYashCotex
                 printControl.Dispose();
             else if (_currentFormControl is SettingsControl settingsControl)
                 settingsControl.Dispose();
+            else if (_currentFormControl is ModernSettingsControl modernSettingsControl)
+                modernSettingsControl.Dispose();
         }
     }
 }

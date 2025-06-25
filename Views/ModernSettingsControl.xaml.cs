@@ -20,13 +20,25 @@ namespace WeighbridgeSoftwareYashCotex.Views
             // Initialize any additional setup here
             if (DataContext is ModernSettingsViewModel viewModel)
             {
-                // Subscribe to view model events if needed
+                // Subscribe to view model events
+                viewModel.SettingsOperationCompleted += OnSettingsOperationCompleted;
             }
+        }
+
+        private void OnSettingsOperationCompleted(object? sender, string message)
+        {
+            // Forward the event to the parent
+            FormCompleted?.Invoke(this, message);
         }
 
         public void Dispose()
         {
             // Clean up resources
+            if (DataContext is ModernSettingsViewModel viewModel)
+            {
+                viewModel.SettingsOperationCompleted -= OnSettingsOperationCompleted;
+            }
+            
             if (DataContext is IDisposable disposableViewModel)
             {
                 disposableViewModel.Dispose();

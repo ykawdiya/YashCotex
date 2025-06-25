@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Microsoft.Win32;
 using WeighbridgeSoftwareYashCotex.Models;
 
 namespace WeighbridgeSoftwareYashCotex.Controls
@@ -167,7 +168,7 @@ namespace WeighbridgeSoftwareYashCotex.Controls
             
             button.Click += (s, e) =>
             {
-                var dialog = new Microsoft.Win32.OpenFileDialog
+                var dialog = new OpenFileDialog
                 {
                     Filter = field.FileFilter ?? "All Files (*.*)|*.*"
                 };
@@ -201,17 +202,51 @@ namespace WeighbridgeSoftwareYashCotex.Controls
             
             border.MouseLeftButtonUp += (s, e) =>
             {
-                // Implement color picker dialog
-                var colorDialog = new System.Windows.Forms.ColorDialog();
-                if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                // Simple color picker with predefined colors
+                var colorWindow = new Window
                 {
-                    var color = System.Windows.Media.Color.FromRgb(
-                        colorDialog.Color.R, 
-                        colorDialog.Color.G, 
-                        colorDialog.Color.B);
-                    border.Background = new System.Windows.Media.SolidColorBrush(color);
-                    field.Value = color.ToString();
+                    Title = "Select Color",
+                    Width = 300,
+                    Height = 200,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                    Owner = Window.GetWindow(this)
+                };
+
+                var colorPanel = new WrapPanel { Margin = new Thickness(10) };
+                var predefinedColors = new[]
+                {
+                    "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF",
+                    "#FFA500", "#800080", "#008000", "#FFC0CB", "#A52A2A", "#808080",
+                    "#000000", "#FFFFFF", "#C0C0C0", "#800000", "#808000", "#008080"
+                };
+
+                foreach (var colorHex in predefinedColors)
+                {
+                    var colorBorder = new Border
+                    {
+                        Width = 30,
+                        Height = 30,
+                        Margin = new Thickness(2),
+                        Background = new System.Windows.Media.SolidColorBrush(
+                            (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(colorHex)),
+                        BorderBrush = System.Windows.Media.Brushes.Black,
+                        BorderThickness = new Thickness(1),
+                        Cursor = System.Windows.Input.Cursors.Hand
+                    };
+
+                    colorBorder.MouseLeftButtonUp += (cs, ce) =>
+                    {
+                        var selectedColor = ((System.Windows.Media.SolidColorBrush)colorBorder.Background).Color;
+                        border.Background = new System.Windows.Media.SolidColorBrush(selectedColor);
+                        field.Value = selectedColor.ToString();
+                        colorWindow.Close();
+                    };
+
+                    colorPanel.Children.Add(colorBorder);
                 }
+
+                colorWindow.Content = colorPanel;
+                colorWindow.ShowDialog();
             };
             
             return border;

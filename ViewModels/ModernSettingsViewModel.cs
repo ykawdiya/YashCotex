@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -13,6 +15,8 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
     {
         private readonly SettingsService _settingsService;
         private bool _isLoading;
+
+        public event EventHandler<string>? SettingsOperationCompleted;
 
         public ObservableCollection<SettingsGroup> CompanySettings { get; }
         public ObservableCollection<SettingsGroup> HardwareSettings { get; }
@@ -292,6 +296,9 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 
                 MessageBox.Show("All settings saved successfully!", "Settings Saved", 
                               MessageBoxButton.OK, MessageBoxImage.Information);
+                
+                // Notify that settings were saved successfully
+                SettingsOperationCompleted?.Invoke(this, "Settings saved successfully");
             }
             catch (Exception ex)
             {
@@ -374,6 +381,7 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
         private void Cancel()
         {
             LoadCurrentValues(); // Reload original values
+            SettingsOperationCompleted?.Invoke(this, "Settings cancelled");
         }
 
         // Helper methods to get options for dropdowns

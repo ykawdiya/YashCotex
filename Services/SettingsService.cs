@@ -34,14 +34,24 @@ public class SettingsService
     [field: NonSerialized] public event EventHandler? PrinterSettingsChanged;
     [field: NonSerialized] public event EventHandler? SystemSettingsChanged;
     
+    // Weighbridge Settings
     public string? WeighbridgeComPort { get; set; } = "COM1";
+    public int? WeighbridgeBaudRate { get; set; } = 9600;
+    public int? WeighbridgeDataBits { get; set; } = 8;
+    public string? WeighbridgeStopBits { get; set; } = "One";
+    public double? WeighbridgeCapacity { get; set; } = 50000;
+    public int? WeighbridgeTimeout { get; set; } = 30;
+    
+    // Company Settings
     public string CompanyName { get; set; } = "YASH COTEX";
     public string CompanyAddress { get; set; } = "Company Address Here";
     public string CompanyAddressLine1 { get; set; } = "";
     public string CompanyAddressLine2 { get; set; } = "";
+    public string CompanyCity { get; set; } = "";
     public string CompanyEmail { get; set; } = "email@company.com";
     public string CompanyPhone { get; set; } = "Phone: +91-9876543210";
     public string CompanyGSTIN { get; set; } = "GSTIN: 22AAAAA0000A1Z5";
+    public string CompanyLicense { get; set; } = "";
     public string CompanyLogo { get; set; } = "Assets/logo.png";
     
     public List<WeightRule>? WeightRules { get; set; }
