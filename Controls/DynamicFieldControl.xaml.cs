@@ -60,6 +60,9 @@ namespace WeighbridgeSoftwareYashCotex.Controls
 
         private void SetupFieldBinding(FrameworkElement element, SettingsField field)
         {
+            // Set the element's DataContext first to ensure proper binding
+            element.DataContext = field;
+
             // Common binding setup
             var binding = new Binding("Value")
             {
@@ -73,23 +76,25 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                 case FieldType.Text:
                 case FieldType.Number:
                     var textBox = (TextBox)element;
-                    textBox.SetBinding(TextBox.TextProperty, binding);
                     
-                    // Force initial value to be visible
-                    textBox.Loaded += (s, e) =>
+                    // Set initial value BEFORE binding to avoid conflicts
+                    if (field.Value != null)
                     {
-                        if (field.Value != null && !string.IsNullOrEmpty(field.Value.ToString()))
-                        {
-                            textBox.Text = field.Value.ToString();
-                            textBox.Foreground = System.Windows.Media.Brushes.Black;
-                        }
-                    };
+                        textBox.Text = field.Value.ToString();
+                    }
+                    
+                    // Now set up the binding
+                    textBox.SetBinding(TextBox.TextProperty, binding);
                     break;
 
                 case FieldType.Password:
                     var passwordBox = (PasswordBox)element;
-                    // Set initial value immediately
-                    passwordBox.Password = field.Value?.ToString() ?? "";
+                    
+                    // Set initial value BEFORE setting up event handlers
+                    if (field.Value != null)
+                    {
+                        passwordBox.Password = field.Value.ToString();
+                    }
                     
                     // Set up two-way binding manually for PasswordBox
                     passwordBox.PasswordChanged += (s, e) => field.Value = passwordBox.Password;
@@ -106,30 +111,37 @@ namespace WeighbridgeSoftwareYashCotex.Controls
 
                 case FieldType.Dropdown:
                     var comboBox = (ComboBox)element;
-                    comboBox.SetBinding(ComboBox.SelectedValueProperty, binding);
                     
-                    // Ensure selection is visible after loading
-                    comboBox.Loaded += (s, e) =>
+                    // Set initial selection BEFORE binding
+                    if (field.Value != null && field.Options != null)
                     {
-                        if (field.Value != null)
+                        var matchingOption = field.Options.FirstOrDefault(o => 
+                            o.Value?.ToString() == field.Value.ToString());
+                        if (matchingOption != null)
                         {
-                            comboBox.SelectedValue = field.Value;
-                            // If SelectedValue doesn't work, try finding by string match
-                            if (comboBox.SelectedItem == null && field.Options != null)
-                            {
-                                var matchingOption = field.Options.FirstOrDefault(o => 
-                                    o.Value?.ToString() == field.Value.ToString());
-                                if (matchingOption != null)
-                                {
-                                    comboBox.SelectedItem = matchingOption;
-                                }
-                            }
+                            comboBox.SelectedItem = matchingOption;
                         }
-                    };
+                    }
+                    
+                    // Now set up the binding
+                    comboBox.SetBinding(ComboBox.SelectedValueProperty, binding);
                     break;
 
                 case FieldType.Checkbox:
                     var checkBox = (CheckBox)element;
+                    
+                    // Set initial checked state BEFORE binding
+                    if (field.Value != null)
+                    {
+                        if (bool.TryParse(field.Value.ToString(), out bool isChecked))
+                        {
+                            checkBox.IsChecked = isChecked;
+                        }
+                        else if (field.Value is bool boolValue)
+                        {
+                            checkBox.IsChecked = boolValue;
+                        }
+                    }
                     
                     // Set up boolean conversion binding
                     var checkBoxBinding = new Binding("Value")
@@ -140,37 +152,20 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                         Converter = new BooleanConverter()
                     };
                     checkBox.SetBinding(CheckBox.IsCheckedProperty, checkBoxBinding);
-                    
-                    // Force initial checked state
-                    checkBox.Loaded += (s, e) =>
-                    {
-                        if (field.Value != null)
-                        {
-                            if (bool.TryParse(field.Value.ToString(), out bool isChecked))
-                            {
-                                checkBox.IsChecked = isChecked;
-                            }
-                            else
-                            {
-                                checkBox.IsChecked = field.Value as bool? ?? false;
-                            }
-                        }
-                    };
                     break;
 
                 case FieldType.File:
                     var filePanel = (StackPanel)element;
                     var fileTextBox = (TextBox)filePanel.Children[0];
-                    fileTextBox.SetBinding(TextBox.TextProperty, binding);
                     
-                    // Set initial file path
-                    fileTextBox.Loaded += (s, e) =>
+                    // Set initial file path BEFORE binding
+                    if (field.Value != null)
                     {
-                        if (field.Value != null)
-                        {
-                            fileTextBox.Text = field.Value.ToString();
-                        }
-                    };
+                        fileTextBox.Text = field.Value.ToString();
+                    }
+                    
+                    // Now set up the binding
+                    fileTextBox.SetBinding(TextBox.TextProperty, binding);
                     break;
 
                 case FieldType.Color:

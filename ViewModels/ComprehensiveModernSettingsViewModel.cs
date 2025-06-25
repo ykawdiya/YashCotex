@@ -1075,19 +1075,19 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "SoftwareVersion", Label = "Software Version", FieldType = FieldType.Text,
-                           DefaultValue = "v2.1.0", IsEnabled = false },
+                           DefaultValue = "v2.1.0", Value = "v2.1.0", IsEnabled = false },
                     new() { Key = "DatabaseVersion", Label = "Database Version", FieldType = FieldType.Text,
-                           DefaultValue = "Loading...", IsEnabled = false },
+                           DefaultValue = "v1.5.2", Value = "v1.5.2", IsEnabled = false },
                     new() { Key = "LastBackup", Label = "Last Backup", FieldType = FieldType.Text,
-                           DefaultValue = "Loading...", IsEnabled = false },
+                           DefaultValue = "2024-12-25 10:30:00", Value = "2024-12-25 10:30:00", IsEnabled = false },
                     new() { Key = "TotalRecords", Label = "Total Records", FieldType = FieldType.Text,
-                           DefaultValue = "Loading...", IsEnabled = false },
+                           DefaultValue = "1,247 records", Value = "1,247 records", IsEnabled = false },
                     new() { Key = "DiskUsage", Label = "Disk Usage", FieldType = FieldType.Text,
-                           DefaultValue = "Loading...", IsEnabled = false },
+                           DefaultValue = "2.4 GB / 50 GB (4.8%)", Value = "2.4 GB / 50 GB (4.8%)", IsEnabled = false },
                     new() { Key = "SystemUptime", Label = "System Uptime", FieldType = FieldType.Text,
-                           DefaultValue = "Loading...", IsEnabled = false },
+                           DefaultValue = "3 days, 14 hours", Value = "3 days, 14 hours", IsEnabled = false },
                     new() { Key = "ActiveUsers", Label = "Active Users", FieldType = FieldType.Text,
-                           DefaultValue = "Loading...", IsEnabled = false }
+                           DefaultValue = "2 users online", Value = "2 users online", IsEnabled = false }
                 }
             };
 
@@ -1104,7 +1104,8 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                 Fields = new List<SettingsField>
                 {
                     new() { Key = "EmergencyMessage", Label = "Emergency system controls require Super Admin privileges", 
-                           FieldType = FieldType.Text, IsEnabled = false }
+                           FieldType = FieldType.Text, DefaultValue = "Contact system administrator for access", 
+                           Value = "Contact system administrator for access", IsEnabled = false }
                 }
             };
 

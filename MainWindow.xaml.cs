@@ -33,6 +33,17 @@ namespace WeighbridgeSoftwareYashCotex
             // Update company info display with loaded settings
             UpdateCompanyInfoDisplay();
             
+            // Run field binding tests (temporary - for debugging)
+            try
+            {
+                Test.TestFieldBinding.RunTests();
+                Test.TestModernSettings.RunTests();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Test error: {ex.Message}");
+            }
+            
             // Set up keyboard shortcuts
             this.KeyDown += MainWindow_KeyDown;
             
@@ -1065,6 +1076,34 @@ namespace WeighbridgeSoftwareYashCotex
                 settingsControl.Dispose();
             else if (_currentFormControl is ModernSettingsControl modernSettingsControl)
                 modernSettingsControl.Dispose();
+        }
+        
+        // Temporary test method - remove after testing
+        private void OpenTestSettings()
+        {
+            try
+            {
+                var testWindow = new TestSettingsWindow();
+                testWindow.Owner = this;
+                testWindow.Show();
+                LatestOperation.Text = "Test settings window opened";
+            }
+            catch (Exception ex)
+            {
+                LatestOperation.Text = $"Error opening test window: {ex.Message}";
+            }
+        }
+        
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            // Ctrl+T to open test window
+            if (e.Key == Key.T && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                OpenTestSettings();
+                e.Handled = true;
+            }
+            
+            base.OnKeyDown(e);
         }
     }
 }
