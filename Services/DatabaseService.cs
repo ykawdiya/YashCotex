@@ -73,6 +73,184 @@ public class DatabaseService : IDisposable
             .OrderBy(m => m)
             .ToList();
     }
+
+    // Material CRUD Operations
+    public List<Material> GetAllMaterials()
+    {
+        return _context.Materials
+            .OrderBy(m => m.Name)
+            .ToList();
+    }
+
+    public List<Material> GetActiveMaterials()
+    {
+        return _context.Materials
+            .Where(m => m.IsActive)
+            .OrderBy(m => m.Name)
+            .ToList();
+    }
+
+    public Material? GetMaterialById(int id)
+    {
+        return _context.Materials.FirstOrDefault(m => m.Id == id);
+    }
+
+    public bool CreateMaterial(string name)
+    {
+        try
+        {
+            // Check if material already exists
+            if (_context.Materials.Any(m => m.Name.ToLower() == name.ToLower()))
+            {
+                return false; // Material already exists
+            }
+
+            var material = new Material
+            {
+                Name = name.Trim(),
+                IsActive = true,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.Materials.Add(material);
+            _context.SaveChanges();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool UpdateMaterial(int id, string name)
+    {
+        try
+        {
+            var material = _context.Materials.FirstOrDefault(m => m.Id == id);
+            if (material == null) return false;
+
+            // Check if another material with same name exists
+            if (_context.Materials.Any(m => m.Name.ToLower() == name.ToLower() && m.Id != id))
+            {
+                return false; // Another material with same name exists
+            }
+
+            material.Name = name.Trim();
+            _context.SaveChanges();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool DeleteMaterial(int id)
+    {
+        try
+        {
+            var material = _context.Materials.FirstOrDefault(m => m.Id == id);
+            if (material == null) return false;
+
+            // Soft delete - set IsActive to false
+            material.IsActive = false;
+            _context.SaveChanges();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    // Address CRUD Operations
+    public List<Address> GetAllAddresses()
+    {
+        return _context.Addresses
+            .OrderBy(a => a.Name)
+            .ToList();
+    }
+
+    public List<Address> GetActiveAddresses()
+    {
+        return _context.Addresses
+            .Where(a => a.IsActive)
+            .OrderBy(a => a.Name)
+            .ToList();
+    }
+
+    public Address? GetAddressById(int id)
+    {
+        return _context.Addresses.FirstOrDefault(a => a.Id == id);
+    }
+
+    public bool CreateAddress(string name)
+    {
+        try
+        {
+            // Check if address already exists
+            if (_context.Addresses.Any(a => a.Name.ToLower() == name.ToLower()))
+            {
+                return false; // Address already exists
+            }
+
+            var address = new Address
+            {
+                Name = name.Trim(),
+                IsActive = true,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.Addresses.Add(address);
+            _context.SaveChanges();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool UpdateAddress(int id, string name)
+    {
+        try
+        {
+            var address = _context.Addresses.FirstOrDefault(a => a.Id == id);
+            if (address == null) return false;
+
+            // Check if another address with same name exists
+            if (_context.Addresses.Any(a => a.Name.ToLower() == name.ToLower() && a.Id != id))
+            {
+                return false; // Another address with same name exists
+            }
+
+            address.Name = name.Trim();
+            _context.SaveChanges();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool DeleteAddress(int id)
+    {
+        try
+        {
+            var address = _context.Addresses.FirstOrDefault(a => a.Id == id);
+            if (address == null) return false;
+
+            // Soft delete - set IsActive to false
+            address.IsActive = false;
+            _context.SaveChanges();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
     
     public Customer? GetCustomerByVehicleNumber(string vehicleNumber)
     {

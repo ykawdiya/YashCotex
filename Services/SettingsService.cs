@@ -33,6 +33,8 @@ public class SettingsService
     [field: NonSerialized] public event EventHandler? CameraSettingsChanged;
     [field: NonSerialized] public event EventHandler? PrinterSettingsChanged;
     [field: NonSerialized] public event EventHandler? SystemSettingsChanged;
+    [field: NonSerialized] public event EventHandler? MaterialsChanged;
+    [field: NonSerialized] public event EventHandler? AddressesChanged;
     
     // Weighbridge Settings
     public string? WeighbridgeComPort { get; set; } = "COM1";
@@ -409,6 +411,16 @@ public class SettingsService
     {
         SystemSettingsChanged?.Invoke(this, EventArgs.Empty);
     }
+    
+    public virtual void OnMaterialsChanged()
+    {
+        MaterialsChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
+    public virtual void OnAddressesChanged()
+    {
+        AddressesChanged?.Invoke(this, EventArgs.Empty);
+    }
 
     public void RefreshAll()
     {
@@ -419,6 +431,8 @@ public class SettingsService
         OnCameraSettingsChanged();
         OnPrinterSettingsChanged();
         OnSystemSettingsChanged();
+        OnMaterialsChanged();
+        OnAddressesChanged();
         OnSettingsChanged(new SettingsChangedEventArgs
         {
             ChangeType = "All",

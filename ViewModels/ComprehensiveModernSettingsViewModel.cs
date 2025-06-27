@@ -15,6 +15,7 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
     public class ComprehensiveModernSettingsViewModel : INotifyPropertyChanged
     {
         private readonly SettingsService _settingsService;
+        private readonly DatabaseService _databaseService;
         private bool _isLoading;
 
         public event EventHandler<string>? SettingsOperationCompleted;
@@ -30,6 +31,33 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
         public ObservableCollection<SettingsGroup> UserSettings { get; }
         public ObservableCollection<SettingsGroup> SystemSettings { get; }
         public ObservableCollection<SettingsGroup> AdminToolsSettings { get; }
+
+        // Data Management Collections
+        public ObservableCollection<Material> CurrentMaterials { get; }
+        public ObservableCollection<Address> CurrentAddresses { get; }
+
+        // Selected Items for Data Management
+        private Material? _selectedMaterial;
+        public Material? SelectedMaterial
+        {
+            get => _selectedMaterial;
+            set
+            {
+                _selectedMaterial = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Address? _selectedAddress;
+        public Address? SelectedAddress
+        {
+            get => _selectedAddress;
+            set
+            {
+                _selectedAddress = value;
+                OnPropertyChanged();
+            }
+        }
 
         // Commands
         public ICommand SaveAllCommand { get; set; }
@@ -118,6 +146,7 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
         public ComprehensiveModernSettingsViewModel()
         {
             _settingsService = SettingsService.Instance;
+            _databaseService = new DatabaseService();
             
             // Initialize Collections
             CompanySettings = new ObservableCollection<SettingsGroup>();
@@ -131,12 +160,19 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
             SystemSettings = new ObservableCollection<SettingsGroup>();
             AdminToolsSettings = new ObservableCollection<SettingsGroup>();
 
+            // Initialize Data Management Collections
+            CurrentMaterials = new ObservableCollection<Material>();
+            CurrentAddresses = new ObservableCollection<Address>();
+
             // Initialize Commands
             InitializeCommands();
             
             // Initialize Settings
             InitializeAllSettings();
             LoadCurrentValues();
+            
+            // Load Data Management Data
+            LoadDataManagementData();
         }
 
         private void InitializeCommands()
@@ -583,13 +619,236 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
         private void BackupNow() { /* Perform backup */ }
         private void RestoreBackup() { /* Restore from backup */ }
 
-        // Data Management Commands (placeholder implementations)
-        private void AddMaterial() { /* Add material */ }
-        private void EditMaterial() { /* Edit material */ }
-        private void DeleteMaterial() { /* Delete material */ }
-        private void AddAddress() { /* Add address */ }
-        private void EditAddress() { /* Edit address */ }
-        private void DeleteAddress() { /* Delete address */ }
+        // Data Management Commands
+        private void AddMaterial()
+        {
+            try
+            {
+                var materialName = Microsoft.VisualBasic.Interaction.InputBox(
+                    "Enter material name:", 
+                    "Add New Material", 
+                    "");
+
+                if (string.IsNullOrWhiteSpace(materialName))
+                    return;
+
+                if (_databaseService.CreateMaterial(materialName))
+                {
+                    LoadDataManagementData(); // Refresh the collections
+                    _settingsService.OnMaterialsChanged(); // Trigger refresh event for Entry/Exit forms
+                    MessageBox.Show($"Material '{materialName}' added successfully!", 
+                                  "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show($"Failed to add material '{materialName}'. It may already exist.", 
+                                  "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error adding material: {ex.Message}", 
+                              "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void EditMaterial()
+        {
+            try
+            {
+                if (SelectedMaterial != null)
+                {
+                    var selectedMaterial = SelectedMaterial;
+                    var newName = Microsoft.VisualBasic.Interaction.InputBox(
+                        "Edit material name:", 
+                        "Edit Material", 
+                        selectedMaterial.Name);
+
+                    if (string.IsNullOrWhiteSpace(newName) || newName == selectedMaterial.Name)
+                        return;
+
+                    if (_databaseService.UpdateMaterial(selectedMaterial.Id, newName))
+                    {
+                        LoadDataManagementData(); // Refresh the collections
+                        _settingsService.OnMaterialsChanged(); // Trigger refresh event for Entry/Exit forms
+                        MessageBox.Show($"Material updated successfully!", 
+                                      "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Failed to update material. Name may already exist.", 
+                                      "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a material to edit.", 
+                                  "No Selection", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error editing material: {ex.Message}", 
+                              "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void DeleteMaterial()
+        {
+            try
+            {
+                if (SelectedMaterial != null)
+                {
+                    var selectedMaterial = SelectedMaterial;
+                    var result = MessageBox.Show(
+                        $"Are you sure you want to delete the material '{selectedMaterial.Name}'?\n\nThis will mark it as inactive and it won't appear in entry forms.", 
+                        "Confirm Delete", 
+                        MessageBoxButton.YesNo, 
+                        MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        if (_databaseService.DeleteMaterial(selectedMaterial.Id))
+                        {
+                            LoadDataManagementData(); // Refresh the collections
+                            _settingsService.OnMaterialsChanged(); // Trigger refresh event for Entry/Exit forms
+                            MessageBox.Show($"Material '{selectedMaterial.Name}' deleted successfully!", 
+                                          "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to delete material.", 
+                                          "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a material to delete.", 
+                                  "No Selection", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error deleting material: {ex.Message}", 
+                              "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void AddAddress()
+        {
+            try
+            {
+                var addressName = Microsoft.VisualBasic.Interaction.InputBox(
+                    "Enter address name:", 
+                    "Add New Address", 
+                    "");
+
+                if (string.IsNullOrWhiteSpace(addressName))
+                    return;
+
+                if (_databaseService.CreateAddress(addressName))
+                {
+                    LoadDataManagementData(); // Refresh the collections
+                    _settingsService.OnAddressesChanged(); // Trigger refresh event for Entry/Exit forms
+                    MessageBox.Show($"Address '{addressName}' added successfully!", 
+                                  "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show($"Failed to add address '{addressName}'. It may already exist.", 
+                                  "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error adding address: {ex.Message}", 
+                              "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void EditAddress()
+        {
+            try
+            {
+                if (SelectedAddress != null)
+                {
+                    var selectedAddress = SelectedAddress;
+                    var newName = Microsoft.VisualBasic.Interaction.InputBox(
+                        "Edit address name:", 
+                        "Edit Address", 
+                        selectedAddress.Name);
+
+                    if (string.IsNullOrWhiteSpace(newName) || newName == selectedAddress.Name)
+                        return;
+
+                    if (_databaseService.UpdateAddress(selectedAddress.Id, newName))
+                    {
+                        LoadDataManagementData(); // Refresh the collections
+                        _settingsService.OnAddressesChanged(); // Trigger refresh event for Entry/Exit forms
+                        MessageBox.Show($"Address updated successfully!", 
+                                      "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Failed to update address. Name may already exist.", 
+                                      "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select an address to edit.", 
+                                  "No Selection", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error editing address: {ex.Message}", 
+                              "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void DeleteAddress()
+        {
+            try
+            {
+                if (SelectedAddress != null)
+                {
+                    var selectedAddress = SelectedAddress;
+                    var result = MessageBox.Show(
+                        $"Are you sure you want to delete the address '{selectedAddress.Name}'?\n\nThis will mark it as inactive and it won't appear in entry forms.", 
+                        "Confirm Delete", 
+                        MessageBoxButton.YesNo, 
+                        MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        if (_databaseService.DeleteAddress(selectedAddress.Id))
+                        {
+                            LoadDataManagementData(); // Refresh the collections
+                            _settingsService.OnAddressesChanged(); // Trigger refresh event for Entry/Exit forms
+                            MessageBox.Show($"Address '{selectedAddress.Name}' deleted successfully!", 
+                                          "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Failed to delete address.", 
+                                          "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select an address to delete.", 
+                                  "No Selection", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error deleting address: {ex.Message}", 
+                              "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         // User Management Commands (placeholder implementations)
         private void AddUser() { /* Add user */ }
@@ -829,6 +1088,93 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
             // Load other values...
         }
 
+        private void LoadDataManagementData()
+        {
+            try
+            {
+                // Load current materials
+                var materials = _databaseService.GetActiveMaterials();
+                CurrentMaterials.Clear();
+                foreach (var material in materials)
+                {
+                    CurrentMaterials.Add(material);
+                }
+
+                // Load current addresses
+                var addresses = _databaseService.GetActiveAddresses();
+                CurrentAddresses.Clear();
+                foreach (var address in addresses)
+                {
+                    CurrentAddresses.Add(address);
+                }
+
+                // Update UI fields with current data
+                UpdateDataManagementUI();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading data management data: {ex.Message}", "Error", 
+                              MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void UpdateDataManagementUI()
+        {
+            try
+            {
+                // Update materials list display
+                var materialsGroup = DataManagementSettings.FirstOrDefault(g => g.Title.Contains("Materials"));
+                if (materialsGroup != null)
+                {
+                    var materialsListField = materialsGroup.Fields.FirstOrDefault(f => f.Key == "CurrentMaterialsList");
+                    if (materialsListField != null)
+                    {
+                        var materialNames = CurrentMaterials.Select(m => m.Name).ToList();
+                        materialsListField.Value = materialNames.Count > 0 
+                            ? string.Join(", ", materialNames)
+                            : "No materials found";
+                    }
+                }
+
+                // Update addresses list display
+                var addressesGroup = DataManagementSettings.FirstOrDefault(g => g.Title.Contains("Addresses"));
+                if (addressesGroup != null)
+                {
+                    var addressesListField = addressesGroup.Fields.FirstOrDefault(f => f.Key == "CurrentAddressesList");
+                    if (addressesListField != null)
+                    {
+                        var addressNames = CurrentAddresses.Select(a => a.Name).ToList();
+                        addressesListField.Value = addressNames.Count > 0 
+                            ? string.Join(", ", addressNames)
+                            : "No addresses found";
+                    }
+                }
+
+                // Update summary counts
+                var summaryGroup = DataManagementSettings.FirstOrDefault(g => g.Title.Contains("Summary"));
+                if (summaryGroup != null)
+                {
+                    var materialCountField = summaryGroup.Fields.FirstOrDefault(f => f.Key == "MaterialCount");
+                    var addressCountField = summaryGroup.Fields.FirstOrDefault(f => f.Key == "AddressCount");
+                    var statusField = summaryGroup.Fields.FirstOrDefault(f => f.Key == "DataStatus");
+
+                    if (materialCountField != null)
+                        materialCountField.Value = CurrentMaterials.Count.ToString();
+                    
+                    if (addressCountField != null)
+                        addressCountField.Value = CurrentAddresses.Count.ToString();
+                    
+                    if (statusField != null)
+                        statusField.Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating data management UI: {ex.Message}", "Error", 
+                              MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void LoadCompanyValues()
         {
             var companyGroup = CompanySettings.FirstOrDefault();
@@ -933,31 +1279,165 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
             // Materials Management
             var materialsGroup = new SettingsGroup
             {
-                Title = "Materials Management",
-                Description = "Manage material types for weighment records",
-                ColumnCount = 1,
+                Title = "🏗️ Materials Management",
+                Description = "Manage material types used in weighment records. Add, edit, or remove materials from the system.",
+                ColumnCount = 2,
                 Fields = new List<SettingsField>
                 {
-                    new() { Key = "NewMaterial", Label = "Add New Material", FieldType = FieldType.Text,
-                           Placeholder = "Enter material name", DefaultValue = "", Value = "" }
+                    new() { 
+                        Key = "CurrentMaterialsList", 
+                        Label = "Current Materials", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "Loading materials...", 
+                        Value = "Loading materials...",
+                        IsEnabled = false,
+                        Description = "Select a material from the list below to edit or delete"
+                    },
+                    new() { 
+                        Key = "MaterialActions", 
+                        Label = "Material Actions", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "Use buttons below to manage materials", 
+                        Value = "Use buttons below to manage materials",
+                        IsEnabled = false,
+                        Description = "Add new materials or manage existing ones"
+                    },
+                    new() { 
+                        Key = "AddMaterialBtn", 
+                        Label = "➕ Add Material", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "Click to add new material", 
+                        Value = "Click to add new material",
+                        IsEnabled = true,
+                        Description = "Add a new material type to the system"
+                    },
+                    new() { 
+                        Key = "EditMaterialBtn", 
+                        Label = "✏️ Edit Material", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "Select a material first", 
+                        Value = "Select a material first",
+                        IsEnabled = false,
+                        Description = "Edit the selected material name"
+                    },
+                    new() { 
+                        Key = "DeleteMaterialBtn", 
+                        Label = "🗑️ Delete Material", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "Select a material first", 
+                        Value = "Select a material first",
+                        IsEnabled = false,
+                        Description = "Remove the selected material (will be marked as inactive)"
+                    }
                 }
             };
 
             // Addresses Management
             var addressesGroup = new SettingsGroup
             {
-                Title = "Addresses Management",
-                Description = "Manage customer and supplier addresses",
-                ColumnCount = 1,
+                Title = "📍 Addresses Management",
+                Description = "Manage customer and supplier addresses. Add, edit, or remove addresses from the system.",
+                ColumnCount = 2,
                 Fields = new List<SettingsField>
                 {
-                    new() { Key = "NewAddress", Label = "Add New Address", FieldType = FieldType.Text,
-                           Placeholder = "Enter address details", DefaultValue = "", Value = "" }
+                    new() { 
+                        Key = "CurrentAddressesList", 
+                        Label = "Current Addresses", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "Loading addresses...", 
+                        Value = "Loading addresses...",
+                        IsEnabled = false,
+                        Description = "Select an address from the list below to edit or delete"
+                    },
+                    new() { 
+                        Key = "AddressActions", 
+                        Label = "Address Actions", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "Use buttons below to manage addresses", 
+                        Value = "Use buttons below to manage addresses",
+                        IsEnabled = false,
+                        Description = "Add new addresses or manage existing ones"
+                    },
+                    new() { 
+                        Key = "AddAddressBtn", 
+                        Label = "➕ Add Address", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "Click to add new address", 
+                        Value = "Click to add new address",
+                        IsEnabled = true,
+                        Description = "Add a new address to the system"
+                    },
+                    new() { 
+                        Key = "EditAddressBtn", 
+                        Label = "✏️ Edit Address", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "Select an address first", 
+                        Value = "Select an address first",
+                        IsEnabled = false,
+                        Description = "Edit the selected address"
+                    },
+                    new() { 
+                        Key = "DeleteAddressBtn", 
+                        Label = "🗑️ Delete Address", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "Select an address first", 
+                        Value = "Select an address first",
+                        IsEnabled = false,
+                        Description = "Remove the selected address (will be marked as inactive)"
+                    }
+                }
+            };
+
+            // Data Summary
+            var summaryGroup = new SettingsGroup
+            {
+                Title = "📊 Data Summary",
+                Description = "Overview of current data in the system",
+                ColumnCount = 2,
+                Fields = new List<SettingsField>
+                {
+                    new() { 
+                        Key = "MaterialCount", 
+                        Label = "Total Active Materials", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "0", 
+                        Value = "0",
+                        IsEnabled = false,
+                        Description = "Number of active materials in the system"
+                    },
+                    new() { 
+                        Key = "AddressCount", 
+                        Label = "Total Active Addresses", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "0", 
+                        Value = "0",
+                        IsEnabled = false,
+                        Description = "Number of active addresses in the system"
+                    },
+                    new() { 
+                        Key = "RefreshData", 
+                        Label = "🔄 Refresh Data", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = "Click to refresh", 
+                        Value = "Click to refresh",
+                        IsEnabled = true,
+                        Description = "Reload materials and addresses from database"
+                    },
+                    new() { 
+                        Key = "DataStatus", 
+                        Label = "Last Updated", 
+                        FieldType = FieldType.Text,
+                        DefaultValue = DateTime.Now.ToString("yyyy-MM-dd HH:mm"), 
+                        Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
+                        IsEnabled = false,
+                        Description = "When data was last loaded from the database"
+                    }
                 }
             };
 
             DataManagementSettings.Add(materialsGroup);
             DataManagementSettings.Add(addressesGroup);
+            DataManagementSettings.Add(summaryGroup);
         }
 
         private void InitializeSecuritySettings()

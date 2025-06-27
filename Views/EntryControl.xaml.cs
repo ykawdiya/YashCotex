@@ -31,6 +31,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
             // Subscribe to settings changes that affect entry form
             _settingsService.CompanyInfoChanged += OnCompanyInfoChanged;
             _settingsService.WeighbridgeSettingsChanged += OnWeighbridgeSettingsChanged;
+            _settingsService.MaterialsChanged += OnMaterialsChanged;
+            _settingsService.AddressesChanged += OnAddressesChanged;
             
             this.Loaded += EntryControl_Loaded;
             this.KeyDown += EntryControl_KeyDown;
@@ -659,6 +661,8 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 // Unsubscribe from settings events
                 _settingsService.CompanyInfoChanged -= OnCompanyInfoChanged;
                 _settingsService.WeighbridgeSettingsChanged -= OnWeighbridgeSettingsChanged;
+                _settingsService.MaterialsChanged -= OnMaterialsChanged;
+                _settingsService.AddressesChanged -= OnAddressesChanged;
                 
                 _databaseService?.Dispose();
                 _weightService?.Dispose();
@@ -685,6 +689,70 @@ namespace WeighbridgeSoftwareYashCotex.Views
                 // Recapture weight with new settings
                 CaptureCurrentWeight();
             });
+        }
+        
+        private void OnMaterialsChanged(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                RefreshMaterials();
+            });
+        }
+        
+        private void OnAddressesChanged(object? sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                RefreshAddresses();
+            });
+        }
+        
+        private void RefreshMaterials()
+        {
+            try
+            {
+                var currentSelection = MaterialComboBox.SelectedItem?.ToString();
+                var materials = _databaseService.GetMaterials();
+                MaterialComboBox.ItemsSource = materials;
+                
+                // Try to preserve selection if possible
+                if (!string.IsNullOrEmpty(currentSelection) && materials.Contains(currentSelection))
+                {
+                    MaterialComboBox.SelectedItem = currentSelection;
+                }
+                else if (materials.Any())
+                {
+                    MaterialComboBox.SelectedIndex = 0;
+                }
+                
+                UpdateFormStatus("Materials refreshed", true);
+            }
+            catch (Exception ex)
+            {
+                UpdateFormStatus($"Error refreshing materials: {ex.Message}", false);
+            }
+        }
+        
+        private void RefreshAddresses()
+        {
+            try
+            {
+                var currentSelection = AddressComboBox.SelectedItem?.ToString();
+                var addresses = _databaseService.GetAddresses();
+                AddressComboBox.ItemsSource = addresses;
+                
+                // Try to preserve selection if possible
+                if (!string.IsNullOrEmpty(currentSelection) && addresses.Contains(currentSelection))
+                {
+                    AddressComboBox.SelectedItem = currentSelection;
+                }
+                
+                UpdateFormStatus("Addresses refreshed", true);
+            }
+            catch (Exception ex)
+            {
+                UpdateFormStatus($"Error refreshing addresses: {ex.Message}", false);
+            }
         }
         
         private void LoadCompanyData()
