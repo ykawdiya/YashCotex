@@ -36,29 +36,6 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
         public ObservableCollection<Material> CurrentMaterials { get; }
         public ObservableCollection<Address> CurrentAddresses { get; }
 
-        // Selected Items for Data Management
-        private Material? _selectedMaterial;
-        public Material? SelectedMaterial
-        {
-            get => _selectedMaterial;
-            set
-            {
-                _selectedMaterial = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private Address? _selectedAddress;
-        public Address? SelectedAddress
-        {
-            get => _selectedAddress;
-            set
-            {
-                _selectedAddress = value;
-                OnPropertyChanged();
-            }
-        }
-
         // Commands
         public ICommand SaveAllCommand { get; set; }
         public ICommand ResetCommand { get; set; }
@@ -656,9 +633,9 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
         {
             try
             {
-                if (SelectedMaterial != null)
+                var selectedMaterial = GetSelectedMaterial();
+                if (selectedMaterial != null)
                 {
-                    var selectedMaterial = SelectedMaterial;
                     var newName = Microsoft.VisualBasic.Interaction.InputBox(
                         "Edit material name:", 
                         "Edit Material", 
@@ -697,9 +674,9 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
         {
             try
             {
-                if (SelectedMaterial != null)
+                var selectedMaterial = GetSelectedMaterial();
+                if (selectedMaterial != null)
                 {
-                    var selectedMaterial = SelectedMaterial;
                     var result = MessageBox.Show(
                         $"Are you sure you want to delete the material '{selectedMaterial.Name}'?\n\nThis will mark it as inactive and it won't appear in entry forms.", 
                         "Confirm Delete", 
@@ -771,9 +748,9 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
         {
             try
             {
-                if (SelectedAddress != null)
+                var selectedAddress = GetSelectedAddress();
+                if (selectedAddress != null)
                 {
-                    var selectedAddress = SelectedAddress;
                     var newName = Microsoft.VisualBasic.Interaction.InputBox(
                         "Edit address name:", 
                         "Edit Address", 
@@ -812,9 +789,9 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
         {
             try
             {
-                if (SelectedAddress != null)
+                var selectedAddress = GetSelectedAddress();
+                if (selectedAddress != null)
                 {
-                    var selectedAddress = SelectedAddress;
                     var result = MessageBox.Show(
                         $"Are you sure you want to delete the address '{selectedAddress.Name}'?\n\nThis will mark it as inactive and it won't appear in entry forms.", 
                         "Confirm Delete", 
@@ -1122,31 +1099,65 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
         {
             try
             {
-                // Update materials list display
+                // Update materials dropdown options
                 var materialsGroup = DataManagementSettings.FirstOrDefault(g => g.Title.Contains("Materials"));
                 if (materialsGroup != null)
                 {
-                    var materialsListField = materialsGroup.Fields.FirstOrDefault(f => f.Key == "CurrentMaterialsList");
+                    var materialsListField = materialsGroup.Fields.FirstOrDefault(f => f.Key == "MaterialsList");
                     if (materialsListField != null)
                     {
-                        var materialNames = CurrentMaterials.Select(m => m.Name).ToList();
-                        materialsListField.Value = materialNames.Count > 0 
-                            ? string.Join(", ", materialNames)
-                            : "No materials found";
+                        materialsListField.Options.Clear();
+                        
+                        if (CurrentMaterials.Count > 0)
+                        {
+                            foreach (var material in CurrentMaterials)
+                            {
+                                materialsListField.Options.Add(new SettingsOption 
+                                { 
+                                    Text = $"{material.Name} (ID: {material.Id})", 
+                                    Value = material.Id.ToString() 
+                                });
+                            }
+                        }
+                        else
+                        {
+                            materialsListField.Options.Add(new SettingsOption 
+                            { 
+                                Text = "No materials found", 
+                                Value = "" 
+                            });
+                        }
                     }
                 }
 
-                // Update addresses list display
+                // Update addresses dropdown options
                 var addressesGroup = DataManagementSettings.FirstOrDefault(g => g.Title.Contains("Addresses"));
                 if (addressesGroup != null)
                 {
-                    var addressesListField = addressesGroup.Fields.FirstOrDefault(f => f.Key == "CurrentAddressesList");
+                    var addressesListField = addressesGroup.Fields.FirstOrDefault(f => f.Key == "AddressesList");
                     if (addressesListField != null)
                     {
-                        var addressNames = CurrentAddresses.Select(a => a.Name).ToList();
-                        addressesListField.Value = addressNames.Count > 0 
-                            ? string.Join(", ", addressNames)
-                            : "No addresses found";
+                        addressesListField.Options.Clear();
+                        
+                        if (CurrentAddresses.Count > 0)
+                        {
+                            foreach (var address in CurrentAddresses)
+                            {
+                                addressesListField.Options.Add(new SettingsOption 
+                                { 
+                                    Text = $"{address.Name} (ID: {address.Id})", 
+                                    Value = address.Id.ToString() 
+                                });
+                            }
+                        }
+                        else
+                        {
+                            addressesListField.Options.Add(new SettingsOption 
+                            { 
+                                Text = "No addresses found", 
+                                Value = "" 
+                            });
+                        }
                     }
                 }
 
@@ -1165,13 +1176,53 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
                         addressCountField.Value = CurrentAddresses.Count.ToString();
                     
                     if (statusField != null)
-                        statusField.Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+                        statusField.Value = DateTime.Now.ToString("HH:mm");
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error updating data management UI: {ex.Message}", "Error", 
                               MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private Material? GetSelectedMaterial()
+        {
+            try
+            {
+                var materialsGroup = DataManagementSettings.FirstOrDefault(g => g.Title.Contains("Materials"));
+                var materialsListField = materialsGroup?.Fields.FirstOrDefault(f => f.Key == "MaterialsList");
+                
+                if (materialsListField?.Value != null && int.TryParse(materialsListField.Value.ToString(), out int materialId))
+                {
+                    return CurrentMaterials.FirstOrDefault(m => m.Id == materialId);
+                }
+                
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private Address? GetSelectedAddress()
+        {
+            try
+            {
+                var addressesGroup = DataManagementSettings.FirstOrDefault(g => g.Title.Contains("Addresses"));
+                var addressesListField = addressesGroup?.Fields.FirstOrDefault(f => f.Key == "AddressesList");
+                
+                if (addressesListField?.Value != null && int.TryParse(addressesListField.Value.ToString(), out int addressId))
+                {
+                    return CurrentAddresses.FirstOrDefault(a => a.Id == addressId);
+                }
+                
+                return null;
+            }
+            catch
+            {
+                return null;
             }
         }
 
@@ -1280,54 +1331,28 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
             var materialsGroup = new SettingsGroup
             {
                 Title = "🏗️ Materials Management",
-                Description = "Manage material types used in weighment records. Add, edit, or remove materials from the system.",
-                ColumnCount = 2,
+                Description = "Manage material types used in weighment records. Select a material from the list and use the action buttons to manage it.",
+                ColumnCount = 1,
                 Fields = new List<SettingsField>
                 {
                     new() { 
-                        Key = "CurrentMaterialsList", 
+                        Key = "MaterialsList", 
                         Label = "Current Materials", 
-                        FieldType = FieldType.Text,
-                        DefaultValue = "Loading materials...", 
-                        Value = "Loading materials...",
-                        IsEnabled = false,
-                        Description = "Select a material from the list below to edit or delete"
-                    },
-                    new() { 
-                        Key = "MaterialActions", 
-                        Label = "Material Actions", 
-                        FieldType = FieldType.Text,
-                        DefaultValue = "Use buttons below to manage materials", 
-                        Value = "Use buttons below to manage materials",
-                        IsEnabled = false,
-                        Description = "Add new materials or manage existing ones"
-                    },
-                    new() { 
-                        Key = "AddMaterialBtn", 
-                        Label = "➕ Add Material", 
-                        FieldType = FieldType.Text,
-                        DefaultValue = "Click to add new material", 
-                        Value = "Click to add new material",
+                        FieldType = FieldType.Dropdown,
+                        DefaultValue = "", 
+                        Value = "",
                         IsEnabled = true,
-                        Description = "Add a new material type to the system"
+                        Description = "Select a material to edit or delete",
+                        Options = new List<SettingsOption>()
                     },
                     new() { 
-                        Key = "EditMaterialBtn", 
-                        Label = "✏️ Edit Material", 
+                        Key = "MaterialButtonsContainer", 
+                        Label = "Actions", 
                         FieldType = FieldType.Text,
-                        DefaultValue = "Select a material first", 
-                        Value = "Select a material first",
+                        DefaultValue = "➕ Add  |  ✏️ Edit  |  🗑️ Delete", 
+                        Value = "➕ Add  |  ✏️ Edit  |  🗑️ Delete",
                         IsEnabled = false,
-                        Description = "Edit the selected material name"
-                    },
-                    new() { 
-                        Key = "DeleteMaterialBtn", 
-                        Label = "🗑️ Delete Material", 
-                        FieldType = FieldType.Text,
-                        DefaultValue = "Select a material first", 
-                        Value = "Select a material first",
-                        IsEnabled = false,
-                        Description = "Remove the selected material (will be marked as inactive)"
+                        Description = "Click the buttons below to manage materials"
                     }
                 }
             };
@@ -1336,54 +1361,48 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
             var addressesGroup = new SettingsGroup
             {
                 Title = "📍 Addresses Management",
-                Description = "Manage customer and supplier addresses. Add, edit, or remove addresses from the system.",
-                ColumnCount = 2,
+                Description = "Manage customer and supplier addresses. Select an address from the list and use the action buttons to manage it.",
+                ColumnCount = 1,
                 Fields = new List<SettingsField>
                 {
                     new() { 
-                        Key = "CurrentAddressesList", 
+                        Key = "AddressesList", 
                         Label = "Current Addresses", 
-                        FieldType = FieldType.Text,
-                        DefaultValue = "Loading addresses...", 
-                        Value = "Loading addresses...",
-                        IsEnabled = false,
-                        Description = "Select an address from the list below to edit or delete"
-                    },
-                    new() { 
-                        Key = "AddressActions", 
-                        Label = "Address Actions", 
-                        FieldType = FieldType.Text,
-                        DefaultValue = "Use buttons below to manage addresses", 
-                        Value = "Use buttons below to manage addresses",
-                        IsEnabled = false,
-                        Description = "Add new addresses or manage existing ones"
-                    },
-                    new() { 
-                        Key = "AddAddressBtn", 
-                        Label = "➕ Add Address", 
-                        FieldType = FieldType.Text,
-                        DefaultValue = "Click to add new address", 
-                        Value = "Click to add new address",
+                        FieldType = FieldType.Dropdown,
+                        DefaultValue = "", 
+                        Value = "",
                         IsEnabled = true,
-                        Description = "Add a new address to the system"
+                        Description = "Select an address to edit or delete",
+                        Options = new List<SettingsOption>()
                     },
                     new() { 
-                        Key = "EditAddressBtn", 
-                        Label = "✏️ Edit Address", 
+                        Key = "AddressButtonsContainer", 
+                        Label = "Actions", 
                         FieldType = FieldType.Text,
-                        DefaultValue = "Select an address first", 
-                        Value = "Select an address first",
+                        DefaultValue = "➕ Add  |  ✏️ Edit  |  🗑️ Delete", 
+                        Value = "➕ Add  |  ✏️ Edit  |  🗑️ Delete",
                         IsEnabled = false,
-                        Description = "Edit the selected address"
-                    },
+                        Description = "Click the buttons below to manage addresses"
+                    }
+                }
+            };
+
+            // Data Management Instructions
+            var instructionsGroup = new SettingsGroup
+            {
+                Title = "📋 How to Use Data Management",
+                Description = "Instructions for managing materials and addresses",
+                ColumnCount = 1,
+                Fields = new List<SettingsField>
+                {
                     new() { 
-                        Key = "DeleteAddressBtn", 
-                        Label = "🗑️ Delete Address", 
+                        Key = "Instructions", 
+                        Label = "How to Manage Data", 
                         FieldType = FieldType.Text,
-                        DefaultValue = "Select an address first", 
-                        Value = "Select an address first",
+                        DefaultValue = "• ADD: Click 'Add Material' or 'Add Address' buttons in the settings menu\n• EDIT: Select an item from the dropdown, then click 'Edit' in the menu\n• DELETE: Select an item from the dropdown, then click 'Delete' in the menu\n• Changes are immediately saved and reflected in entry/exit forms", 
+                        Value = "• ADD: Click 'Add Material' or 'Add Address' buttons in the settings menu\n• EDIT: Select an item from the dropdown, then click 'Edit' in the menu\n• DELETE: Select an item from the dropdown, then click 'Delete' in the menu\n• Changes are immediately saved and reflected in entry/exit forms",
                         IsEnabled = false,
-                        Description = "Remove the selected address (will be marked as inactive)"
+                        Description = "Step-by-step guide for managing materials and addresses"
                     }
                 }
             };
@@ -1393,50 +1412,42 @@ namespace WeighbridgeSoftwareYashCotex.ViewModels
             {
                 Title = "📊 Data Summary",
                 Description = "Overview of current data in the system",
-                ColumnCount = 2,
+                ColumnCount = 3,
                 Fields = new List<SettingsField>
                 {
                     new() { 
                         Key = "MaterialCount", 
-                        Label = "Total Active Materials", 
+                        Label = "Active Materials", 
                         FieldType = FieldType.Text,
                         DefaultValue = "0", 
                         Value = "0",
                         IsEnabled = false,
-                        Description = "Number of active materials in the system"
+                        Description = "Number of active materials"
                     },
                     new() { 
                         Key = "AddressCount", 
-                        Label = "Total Active Addresses", 
+                        Label = "Active Addresses", 
                         FieldType = FieldType.Text,
                         DefaultValue = "0", 
                         Value = "0",
                         IsEnabled = false,
-                        Description = "Number of active addresses in the system"
-                    },
-                    new() { 
-                        Key = "RefreshData", 
-                        Label = "🔄 Refresh Data", 
-                        FieldType = FieldType.Text,
-                        DefaultValue = "Click to refresh", 
-                        Value = "Click to refresh",
-                        IsEnabled = true,
-                        Description = "Reload materials and addresses from database"
+                        Description = "Number of active addresses"
                     },
                     new() { 
                         Key = "DataStatus", 
                         Label = "Last Updated", 
                         FieldType = FieldType.Text,
-                        DefaultValue = DateTime.Now.ToString("yyyy-MM-dd HH:mm"), 
-                        Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
+                        DefaultValue = DateTime.Now.ToString("HH:mm"), 
+                        Value = DateTime.Now.ToString("HH:mm"),
                         IsEnabled = false,
-                        Description = "When data was last loaded from the database"
+                        Description = "Last refresh time"
                     }
                 }
             };
 
             DataManagementSettings.Add(materialsGroup);
             DataManagementSettings.Add(addressesGroup);
+            DataManagementSettings.Add(instructionsGroup);
             DataManagementSettings.Add(summaryGroup);
         }
 
