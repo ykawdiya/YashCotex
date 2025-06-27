@@ -6,9 +6,7 @@
              xmlns:controls="clr-namespace:WeighbridgeSoftwareYashCotex.Controls"
              xmlns:converters="clr-namespace:WeighbridgeSoftwareYashCotex.Converters">
 
-    <UserControl.DataContext>
-        <viewmodels:ComprehensiveModernSettingsViewModel/>
-    </UserControl.DataContext>
+    <!-- DataContext is set in code-behind for proper initialization -->
 
     <UserControl.Resources>
         <!-- Converters -->
@@ -75,7 +73,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <controls:DynamicFieldControl Field="{Binding}" Margin="0,0,12,16"/>
+                                <controls:SimpleFieldControl Field="{Binding}" Margin="0,0,12,16"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

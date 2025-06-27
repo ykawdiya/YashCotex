@@ -32,14 +32,24 @@ namespace WeighbridgeSoftwareYashCotex.Controls
             
             if (field != null)
             {
+                Console.WriteLine($"🔧 DynamicFieldControl: Creating field '{field.Key}' ({field.FieldType}) with value '{field.Value}'");
+                
                 // Set the DataContext so the XAML bindings work
                 control.DataContext = field;
                 control.CreateFieldContent(field);
+                
+                Console.WriteLine($"   ✅ Field '{field.Key}' created successfully");
+            }
+            else
+            {
+                Console.WriteLine("⚠️ DynamicFieldControl: Field is null!");
             }
         }
 
         private void CreateFieldContent(SettingsField field)
         {
+            Console.WriteLine($"   🎨 Creating {field.FieldType} control for '{field.Key}'");
+            
             FrameworkElement element = field.FieldType switch
             {
                 FieldType.Text => CreateTextBox(field),
@@ -52,10 +62,21 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                 _ => CreateTextBox(field)
             };
 
-            // Set up binding and initial values based on field type
-            SetupFieldBinding(element, field);
+            if (element != null)
+            {
+                Console.WriteLine($"   🔗 Setting up binding for '{field.Key}' with initial value '{field.Value}'");
+                
+                // Set up binding and initial values based on field type
+                SetupFieldBinding(element, field);
 
-            FieldContent.Content = element;
+                FieldContent.Content = element;
+                
+                Console.WriteLine($"   ✅ Control created and bound for '{field.Key}'");
+            }
+            else
+            {
+                Console.WriteLine($"   ❌ Failed to create control for '{field.Key}'");
+            }
         }
 
         private void SetupFieldBinding(FrameworkElement element, SettingsField field)
@@ -77,14 +98,24 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                 case FieldType.Number:
                     var textBox = (TextBox)element;
                     
+                    Console.WriteLine($"       🔗 Setting up TextBox binding for '{field.Key}'");
+                    Console.WriteLine($"           Field.Value: '{field.Value}' (Type: {field.Value?.GetType().Name})");
+                    
                     // Set initial value BEFORE binding to avoid conflicts
                     if (field.Value != null)
                     {
-                        textBox.Text = field.Value.ToString();
+                        var initialValue = field.Value.ToString();
+                        textBox.Text = initialValue;
+                        Console.WriteLine($"           Set TextBox.Text to: '{initialValue}'");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"           Field.Value is null, not setting TextBox.Text");
                     }
                     
                     // Now set up the binding
                     textBox.SetBinding(TextBox.TextProperty, binding);
+                    Console.WriteLine($"           Binding set up. Current TextBox.Text: '{textBox.Text}'");
                     break;
 
                 case FieldType.Password:
@@ -189,12 +220,16 @@ namespace WeighbridgeSoftwareYashCotex.Controls
 
         private TextBox CreateTextBox(SettingsField field)
         {
+            Console.WriteLine($"     📝 Creating TextBox for '{field.Key}' with placeholder '{field.Placeholder}'");
+            
             var textBox = new TextBox
             {
                 Style = (Style)FindResource("ModernTextBoxStyle"),
                 ToolTip = field.Tooltip,
                 IsEnabled = field.IsEnabled
             };
+            
+            Console.WriteLine($"     📝 TextBox created, IsEnabled: {textBox.IsEnabled}");
             
             // Bind IsEnabled to field's IsEnabled property
             var enabledBinding = new Binding("IsEnabled")
@@ -209,6 +244,7 @@ namespace WeighbridgeSoftwareYashCotex.Controls
                 // Add placeholder functionality
                 textBox.Tag = field.Placeholder;
                 SetPlaceholderBehavior(textBox);
+                Console.WriteLine($"     📝 Placeholder behavior set for '{field.Placeholder}'");
             }
 
             return textBox;
